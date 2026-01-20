@@ -1,6 +1,6 @@
 'use client'
 
-import { AlertCircle, ArrowLeft, Calendar, Loader2 } from 'lucide-react'
+import { AlertCircle, ArrowLeft, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -145,7 +145,6 @@ export default function NewPeriodPage({ params }: PageProps) {
 								} bg-background px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent`}
 								disabled={isLoading}
 							/>
-							<Calendar className='absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none' />
 						</div>
 						{dateError && <p className='mt-2 text-sm text-destructive'>{dateError}</p>}
 					</div>

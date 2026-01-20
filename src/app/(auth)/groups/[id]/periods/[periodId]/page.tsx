@@ -1,8 +1,6 @@
 import { authOptions } from '@/components/lib/auth'
 import { prisma } from '@/components/lib/db'
-import { LockPeriodButton } from '@/components/periods/lock-period-button'
-import { ProgressStatusDropdown } from '@/components/periods/progress-dropdown'
-import { ShareButton } from '@/components/periods/share-button'
+import { PeriodProgressList } from '@/components/periods/period-progress-list'
 import { ArrowLeft, Calendar } from 'lucide-react'
 import { getServerSession } from 'next-auth'
 import Link from 'next/link'
@@ -64,15 +62,6 @@ export default async function PeriodDetailPage({ params }: PageProps) {
 		notFound()
 	}
 
-	// Group by juz
-	const byJuz: Record<number, typeof period.participantPeriods> = {}
-	for (let i = 1; i <= 30; i++) {
-		byJuz[i] = []
-	}
-	for (const pp of period.participantPeriods) {
-		byJuz[pp.juzNumber].push(pp)
-	}
-
 	// Calculate stats
 	const stats = {
 		total: period.participantPeriods.length,
@@ -111,7 +100,6 @@ export default async function PeriodDetailPage({ params }: PageProps) {
 						{new Date(period.endDate).toLocaleDateString('id-ID', { dateStyle: 'long' })}
 					</div>
 				</div>
-				<ShareButton period={period} groupName={period.group.name} />
 			</div>
 
 			{/* Stats Cards */}
@@ -130,68 +118,8 @@ export default async function PeriodDetailPage({ params }: PageProps) {
 				</div>
 			</div>
 
-			{/* Lock Period Button (only for active periods) */}
-			{isActive && (
-				<div className='mb-6'>
-					<LockPeriodButton periodId={period.id} notFinishedCount={stats.not_finished} />
-				</div>
-			)}
-
-			{/* Progress by Juz */}
-			<div className='space-y-4'>
-				<h2 className='text-lg font-medium'>Progress per Juz</h2>
-				{Object.entries(byJuz).map(([juz, participants]) => {
-					if (participants.length === 0) return null
-
-					return (
-						<div key={juz} className='rounded-xl border border-border bg-card'>
-							<div className='bg-muted/50 px-4 py-2 border-b border-border'>
-								<h3 className='font-medium'>Juz {juz}</h3>
-							</div>
-							<div className='divide-y divide-border overflow-hidden'>
-								{participants.map((pp) => (
-									<div key={pp.id} className='flex items-center justify-between px-4 py-3'>
-										<div className='flex items-center gap-3'>
-											<div className='w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center'>
-												<span className='text-primary text-sm font-medium'>
-													{pp.participant.name.charAt(0).toUpperCase()}
-												</span>
-											</div>
-											<div>
-												<p className='font-medium text-sm'>{pp.participant.name}</p>
-												{!pp.participant.isActive && <p className='text-xs text-muted-foreground'>Tidak Aktif</p>}
-											</div>
-										</div>
-										<div className='flex items-center gap-2'>
-											{isActive ? (
-												<ProgressStatusDropdown
-													participantPeriodId={pp.id}
-													currentStatus={pp.progressStatus}
-													participantName={pp.participant.name}
-													whatsappNumber={pp.participant.whatsappNumber}
-												/>
-											) : (
-												<span
-													className={`inline-flex items-center gap-1 text-sm ${
-														pp.progressStatus === 'finished'
-															? 'text-primary'
-															: pp.progressStatus === 'missed'
-																? 'text-destructive'
-																: 'text-muted-foreground'
-													}`}>
-													{pp.progressStatus === 'finished' && '👑 Selesai'}
-													{pp.progressStatus === 'missed' && '💔 Terlewat'}
-													{pp.progressStatus === 'not_finished' && '⏳ Belum selesai'}
-												</span>
-											)}
-										</div>
-									</div>
-								))}
-							</div>
-						</div>
-					)
-				})}
-			</div>
+			{/* Period Progress List with Search and Filters */}
+			<PeriodProgressList period={period} isActive={isActive} notFinishedCount={stats.not_finished} />
 		</div>
 	)
 }
