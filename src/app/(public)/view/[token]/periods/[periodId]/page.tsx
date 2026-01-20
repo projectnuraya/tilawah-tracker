@@ -135,6 +135,7 @@ export default async function PublicPeriodDetailPage({ params }: PageProps) {
 				{/* Footer */}
 				<div className="mt-12 pt-6 border-t border-border text-center text-sm text-muted-foreground">
 					<p>Tilawah Tracker - Sistem tracking tilawah grup</p>
+					<p className="mt-1">PT Nuraya Digital Nusantara</p>
 				</div>
 			</div>
 		</div>
