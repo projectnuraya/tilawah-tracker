@@ -75,15 +75,15 @@ export default async function ParticipantsPage({ params }: PageProps) {
 				className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6"
 			>
 				<ArrowLeft className="h-4 w-4" />
-				Back to {group.name}
+				Kembali ke {group.name}
 			</Link>
 
 			{/* Header */}
 			<div className="flex items-center justify-between mb-6">
 				<div>
-					<h1 className="text-2xl font-semibold">Participants</h1>
+					<h1 className="text-2xl font-semibold">Peserta</h1>
 					<p className="text-muted-foreground text-sm mt-1">
-						{activeParticipants.length} active participant{activeParticipants.length !== 1 ? "s" : ""}
+						{activeParticipants.length} peserta aktif
 					</p>
 				</div>
 				<Link
@@ -91,7 +91,7 @@ export default async function ParticipantsPage({ params }: PageProps) {
 					className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-white font-medium shadow-sm transition hover:bg-primary/90"
 				>
 					<Plus className="h-4 w-4" />
-					<span className="hidden sm:inline">Add</span>
+					<span className="hidden sm:inline">Tambah</span>
 				</Link>
 			</div>
 
@@ -101,14 +101,14 @@ export default async function ParticipantsPage({ params }: PageProps) {
 					<div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
 						<User className="h-8 w-8 text-primary" />
 					</div>
-					<h2 className="text-lg font-medium mb-2">No participants yet</h2>
-					<p className="text-muted-foreground text-sm mb-6">Add participants to start tracking their tilawah progress.</p>
+					<h2 className="text-lg font-medium mb-2">Belum ada peserta</h2>
+					<p className="text-muted-foreground text-sm mb-6">Tambahkan peserta untuk mulai melacak progress tilawah mereka.</p>
 					<Link
 						href={`/groups/${group.id}/participants/new`}
 						className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-white font-medium shadow-sm transition hover:bg-primary/90"
 					>
 						<Plus className="h-4 w-4" />
-						Add First Participant
+						Tambah Peserta Pertama
 					</Link>
 				</div>
 			) : (
@@ -143,7 +143,7 @@ export default async function ParticipantsPage({ params }: PageProps) {
 				<div className="mt-8">
 					<h2 className="text-lg font-medium mb-4 flex items-center gap-2">
 						<UserX className="h-5 w-5 text-muted-foreground" />
-						Inactive ({inactiveParticipants.length})
+						Tidak Aktif ({inactiveParticipants.length})
 					</h2>
 					<div className="rounded-xl border border-border bg-card/50 divide-y divide-border">
 						{inactiveParticipants.map((participant) => (
@@ -158,7 +158,7 @@ export default async function ParticipantsPage({ params }: PageProps) {
 									</div>
 									<div>
 										<p className="font-medium">{participant.name}</p>
-										<p className="text-sm text-muted-foreground">Inactive</p>
+										<p className="text-sm text-muted-foreground">Tidak Aktif</p>
 									</div>
 								</div>
 							</Link>

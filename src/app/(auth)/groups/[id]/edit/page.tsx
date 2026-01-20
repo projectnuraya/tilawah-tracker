@@ -34,10 +34,10 @@ export default function EditGroupPage({ params }: PageProps) {
 				setName(data.data.name);
 				setOriginalName(data.data.name);
 			} else {
-				setError("Failed to load group");
+				setError("Gagal memuat grup");
 			}
 		} catch {
-			setError("An unexpected error occurred");
+			setError("Terjadi kesalahan yang tidak terduga");
 		} finally {
 			setIsLoading(false);
 		}
@@ -48,7 +48,7 @@ export default function EditGroupPage({ params }: PageProps) {
 		setError("");
 
 		if (!name.trim()) {
-			setError("Group name is required");
+			setError("Nama grup wajib diisi");
 			return;
 		}
 
@@ -71,14 +71,14 @@ export default function EditGroupPage({ params }: PageProps) {
 			const data = await response.json();
 
 			if (!data.success) {
-				setError(data.error?.message || "Failed to update group");
+				setError(data.error?.message || "Gagal memperbarui grup");
 				return;
 			}
 
 			router.push(`/groups/${groupId}`);
 			router.refresh();
 		} catch {
-			setError("An unexpected error occurred");
+			setError("Terjadi kesalahan yang tidak terduga");
 		} finally {
 			setIsSaving(false);
 		}
@@ -100,17 +100,17 @@ export default function EditGroupPage({ params }: PageProps) {
 				className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6"
 			>
 				<ArrowLeft className="h-4 w-4" />
-				Back to Group
+				Kembali ke Grup
 			</Link>
 
 			<div className="max-w-md">
-				<h1 className="text-2xl font-semibold mb-2">Edit Group</h1>
-				<p className="text-muted-foreground text-sm mb-6">Update your group settings.</p>
+				<h1 className="text-2xl font-semibold mb-2">Edit Grup</h1>
+				<p className="text-muted-foreground text-sm mb-6">Perbarui pengaturan grup Anda.</p>
 
 				<form onSubmit={handleSubmit} className="space-y-4">
 					<div>
 						<label htmlFor="name" className="block text-sm font-medium mb-2">
-							Group Name
+							Nama Grup
 						</label>
 						<input
 							type="text"
@@ -134,17 +134,17 @@ export default function EditGroupPage({ params }: PageProps) {
 							{isSaving ? (
 								<span className="inline-flex items-center justify-center gap-2">
 									<Loader2 className="h-4 w-4 animate-spin" />
-									Saving...
+									Menyimpan...
 								</span>
 							) : (
-								"Save Changes"
+								"Simpan Perubahan"
 							)}
 						</button>
 						<Link
 							href={`/groups/${groupId}`}
 							className="rounded-lg border border-border px-4 py-3 font-medium hover:bg-muted transition text-center"
 						>
-							Cancel
+							Batal
 						</Link>
 					</div>
 				</form>

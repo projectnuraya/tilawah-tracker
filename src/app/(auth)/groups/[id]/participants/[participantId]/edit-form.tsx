@@ -29,7 +29,7 @@ export function EditParticipantForm({ participant }: EditParticipantFormProps) {
 		setSuccess(false);
 
 		if (!name.trim()) {
-			setError("Name is required");
+			setError("Nama wajib diisi");
 			return;
 		}
 
@@ -50,7 +50,7 @@ export function EditParticipantForm({ participant }: EditParticipantFormProps) {
 			const data = await response.json();
 
 			if (!data.success) {
-				setError(data.error?.message || "Failed to update");
+				setError(data.error?.message || "Gagal memperbarui");
 				return;
 			}
 
@@ -58,7 +58,7 @@ export function EditParticipantForm({ participant }: EditParticipantFormProps) {
 			router.refresh();
 			setTimeout(() => setSuccess(false), 2000);
 		} catch {
-			setError("An unexpected error occurred");
+			setError("Terjadi kesalahan yang tidak terduga");
 		} finally {
 			setIsSaving(false);
 		}
@@ -68,7 +68,7 @@ export function EditParticipantForm({ participant }: EditParticipantFormProps) {
 		<form onSubmit={handleSubmit} className="space-y-4">
 			<div>
 				<label htmlFor="name" className="block text-sm font-medium mb-2">
-					Name
+					Nama
 				</label>
 				<input
 					type="text"
@@ -82,7 +82,7 @@ export function EditParticipantForm({ participant }: EditParticipantFormProps) {
 
 			<div>
 				<label htmlFor="whatsapp" className="block text-sm font-medium mb-2">
-					WhatsApp Number
+					Nomor WhatsApp
 				</label>
 				<input
 					type="tel"
@@ -96,7 +96,7 @@ export function EditParticipantForm({ participant }: EditParticipantFormProps) {
 			</div>
 
 			{error && <p className="text-sm text-destructive">{error}</p>}
-			{success && <p className="text-sm text-primary">Saved successfully!</p>}
+			{success && <p className="text-sm text-primary">Berhasil disimpan!</p>}
 
 			<button
 				type="submit"
@@ -106,10 +106,10 @@ export function EditParticipantForm({ participant }: EditParticipantFormProps) {
 				{isSaving ? (
 					<span className="inline-flex items-center gap-2">
 						<Loader2 className="h-4 w-4 animate-spin" />
-						Saving...
+						Menyimpan...
 					</span>
 				) : (
-					"Save Changes"
+					"Simpan Perubahan"
 				)}
 			</button>
 		</form>

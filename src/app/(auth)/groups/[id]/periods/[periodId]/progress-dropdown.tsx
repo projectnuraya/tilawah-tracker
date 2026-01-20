@@ -12,9 +12,9 @@ interface ProgressStatusDropdownProps {
 }
 
 const STATUS_OPTIONS = [
-	{ value: "not_finished", label: "Not finished", icon: "⏳" },
-	{ value: "finished", label: "Finished", icon: "👑" },
-	{ value: "missed", label: "Missed", icon: "💔" },
+	{ value: "not_finished", label: "Belum selesai", icon: "⏳" },
+	{ value: "finished", label: "Selesai", icon: "👑" },
+	{ value: "missed", label: "Terlewat", icon: "💔" },
 ];
 
 export function ProgressStatusDropdown({
@@ -77,7 +77,7 @@ export function ProgressStatusDropdown({
 
 	const whatsappLink = whatsappNumber
 		? `https://wa.me/${whatsappNumber.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(
-				`Assalamu'alaikum ${participantName}, this is a reminder for your tilawah.`
+				`Assalamu'alaikum ${participantName}, ini pengingat untuk tilawah Anda.`
 		  )}`
 		: null;
 
@@ -90,7 +90,7 @@ export function ProgressStatusDropdown({
 					target="_blank"
 					rel="noopener noreferrer"
 					className="rounded-lg p-2 text-green-600 hover:bg-green-50 transition"
-					title="Remind via WhatsApp"
+					title="Ingatkan via WhatsApp"
 				>
 					<MessageCircle className="h-4 w-4" />
 				</a>

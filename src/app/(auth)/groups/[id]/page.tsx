@@ -81,7 +81,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
 			{/* Back Button */}
 			<Link href="/dashboard" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6">
 				<ArrowLeft className="h-4 w-4" />
-				Back to Dashboard
+				Kembali ke Dashboard
 			</Link>
 
 			{/* Group Header */}
@@ -89,7 +89,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
 				<div>
 					<h1 className="text-2xl font-semibold">{group.name}</h1>
 					<p className="text-muted-foreground text-sm mt-1">
-						Created {new Date(group.createdAt).toLocaleDateString("en-US", { dateStyle: "medium" })}
+						Dibuat {new Date(group.createdAt).toLocaleDateString("id-ID", { dateStyle: "medium" })}
 					</p>
 				</div>
 				<Link
@@ -97,7 +97,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
 					className="inline-flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm font-medium hover:bg-muted transition"
 				>
 					<Settings className="h-4 w-4" />
-					Edit
+					Ubah
 				</Link>
 			</div>
 
@@ -110,7 +110,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
 						</div>
 						<div>
 							<p className="text-2xl font-semibold">{group.participants.length}</p>
-							<p className="text-sm text-muted-foreground">Participants</p>
+							<p className="text-sm text-muted-foreground">Peserta</p>
 						</div>
 					</div>
 				</div>
@@ -121,7 +121,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
 						</div>
 						<div>
 							<p className="text-2xl font-semibold">{group.periods.length}</p>
-							<p className="text-sm text-muted-foreground">Periods</p>
+							<p className="text-sm text-muted-foreground">Periode</p>
 						</div>
 					</div>
 				</div>
@@ -129,8 +129,8 @@ export default async function GroupDetailPage({ params }: PageProps) {
 
 			{/* Public Link */}
 			<div className="rounded-xl border border-border bg-card p-4 mb-6">
-				<h2 className="font-medium mb-2">Public Link</h2>
-				<p className="text-xs text-muted-foreground mb-3">Share this link with participants for read-only access.</p>
+				<h2 className="font-medium mb-2">Link Publik</h2>
+				<p className="text-xs text-muted-foreground mb-3">Bagikan link ini kepada peserta untuk akses baca saja.</p>
 				<div className="flex items-center gap-2">
 					<input
 						type="text"
@@ -153,14 +153,14 @@ export default async function GroupDetailPage({ params }: PageProps) {
 			{/* Active Period or Start New */}
 			<div className="rounded-xl border border-border bg-card p-4 mb-6">
 				<div className="flex items-center justify-between mb-4">
-					<h2 className="font-medium">Active Period</h2>
+					<h2 className="font-medium">Periode Aktif</h2>
 					{!activePeriod && group.participants.length > 0 && (
 						<Link
 							href={`/groups/${group.id}/periods/new`}
 							className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
 						>
 							<Plus className="h-4 w-4" />
-							Start New Period
+							Mulai Periode Baru
 						</Link>
 					)}
 				</div>
@@ -171,22 +171,22 @@ export default async function GroupDetailPage({ params }: PageProps) {
 					>
 						<div className="flex items-center justify-between">
 							<div>
-								<p className="font-medium">Period #{activePeriod.periodNumber}</p>
+								<p className="font-medium">Periode #{activePeriod.periodNumber}</p>
 								<p className="text-sm text-muted-foreground">
-									{new Date(activePeriod.startDate).toLocaleDateString("en-US", { dateStyle: "medium" })} -{" "}
-									{new Date(activePeriod.endDate).toLocaleDateString("en-US", { dateStyle: "medium" })}
+									{new Date(activePeriod.startDate).toLocaleDateString("id-ID", { dateStyle: "medium" })} -{" "}
+									{new Date(activePeriod.endDate).toLocaleDateString("id-ID", { dateStyle: "medium" })}
 								</p>
 							</div>
 							<span className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
-								Active
+								Aktif
 							</span>
 						</div>
 					</Link>
 				) : (
 					<p className="text-sm text-muted-foreground">
 						{group.participants.length === 0
-							? "Add participants first before starting a period."
-							: "No active period. Start a new one to begin tracking."}
+							? "Tambahkan peserta terlebih dahulu sebelum memulai periode."
+							: "Tidak ada periode aktif. Mulai yang baru untuk melacak progress."}
 					</p>
 				)}
 			</div>
@@ -194,20 +194,20 @@ export default async function GroupDetailPage({ params }: PageProps) {
 			{/* Participants Quick View */}
 			<div className="rounded-xl border border-border bg-card p-4 mb-6">
 				<div className="flex items-center justify-between mb-4">
-					<h2 className="font-medium">Participants</h2>
+					<h2 className="font-medium">Peserta</h2>
 					<Link href={`/groups/${group.id}/participants`} className="text-sm text-primary hover:underline">
-						Manage
+						Kelola
 					</Link>
 				</div>
 				{group.participants.length === 0 ? (
 					<div className="text-center py-4">
-						<p className="text-sm text-muted-foreground mb-3">No participants yet.</p>
+						<p className="text-sm text-muted-foreground mb-3">Belum ada peserta.</p>
 						<Link
 							href={`/groups/${group.id}/participants/new`}
 							className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
 						>
 							<Plus className="h-4 w-4" />
-							Add Participant
+							Tambah Peserta
 						</Link>
 					</div>
 				) : (
@@ -219,7 +219,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
 							</div>
 						))}
 						{group.participants.length > 5 && (
-							<p className="text-sm text-muted-foreground">+{group.participants.length - 5} more</p>
+							<p className="text-sm text-muted-foreground">+{group.participants.length - 5} lainnya</p>
 						)}
 					</div>
 				)}
@@ -229,9 +229,9 @@ export default async function GroupDetailPage({ params }: PageProps) {
 			{group.periods.length > 0 && (
 				<div className="rounded-xl border border-border bg-card p-4 mb-6">
 					<div className="flex items-center justify-between mb-4">
-						<h2 className="font-medium">Recent Periods</h2>
+						<h2 className="font-medium">Periode Terbaru</h2>
 						<Link href={`/groups/${group.id}/periods`} className="text-sm text-primary hover:underline">
-							View All
+							Lihat Semua
 						</Link>
 					</div>
 					<div className="space-y-2">
@@ -242,9 +242,9 @@ export default async function GroupDetailPage({ params }: PageProps) {
 								className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-muted transition"
 							>
 								<div>
-									<span className="text-sm font-medium">Period #{period.periodNumber}</span>
+									<span className="text-sm font-medium">Periode #{period.periodNumber}</span>
 									<p className="text-xs text-muted-foreground">
-										{new Date(period.startDate).toLocaleDateString("en-US", { dateStyle: "short" })}
+										{new Date(period.startDate).toLocaleDateString("id-ID", { dateStyle: "short" })}
 									</p>
 								</div>
 								<span
@@ -252,7 +252,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
 										period.status === "active" ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"
 									}`}
 								>
-									{period.status === "active" ? "Active" : "Locked"}
+									{period.status === "active" ? "Aktif" : "Terkunci"}
 								</span>
 							</Link>
 						))}
@@ -262,9 +262,9 @@ export default async function GroupDetailPage({ params }: PageProps) {
 
 			{/* Danger Zone */}
 			<div className="rounded-xl border border-destructive/20 bg-destructive/5 p-4">
-				<h2 className="font-medium text-destructive mb-2">Danger Zone</h2>
+				<h2 className="font-medium text-destructive mb-2">Zona Berbahaya</h2>
 				<p className="text-sm text-muted-foreground mb-4">
-					Deleting this group will permanently remove all participants, periods, and progress data.
+					Menghapus grup ini akan menghapus permanen semua peserta, periode, dan data progress.
 				</p>
 				<DeleteGroupButton groupId={group.id} groupName={group.name} />
 			</div>

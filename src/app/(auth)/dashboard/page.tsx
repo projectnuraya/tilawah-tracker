@@ -56,15 +56,15 @@ export default async function DashboardPage() {
 			{/* Header */}
 			<div className="flex items-center justify-between mb-6">
 				<div>
-					<h1 className="text-2xl font-semibold">My Groups</h1>
-					<p className="text-muted-foreground text-sm mt-1">Manage your tilawah groups</p>
+					<h1 className="text-2xl font-semibold">Grup Saya</h1>
+					<p className="text-muted-foreground text-sm mt-1">Kelola grup tilawah Anda</p>
 				</div>
 				<Link
 					href="/groups/new"
 					className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-white font-medium shadow-sm transition hover:bg-primary/90"
 				>
 					<Plus className="h-4 w-4" />
-					<span className="hidden sm:inline">New Group</span>
+					<span className="hidden sm:inline">Grup Baru</span>
 				</Link>
 			</div>
 
@@ -74,14 +74,14 @@ export default async function DashboardPage() {
 					<div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
 						<Users className="h-8 w-8 text-primary" />
 					</div>
-					<h2 className="text-lg font-medium mb-2">No groups yet</h2>
-					<p className="text-muted-foreground text-sm mb-6">Create your first tilawah group to start tracking progress.</p>
+					<h2 className="text-lg font-medium mb-2">Belum ada grup</h2>
+					<p className="text-muted-foreground text-sm mb-6">Buat grup tilawah pertama Anda untuk mulai melacak progress.</p>
 					<Link
 						href="/groups/new"
 						className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-white font-medium shadow-sm transition hover:bg-primary/90"
 					>
 						<Plus className="h-4 w-4" />
-						Create New Group
+						Buat Grup Baru
 					</Link>
 				</div>
 			) : (
@@ -98,22 +98,22 @@ export default async function DashboardPage() {
 									<div className="flex flex-wrap items-center gap-4 mt-2 text-sm text-muted-foreground">
 										<span className="inline-flex items-center gap-1">
 											<Users className="h-4 w-4" />
-											{group.participantCount} participants
+											{group.participantCount} peserta
 										</span>
 										<span className="inline-flex items-center gap-1">
 											<Calendar className="h-4 w-4" />
-											{group.periodCount} periods
+											{group.periodCount} periode
 										</span>
 									</div>
 								</div>
 								<div className="flex flex-col items-end gap-2">
 									{group.hasActivePeriod ? (
 										<span className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
-											Active
-										</span>
-									) : (
-										<span className="inline-flex items-center rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
-											No active period
+										Aktif
+									</span>
+								) : (
+									<span className="inline-flex items-center rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
+										Tidak ada periode aktif
 										</span>
 									)}
 									<ExternalLink className="h-4 w-4 text-muted-foreground" />

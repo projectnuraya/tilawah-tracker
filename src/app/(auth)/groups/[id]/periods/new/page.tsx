@@ -38,7 +38,7 @@ export default function NewPeriodPage({ params }: PageProps) {
 	const handleDateChange = (value: string) => {
 		setStartDate(value);
 		if (value && !isSunday(value)) {
-			setDateError("Period must start on a Sunday");
+			setDateError("Periode harus dimulai pada hari Ahad");
 		} else {
 			setDateError("");
 		}
@@ -49,12 +49,12 @@ export default function NewPeriodPage({ params }: PageProps) {
 		setError("");
 
 		if (!startDate) {
-			setError("Start date is required");
+			setError("Tanggal mulai wajib diisi");
 			return;
 		}
 
 		if (!isSunday(startDate)) {
-			setError("Period must start on a Sunday");
+			setError("Periode harus dimulai pada hari Ahad");
 			return;
 		}
 
@@ -72,14 +72,14 @@ export default function NewPeriodPage({ params }: PageProps) {
 			const data = await response.json();
 
 			if (!data.success) {
-				setError(data.error?.message || "Failed to create period");
+				setError(data.error?.message || "Gagal membuat periode");
 				return;
 			}
 
 			router.push(`/groups/${groupId}/periods/${data.data.id}`);
 			router.refresh();
 		} catch {
-			setError("An unexpected error occurred");
+			setError("Terjadi kesalahan yang tidak terduga");
 		} finally {
 			setIsLoading(false);
 		}
@@ -110,23 +110,23 @@ export default function NewPeriodPage({ params }: PageProps) {
 				className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6"
 			>
 				<ArrowLeft className="h-4 w-4" />
-				Back to Group
+				Kembali ke Grup
 			</Link>
 
 			<div className="max-w-md">
-				<h1 className="text-2xl font-semibold mb-2">Start New Period</h1>
-				<p className="text-muted-foreground text-sm mb-6">Create a new weekly tilawah period for your group.</p>
+				<h1 className="text-2xl font-semibold mb-2">Mulai Periode Baru</h1>
+				<p className="text-muted-foreground text-sm mb-6">Buat periode tilawah mingguan baru untuk grup Anda.</p>
 
 				{/* Info Card */}
 				<div className="rounded-lg border border-blue-200 bg-blue-50 p-4 mb-6">
 					<div className="flex gap-3">
 						<AlertCircle className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
 						<div className="text-sm text-blue-800">
-							<p className="font-medium mb-1">Period Rules</p>
+							<p className="font-medium mb-1">Aturan Periode</p>
 							<ul className="list-disc list-inside space-y-1 text-blue-700">
-								<li>Must start on Sunday</li>
-								<li>Lasts exactly 7 days (Sunday to Saturday)</li>
-								<li>Juz assignments auto-rotate from previous period</li>
+								<li>Harus dimulai pada hari Ahad</li>
+								<li>Berlangsung tepat 7 hari (Ahad sampai Sabtu)</li>
+								<li>Pembagian juz otomatis bergilir dari periode sebelumnya</li>
 							</ul>
 						</div>
 					</div>
@@ -135,7 +135,7 @@ export default function NewPeriodPage({ params }: PageProps) {
 				<form onSubmit={handleSubmit} className="space-y-4">
 					<div>
 						<label htmlFor="startDate" className="block text-sm font-medium mb-2">
-							Start Date (Sunday)
+							Tanggal Mulai (Ahad)
 						</label>
 						<div className="relative">
 							<input
@@ -155,11 +155,11 @@ export default function NewPeriodPage({ params }: PageProps) {
 
 					{startDate && !dateError && (
 						<div className="rounded-lg border border-border bg-muted/50 p-4">
-							<p className="text-sm font-medium mb-2">Period Duration</p>
+							<p className="text-sm font-medium mb-2">Durasi Periode</p>
 							<p className="text-sm text-muted-foreground">
-								{new Date(startDate).toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
+								{new Date(startDate).toLocaleDateString("id-ID", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
 								{" → "}
-								{new Date(endDate).toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
+								{new Date(endDate).toLocaleDateString("id-ID", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
 							</p>
 						</div>
 					)}
@@ -179,10 +179,10 @@ export default function NewPeriodPage({ params }: PageProps) {
 							{isLoading ? (
 								<span className="inline-flex items-center gap-2">
 									<Loader2 className="h-4 w-4 animate-spin" />
-									Creating...
+									Membuat...
 								</span>
 							) : (
-								"Start Period"
+								"Mulai Periode"
 							)}
 						</button>
 					</div>

@@ -24,7 +24,7 @@ export function CopyTokenButton({ url }: CopyTokenButtonProps) {
 		<button
 			onClick={handleCopy}
 			className="rounded-lg border border-border p-2 hover:bg-muted transition"
-			title={copied ? "Copied!" : "Copy link"}
+			title={copied ? "Tersalin!" : "Salin tautan"}
 		>
 			{copied ? <Check className="h-4 w-4 text-primary" /> : <Copy className="h-4 w-4" />}
 		</button>

@@ -17,12 +17,12 @@ export default function SignInPage() {
 				{/* Logo & Title */}
 				<div className="text-center">
 					<h1 className="text-3xl font-semibold text-foreground">📖 Tilawah Tracker</h1>
-					<p className="mt-2 text-muted-foreground">Track group Qur&apos;an reading progress</p>
+					<p className="mt-2 text-muted-foreground">Pantau progress tilawah Al-Qur&apos;an bersama</p>
 				</div>
 
 				{/* Sign-in Card */}
 				<div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-					<h2 className="text-lg font-medium text-center mb-6">Coordinator Login</h2>
+					<h2 className="text-lg font-medium text-center mb-6">Masuk sebagai Koordinator</h2>
 
 					<button
 						onClick={handleGoogleSignIn}
@@ -30,20 +30,20 @@ export default function SignInPage() {
 						className="w-full flex items-center justify-center gap-3 rounded-lg border border-border bg-white px-4 py-3 text-foreground font-medium shadow-sm transition hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
 					>
 						{isLoading ? (
-							<span>Signing in...</span>
+							<span>Sedang masuk...</span>
 						) : (
 							<>
 								<GoogleIcon />
-								<span>Sign in with Google</span>
+								<span>Masuk dengan Google</span>
 							</>
 						)}
 					</button>
 
-					<p className="mt-4 text-xs text-center text-muted-foreground">Only authorized coordinators can sign in.</p>
+					<p className="mt-4 text-xs text-center text-muted-foreground">Hanya koordinator yang terdaftar yang dapat masuk.</p>
 				</div>
 
 				{/* Footer */}
-				<p className="text-center text-sm text-muted-foreground">Need access? Contact your group administrator.</p>
+				<p className="text-center text-sm text-muted-foreground">Butuh akses? Hubungi admin grup Anda.</p>
 			</div>
 		</div>
 	);

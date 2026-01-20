@@ -41,14 +41,14 @@ export function DeactivateButton({ participantId, groupId }: DeactivateButtonPro
 					disabled={isLoading}
 					className="rounded-lg bg-destructive px-3 py-2 text-sm text-white font-medium hover:bg-destructive/90 disabled:opacity-50"
 				>
-					{isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Yes, Deactivate"}
+					{isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Ya, Nonaktifkan"}
 				</button>
 				<button
 					onClick={() => setIsConfirming(false)}
 					disabled={isLoading}
 					className="rounded-lg border border-border px-3 py-2 text-sm font-medium hover:bg-muted disabled:opacity-50"
 				>
-					Cancel
+					Batal
 				</button>
 			</div>
 		);
@@ -60,7 +60,7 @@ export function DeactivateButton({ participantId, groupId }: DeactivateButtonPro
 			className="inline-flex items-center gap-2 rounded-lg border border-amber-500/50 px-3 py-2 text-sm font-medium text-amber-600 hover:bg-amber-50 transition"
 		>
 			<UserMinus className="h-4 w-4" />
-			Deactivate
+			Nonaktifkan
 		</button>
 	);
 }

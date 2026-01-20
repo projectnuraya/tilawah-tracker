@@ -36,20 +36,20 @@ export function DeleteGroupButton({ groupId, groupName }: DeleteGroupButtonProps
 	if (isConfirming) {
 		return (
 			<div className="flex items-center gap-2">
-				<span className="text-sm text-destructive">Delete &quot;{groupName}&quot;?</span>
+				<span className="text-sm text-destructive">Hapus &quot;{groupName}&quot;?</span>
 				<button
 					onClick={handleDelete}
 					disabled={isDeleting}
 					className="rounded-lg bg-destructive px-3 py-1.5 text-sm text-white font-medium hover:bg-destructive/90 disabled:opacity-50"
 				>
-					{isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Yes, Delete"}
+					{isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Ya, Hapus"}
 				</button>
 				<button
 					onClick={() => setIsConfirming(false)}
 					disabled={isDeleting}
 					className="rounded-lg border border-border px-3 py-1.5 text-sm font-medium hover:bg-muted disabled:opacity-50"
 				>
-					Cancel
+					Batal
 				</button>
 			</div>
 		);
@@ -61,7 +61,7 @@ export function DeleteGroupButton({ groupId, groupName }: DeleteGroupButtonProps
 			className="inline-flex items-center gap-2 rounded-lg border border-destructive/50 px-3 py-2 text-sm font-medium text-destructive hover:bg-destructive/10 transition"
 		>
 			<Trash2 className="h-4 w-4" />
-			Delete Group
+			Hapus Grup
 		</button>
 	);
 }

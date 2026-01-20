@@ -39,11 +39,11 @@ export function LockPeriodButton({ periodId, notFinishedCount }: LockPeriodButto
 				<p className="text-sm text-amber-800 mb-3">
 					{notFinishedCount > 0 ? (
 						<>
-							<strong>{notFinishedCount} participant{notFinishedCount !== 1 ? "s" : ""}</strong> will be marked as{" "}
-							<strong>Missed (💔)</strong>. This action cannot be undone.
+							<strong>{notFinishedCount} peserta</strong> akan ditandai sebagai{" "}
+							<strong>Terlewat (💔)</strong>. Tindakan ini tidak dapat dibatalkan.
 						</>
 					) : (
-						<>Are you sure you want to lock this period? This action cannot be undone.</>
+						<>Apakah Anda yakin ingin mengunci periode ini? Tindakan ini tidak dapat dibatalkan.</>
 					)}
 				</p>
 				<div className="flex items-center gap-2">
@@ -55,10 +55,10 @@ export function LockPeriodButton({ periodId, notFinishedCount }: LockPeriodButto
 						{isLocking ? (
 							<span className="inline-flex items-center gap-2">
 								<Loader2 className="h-4 w-4 animate-spin" />
-								Locking...
+								Mengunci...
 							</span>
 						) : (
-							"Yes, Lock Period"
+							"Ya, Kunci Periode"
 						)}
 					</button>
 					<button
@@ -66,7 +66,7 @@ export function LockPeriodButton({ periodId, notFinishedCount }: LockPeriodButto
 						disabled={isLocking}
 						className="rounded-lg border border-border px-4 py-2 text-sm font-medium hover:bg-muted disabled:opacity-50"
 					>
-						Cancel
+						Batal
 					</button>
 				</div>
 			</div>
@@ -79,7 +79,7 @@ export function LockPeriodButton({ periodId, notFinishedCount }: LockPeriodButto
 			className="inline-flex items-center gap-2 rounded-lg border border-amber-500/50 px-4 py-2.5 text-sm font-medium text-amber-600 hover:bg-amber-50 transition"
 		>
 			<Lock className="h-4 w-4" />
-			Lock Period
+			Kunci Periode
 		</button>
 	);
 }

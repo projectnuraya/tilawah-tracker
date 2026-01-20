@@ -91,26 +91,26 @@ export default async function PeriodDetailPage({ params }: PageProps) {
 				className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6"
 			>
 				<ArrowLeft className="h-4 w-4" />
-				Back to Periods
+				Kembali ke Periode
 			</Link>
 
 			{/* Header */}
 			<div className="flex items-start justify-between mb-4">
 				<div>
 					<div className="flex items-center gap-3 mb-1">
-						<h1 className="text-2xl font-semibold">Period #{period.periodNumber}</h1>
+						<h1 className="text-2xl font-semibold">Periode #{period.periodNumber}</h1>
 						<span
 							className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
 								isActive ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"
 							}`}
 						>
-							{isActive ? "Active" : "Locked"}
+							{isActive ? "Aktif" : "Terkunci"}
 						</span>
 					</div>
 					<div className="flex items-center gap-2 text-sm text-muted-foreground">
 						<Calendar className="h-4 w-4" />
-						{new Date(period.startDate).toLocaleDateString("en-US", { dateStyle: "long" })} -{" "}
-						{new Date(period.endDate).toLocaleDateString("en-US", { dateStyle: "long" })}
+						{new Date(period.startDate).toLocaleDateString("id-ID", { dateStyle: "long" })} -{" "}
+						{new Date(period.endDate).toLocaleDateString("id-ID", { dateStyle: "long" })}
 					</div>
 				</div>
 				<ShareButton period={period} groupName={period.group.name} />
@@ -120,15 +120,15 @@ export default async function PeriodDetailPage({ params }: PageProps) {
 			<div className="grid grid-cols-3 gap-3 mb-6">
 				<div className="rounded-lg border border-border bg-card p-3 text-center">
 					<p className="text-2xl font-semibold text-primary">{stats.finished}</p>
-					<p className="text-xs text-muted-foreground">👑 Finished</p>
+					<p className="text-xs text-muted-foreground">👑 Selesai</p>
 				</div>
 				<div className="rounded-lg border border-border bg-card p-3 text-center">
 					<p className="text-2xl font-semibold text-muted-foreground">{stats.not_finished}</p>
-					<p className="text-xs text-muted-foreground">⏳ In Progress</p>
+					<p className="text-xs text-muted-foreground">⏳ Dalam Proses</p>
 				</div>
 				<div className="rounded-lg border border-border bg-card p-3 text-center">
 					<p className="text-2xl font-semibold text-destructive">{stats.missed}</p>
-					<p className="text-xs text-muted-foreground">💔 Missed</p>
+					<p className="text-xs text-muted-foreground">💔 Terlewat</p>
 				</div>
 			</div>
 
@@ -141,7 +141,7 @@ export default async function PeriodDetailPage({ params }: PageProps) {
 
 			{/* Progress by Juz */}
 			<div className="space-y-4">
-				<h2 className="text-lg font-medium">Progress by Juz</h2>
+				<h2 className="text-lg font-medium">Progress per Juz</h2>
 				{Object.entries(byJuz).map(([juz, participants]) => {
 					if (participants.length === 0) return null;
 
@@ -162,7 +162,7 @@ export default async function PeriodDetailPage({ params }: PageProps) {
 											<div>
 												<p className="font-medium text-sm">{pp.participant.name}</p>
 												{!pp.participant.isActive && (
-													<p className="text-xs text-muted-foreground">Inactive</p>
+													<p className="text-xs text-muted-foreground">Tidak Aktif</p>
 												)}
 											</div>
 										</div>
@@ -184,9 +184,9 @@ export default async function PeriodDetailPage({ params }: PageProps) {
 															: "text-muted-foreground"
 													}`}
 												>
-													{pp.progressStatus === "finished" && "👑 Finished"}
-													{pp.progressStatus === "missed" && "💔 Missed"}
-													{pp.progressStatus === "not_finished" && "⏳ Not finished"}
+													{pp.progressStatus === "finished" && "👑 Selesai"}
+													{pp.progressStatus === "missed" && "💔 Terlewat"}
+													{pp.progressStatus === "not_finished" && "⏳ Belum selesai"}
 												</span>
 											)}
 										</div>

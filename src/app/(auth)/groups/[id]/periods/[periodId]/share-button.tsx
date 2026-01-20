@@ -30,8 +30,8 @@ export function ShareButton({ period, groupName }: ShareButtonProps) {
 	const [copied, setCopied] = useState(false);
 
 	const generateShareText = () => {
-		const startDate = new Date(period.startDate).toLocaleDateString("en-US", { dateStyle: "medium" });
-		const endDate = new Date(period.endDate).toLocaleDateString("en-US", { dateStyle: "medium" });
+		const startDate = new Date(period.startDate).toLocaleDateString("id-ID", { dateStyle: "medium" });
+		const endDate = new Date(period.endDate).toLocaleDateString("id-ID", { dateStyle: "medium" });
 
 		// Group participants by juz
 		const byJuz: Record<number, typeof period.participantPeriods> = {};
@@ -42,8 +42,8 @@ export function ShareButton({ period, groupName }: ShareButtonProps) {
 			byJuz[pp.juzNumber].push(pp);
 		}
 
-		let text = `📖 *Tilawah Group: ${groupName}*\n`;
-		text += `🗓️ Period ${period.periodNumber}: ${startDate} - ${endDate}\n\n`;
+		let text = `📖 *Grup Tilawah: ${groupName}*\n`;
+		text += `🗓️ Periode ${period.periodNumber}: ${startDate} - ${endDate}\n\n`;
 
 		for (let juz = 1; juz <= 30; juz++) {
 			const participants = byJuz[juz];
@@ -83,7 +83,7 @@ export function ShareButton({ period, groupName }: ShareButtonProps) {
 				className="inline-flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm font-medium hover:bg-muted transition"
 			>
 				<Share2 className="h-4 w-4" />
-				Share
+				Bagikan
 			</button>
 
 			{isOpen && (
@@ -94,7 +94,7 @@ export function ShareButton({ period, groupName }: ShareButtonProps) {
 					{/* Modal */}
 					<div className="fixed inset-x-4 top-1/2 -translate-y-1/2 z-50 mx-auto max-w-md rounded-xl bg-card border border-border shadow-xl">
 						<div className="flex items-center justify-between px-4 py-3 border-b border-border">
-							<h2 className="font-semibold">Share to WhatsApp</h2>
+						<h2 className="font-semibold">Bagikan ke WhatsApp</h2>
 							<button onClick={() => setIsOpen(false)} className="p-1 hover:bg-muted rounded-lg transition">
 								<X className="h-5 w-5" />
 							</button>
@@ -104,7 +104,7 @@ export function ShareButton({ period, groupName }: ShareButtonProps) {
 							{/* Custom Message Input */}
 							<div>
 								<label htmlFor="customMessage" className="block text-sm font-medium mb-2">
-									Custom Message (optional)
+								Pesan Kustom (opsional)
 								</label>
 								<textarea
 									id="customMessage"
@@ -118,7 +118,7 @@ export function ShareButton({ period, groupName }: ShareButtonProps) {
 
 							{/* Preview */}
 							<div>
-								<p className="text-sm font-medium mb-2">Preview</p>
+								<p className="text-sm font-medium mb-2">Pratinjau</p>
 								<div className="max-h-48 overflow-y-auto rounded-lg border border-border bg-muted/50 p-3">
 									<pre className="text-xs whitespace-pre-wrap font-sans">{generateShareText()}</pre>
 								</div>
@@ -132,18 +132,18 @@ export function ShareButton({ period, groupName }: ShareButtonProps) {
 								{copied ? (
 									<>
 										<Check className="h-4 w-4" />
-										Copied!
+										Tersalin!
 									</>
 								) : (
 									<>
 										<Copy className="h-4 w-4" />
-										Copy to Clipboard
+										Salin ke Clipboard
 									</>
 								)}
 							</button>
 
 							<p className="text-xs text-center text-muted-foreground">
-								Paste the copied text into your WhatsApp group.
+								Tempel teks yang disalin ke grup WhatsApp Anda.
 							</p>
 						</div>
 					</div>

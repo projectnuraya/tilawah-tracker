@@ -49,7 +49,7 @@ export default function NewParticipantPage({ params }: PageProps) {
 		const validParticipants = participants.filter((p) => p.name.trim());
 
 		if (validParticipants.length === 0) {
-			setError("Add at least one participant with a name");
+			setError("Tambahkan minimal satu peserta dengan nama");
 			return;
 		}
 
@@ -102,14 +102,14 @@ export default function NewParticipantPage({ params }: PageProps) {
 					className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
 				>
 					<ArrowLeft className="h-4 w-4" />
-					Back to Participants
+					Kembali ke Peserta
 				</Link>
 			</div>
 
 			<div className="w-full max-w-2xl">
-				<h1 className="text-2xl font-semibold mb-2 text-center">Add Participants</h1>
+				<h1 className="text-2xl font-semibold mb-2 text-center">Tambah Peserta</h1>
 				<p className="text-muted-foreground text-sm mb-6 text-center">
-					Add one or more members to this tilawah group.
+					Tambahkan satu atau lebih anggota ke grup tilawah ini.
 				</p>
 
 				<form onSubmit={handleSubmit} className="space-y-6">
@@ -120,14 +120,14 @@ export default function NewParticipantPage({ params }: PageProps) {
 								<div className="flex-1 space-y-3">
 									<div>
 										<label htmlFor={`name-${participant.id}`} className="block text-sm font-medium mb-2">
-											Name {index === 0 && <span className="text-destructive">*</span>}
+											Nama {index === 0 && <span className="text-destructive">*</span>}
 										</label>
 										<input
 											type="text"
 											id={`name-${participant.id}`}
 											value={participant.name}
 											onChange={(e) => updateParticipant(participant.id, "name", e.target.value)}
-											placeholder="e.g., Ahmad"
+											placeholder="contoh: Ahmad"
 											className="w-full rounded-lg border border-border bg-background px-4 py-2.5 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
 											disabled={isLoading}
 											autoFocus={index === 0}
@@ -136,14 +136,14 @@ export default function NewParticipantPage({ params }: PageProps) {
 
 									<div>
 										<label htmlFor={`whatsapp-${participant.id}`} className="block text-sm font-medium mb-2">
-											WhatsApp <span className="text-muted-foreground text-xs">(optional)</span>
+											WhatsApp <span className="text-muted-foreground text-xs">(opsional)</span>
 										</label>
 										<input
 											type="tel"
 											id={`whatsapp-${participant.id}`}
 											value={participant.whatsappNumber}
 											onChange={(e) => updateParticipant(participant.id, "whatsappNumber", e.target.value)}
-											placeholder="e.g., +6281234567890"
+											placeholder="contoh: +6281234567890"
 											className="w-full rounded-lg border border-border bg-background px-4 py-2.5 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
 											disabled={isLoading}
 										/>
@@ -174,7 +174,7 @@ export default function NewParticipantPage({ params }: PageProps) {
 						className="w-full rounded-lg border-2 border-dashed border-border px-4 py-3 text-sm font-medium text-muted-foreground hover:border-primary hover:text-primary transition disabled:opacity-50"
 					>
 						<Plus className="h-4 w-4 inline-block mr-2" />
-						Add Another Participant
+						Tambah Peserta Lagi
 					</button>
 
 					{error && (
@@ -193,19 +193,17 @@ export default function NewParticipantPage({ params }: PageProps) {
 							{isLoading ? (
 								<span className="inline-flex items-center gap-2">
 									<Loader2 className="h-4 w-4 animate-spin" />
-									Adding Participants...
+									Menambahkan Peserta...
 								</span>
 							) : (
-								`Add ${participants.filter((p) => p.name.trim()).length || 1} Participant${
-									participants.filter((p) => p.name.trim()).length !== 1 ? "s" : ""
-								}`
+								`Tambah ${participants.filter((p) => p.name.trim()).length || 1} Peserta`
 							)}
 						</button>
 					</div>
 				</form>
 
 				<p className="mt-6 text-xs text-muted-foreground text-center">
-					If there&apos;s an active period, participants will be automatically assigned available juz numbers.
+					Jika ada periode aktif, peserta akan otomatis mendapat nomor juz yang tersedia.
 				</p>
 			</div>
 		</div>

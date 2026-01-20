@@ -68,7 +68,7 @@ export default async function ParticipantDetailPage({ params }: PageProps) {
 
 	const whatsappLink = participant.whatsappNumber
 		? `https://wa.me/${participant.whatsappNumber.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(
-				`Assalamu'alaikum ${participant.name}, this is a reminder for your tilawah.`
+				`Assalamu'alaikum ${participant.name}, ini pengingat untuk tilawah Anda.`
 		  )}`
 		: null;
 
@@ -80,7 +80,7 @@ export default async function ParticipantDetailPage({ params }: PageProps) {
 				className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6"
 			>
 				<ArrowLeft className="h-4 w-4" />
-				Back to Participants
+				Kembali ke Peserta
 			</Link>
 
 			<div className="max-w-md">
@@ -89,12 +89,12 @@ export default async function ParticipantDetailPage({ params }: PageProps) {
 					<div>
 						<h1 className="text-2xl font-semibold">{participant.name}</h1>
 						<p className="text-muted-foreground text-sm mt-1">
-							{participant.isActive ? "Active participant" : "Inactive participant"}
+							{participant.isActive ? "Peserta aktif" : "Peserta tidak aktif"}
 						</p>
 					</div>
 					{!participant.isActive && (
 						<span className="inline-flex items-center rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
-							Inactive
+							Tidak Aktif
 						</span>
 					)}
 				</div>
@@ -102,7 +102,7 @@ export default async function ParticipantDetailPage({ params }: PageProps) {
 				{/* WhatsApp Reminder */}
 				{participant.isActive && whatsappLink && (
 					<div className="rounded-xl border border-border bg-card p-4 mb-6">
-						<h2 className="font-medium mb-2">Quick Actions</h2>
+						<h2 className="font-medium mb-2">Aksi Cepat</h2>
 						<a
 							href={whatsappLink}
 							target="_blank"
@@ -110,26 +110,26 @@ export default async function ParticipantDetailPage({ params }: PageProps) {
 							className="inline-flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2.5 text-white font-medium shadow-sm transition hover:bg-green-700"
 						>
 							<MessageCircle className="h-4 w-4" />
-							Remind via WhatsApp
+							Ingatkan via WhatsApp
 						</a>
 					</div>
 				)}
 
 				{/* Edit Form */}
 				<div className="rounded-xl border border-border bg-card p-4 mb-6">
-					<h2 className="font-medium mb-4">Edit Details</h2>
+					<h2 className="font-medium mb-4">Edit Detail</h2>
 					<EditParticipantForm participant={participant} />
 				</div>
 
 				{/* Recent History */}
 				{participant.participantPeriods.length > 0 && (
 					<div className="rounded-xl border border-border bg-card p-4 mb-6">
-						<h2 className="font-medium mb-4">Recent History</h2>
+						<h2 className="font-medium mb-4">Riwayat Terbaru</h2>
 						<div className="space-y-3">
 							{participant.participantPeriods.map((pp) => (
 								<div key={pp.id} className="flex items-center justify-between">
 									<div>
-										<p className="text-sm font-medium">Period #{pp.period.periodNumber}</p>
+										<p className="text-sm font-medium">Periode #{pp.period.periodNumber}</p>
 										<p className="text-xs text-muted-foreground">Juz {pp.juzNumber}</p>
 									</div>
 									<span
@@ -141,9 +141,9 @@ export default async function ParticipantDetailPage({ params }: PageProps) {
 												: "text-muted-foreground"
 										}`}
 									>
-										{pp.progressStatus === "finished" && "👑 Finished"}
-										{pp.progressStatus === "missed" && "💔 Missed"}
-										{pp.progressStatus === "not_finished" && "⏳ Not finished"}
+										{pp.progressStatus === "finished" && "👑 Selesai"}
+										{pp.progressStatus === "missed" && "💔 Terlewat"}
+										{pp.progressStatus === "not_finished" && "⏳ Belum selesai"}
 									</span>
 								</div>
 							))}
@@ -155,17 +155,17 @@ export default async function ParticipantDetailPage({ params }: PageProps) {
 				<div className="rounded-xl border border-border bg-card p-4">
 					{participant.isActive ? (
 						<>
-							<h2 className="font-medium mb-2">Deactivate Participant</h2>
+							<h2 className="font-medium mb-2">Nonaktifkan Peserta</h2>
 							<p className="text-sm text-muted-foreground mb-4">
-								Deactivated participants won&apos;t appear in new periods but their history is preserved.
+								Peserta yang dinonaktifkan tidak akan muncul di periode baru tetapi riwayatnya tetap tersimpan.
 							</p>
 							<DeactivateButton participantId={participant.id} groupId={participant.group.id} />
 						</>
 					) : (
 						<>
-							<h2 className="font-medium mb-2">Reactivate Participant</h2>
+							<h2 className="font-medium mb-2">Aktifkan Kembali Peserta</h2>
 							<p className="text-sm text-muted-foreground mb-4">
-								Reactivate this participant to include them in future periods.
+								Aktifkan kembali peserta ini untuk menyertakan mereka di periode mendatang.
 							</p>
 							<ReactivateButton participantId={participant.id} groupId={participant.group.id} />
 						</>

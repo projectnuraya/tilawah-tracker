@@ -47,7 +47,7 @@ export function ReactivateButton({ participantId, groupId }: ReactivateButtonPro
 			) : (
 				<>
 					<UserPlus className="h-4 w-4" />
-					Reactivate
+					Aktifkan Kembali
 				</>
 			)}
 		</button>

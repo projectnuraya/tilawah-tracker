@@ -46,29 +46,29 @@ export default function NewGroupPage() {
 		}
 	};
 
-	return (
+		return (
 		<div>
 			{/* Back Button */}
 			<Link href="/dashboard" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6">
 				<ArrowLeft className="h-4 w-4" />
-				Back to Dashboard
+				Kembali ke Dashboard
 			</Link>
 
 			<div className="max-w-md">
-				<h1 className="text-2xl font-semibold mb-2">Create New Group</h1>
-				<p className="text-muted-foreground text-sm mb-6">Start a new tilawah tracking group for your community.</p>
+				<h1 className="text-2xl font-semibold mb-2">Buat Grup Baru</h1>
+				<p className="text-muted-foreground text-sm mb-6">Mulai grup tilawah baru untuk komunitas Anda.</p>
 
 				<form onSubmit={handleSubmit} className="space-y-4">
 					<div>
 						<label htmlFor="name" className="block text-sm font-medium mb-2">
-							Group Name
+							Nama Grup
 						</label>
 						<input
 							type="text"
 							id="name"
 							value={name}
 							onChange={(e) => setName(e.target.value)}
-							placeholder="e.g., Keluarga Besar Bani Adam"
+							placeholder="contoh: Keluarga Besar Bani Adam"
 							className="w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
 							disabled={isLoading}
 							autoFocus
@@ -85,17 +85,17 @@ export default function NewGroupPage() {
 							{isLoading ? (
 								<span className="inline-flex items-center gap-2">
 									<Loader2 className="h-4 w-4 animate-spin" />
-									Creating...
+									Membuat...
 								</span>
 							) : (
-								"Create Group"
+								"Buat Grup"
 							)}
 						</button>
 					</div>
 				</form>
 
 				<p className="mt-6 text-xs text-muted-foreground">
-					A unique public link will be generated automatically. You can share this link with participants for read-only access.
+					Link publik akan dibuat secara otomatis. Anda dapat membagikan link ini kepada peserta untuk akses baca saja.
 				</p>
 			</div>
 		</div>
