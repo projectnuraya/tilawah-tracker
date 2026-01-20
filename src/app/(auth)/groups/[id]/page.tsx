@@ -4,8 +4,8 @@ import Link from "next/link";
 import { authOptions } from "@/components/lib/auth";
 import { prisma } from "@/components/lib/db";
 import { ArrowLeft, Users, Calendar, Copy, Settings, ExternalLink, Plus } from "lucide-react";
-import { CopyTokenButton } from "./copy-token-button";
-import { DeleteGroupButton } from "./delete-group-button";
+import { CopyTokenButton } from "@/components/groups/copy-token-button";
+import { DeleteGroupButton } from "@/components/groups/delete-group-button";
 
 interface PageProps {
 	params: Promise<{ id: string }>;

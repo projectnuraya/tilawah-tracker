@@ -32,7 +32,7 @@ export function ProgressStatusDropdown({
 
 	const currentOption = STATUS_OPTIONS.find((o) => o.value === status) || STATUS_OPTIONS[0];
 
-	const handleOpenDropdown = (e: React.MouseEvent<HTMLButtonElement>) => {
+	const handleOpenDropdown = () => {
 		if (buttonRef.current) {
 			const rect = buttonRef.current.getBoundingClientRect();
 			setDropdownPos({

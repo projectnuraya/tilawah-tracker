@@ -4,9 +4,9 @@ import Link from "next/link";
 import { authOptions } from "@/components/lib/auth";
 import { prisma } from "@/components/lib/db";
 import { ArrowLeft, Calendar } from "lucide-react";
-import { ProgressStatusDropdown } from "./progress-dropdown";
-import { LockPeriodButton } from "./lock-period-button";
-import { ShareButton } from "./share-button";
+import { ProgressStatusDropdown } from "@/components/periods/progress-dropdown";
+import { LockPeriodButton } from "@/components/periods/lock-period-button";
+import { ShareButton } from "@/components/periods/share-button";
 
 interface PageProps {
 	params: Promise<{ id: string; periodId: string }>;

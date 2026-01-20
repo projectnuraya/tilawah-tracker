@@ -4,9 +4,9 @@ import Link from "next/link";
 import { authOptions } from "@/components/lib/auth";
 import { prisma } from "@/components/lib/db";
 import { ArrowLeft, MessageCircle } from "lucide-react";
-import { EditParticipantForm } from "./edit-form";
-import { DeactivateButton } from "./deactivate-button";
-import { ReactivateButton } from "./reactivate-button";
+import { EditParticipantForm } from "@/components/participants/edit-form";
+import { DeactivateButton } from "@/components/participants/deactivate-button";
+import { ReactivateButton } from "@/components/participants/reactivate-button";
 
 interface PageProps {
 	params: Promise<{ id: string; participantId: string }>;
