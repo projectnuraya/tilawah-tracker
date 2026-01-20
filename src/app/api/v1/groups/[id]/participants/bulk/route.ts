@@ -1,9 +1,9 @@
-import { NextRequest } from "next/server";
-import { prisma } from "@/components/lib/db";
-import { requireAuth, requireGroupAccess, apiError, apiSuccess } from "@/components/lib/auth-utils";
+import { apiError, apiSuccess, requireAuth, requireGroupAccess } from '@/components/lib/auth-utils'
+import { prisma } from '@/components/lib/db'
+import { NextRequest } from 'next/server'
 
 interface RouteParams {
-	params: Promise<{ id: string }>;
+	params: Promise<{ id: string }>
 }
 
 /**
@@ -12,29 +12,29 @@ interface RouteParams {
  */
 export async function POST(request: NextRequest, { params }: RouteParams) {
 	try {
-		const session = await requireAuth();
-		const { id: groupId } = await params;
+		const session = await requireAuth()
+		const { id: groupId } = await params
 
-		await requireGroupAccess(session.user.id, groupId);
+		await requireGroupAccess(session.user.id, groupId)
 
-		const body = await request.json();
-		const { participants } = body;
+		const body = await request.json()
+		const { participants } = body
 
 		// Validate input
 		if (!Array.isArray(participants) || participants.length === 0) {
 			return apiError({
-				name: "ValidationError",
-				message: "Participants array is required and must not be empty",
-			});
+				name: 'ValidationError',
+				message: 'Participants array is required and must not be empty',
+			})
 		}
 
 		// Validate each participant
 		for (const participant of participants) {
 			if (!participant.name || !participant.name.trim()) {
 				return apiError({
-					name: "ValidationError",
-					message: "All participants must have a name",
-				});
+					name: 'ValidationError',
+					message: 'All participants must have a name',
+				})
 			}
 		}
 
@@ -42,12 +42,12 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 		const activePeriod = await prisma.period.findFirst({
 			where: {
 				groupId,
-				status: "active",
+				status: 'active',
 			},
 			include: {
 				participantPeriods: true,
 			},
-		});
+		})
 
 		// Create participants and assign juz if active period exists
 		const createdParticipants = await prisma.$transaction(async (tx) => {
@@ -60,33 +60,33 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 							whatsappNumber: participant.whatsappNumber?.trim() || null,
 							isActive: true,
 						},
-					})
-				)
-			);
+					}),
+				),
+			)
 
 			// If active period exists, auto-assign juz
 			if (activePeriod) {
 				// Count current assignments per juz
-				const juzCounts = new Map<number, number>();
+				const juzCounts = new Map<number, number>()
 				for (let i = 1; i <= 30; i++) {
-					juzCounts.set(i, 0);
+					juzCounts.set(i, 0)
 				}
 
 				for (const pp of activePeriod.participantPeriods) {
-					juzCounts.set(pp.juzNumber, (juzCounts.get(pp.juzNumber) || 0) + 1);
+					juzCounts.set(pp.juzNumber, (juzCounts.get(pp.juzNumber) || 0) + 1)
 				}
 
 				// Assign each new participant to the juz with least assignments
 				for (const participant of newParticipants) {
 					// Find juz with minimum count
-					let minJuz = 1;
-					let minCount = juzCounts.get(1) || 0;
+					let minJuz = 1
+					let minCount = juzCounts.get(1) || 0
 
 					for (let juz = 2; juz <= 30; juz++) {
-						const count = juzCounts.get(juz) || 0;
+						const count = juzCounts.get(juz) || 0
 						if (count < minCount) {
-							minCount = count;
-							minJuz = juz;
+							minCount = count
+							minJuz = juz
 						}
 					}
 
@@ -96,23 +96,23 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 							participantId: participant.id,
 							periodId: activePeriod.id,
 							juzNumber: minJuz,
-							progressStatus: "not_finished",
+							progressStatus: 'not_finished',
 						},
-					});
+					})
 
 					// Update count
-					juzCounts.set(minJuz, minCount + 1);
+					juzCounts.set(minJuz, minCount + 1)
 				}
 			}
 
-			return newParticipants;
-		});
+			return newParticipants
+		})
 
 		return apiSuccess({
 			participants: createdParticipants,
 			count: createdParticipants.length,
-		});
+		})
 	} catch (error) {
-		return apiError(error);
+		return apiError(error)
 	}
 }

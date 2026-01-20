@@ -1,9 +1,9 @@
-import { NextRequest } from "next/server";
-import { prisma } from "@/components/lib/db";
-import { requireAuth, apiError, apiSuccess, NotFoundError, ForbiddenError } from "@/components/lib/auth-utils";
+import { apiError, apiSuccess, ForbiddenError, NotFoundError, requireAuth } from '@/components/lib/auth-utils'
+import { prisma } from '@/components/lib/db'
+import { NextRequest } from 'next/server'
 
 interface RouteParams {
-	params: Promise<{ id: string }>;
+	params: Promise<{ id: string }>
 }
 
 /**
@@ -12,8 +12,8 @@ interface RouteParams {
  */
 export async function POST(request: NextRequest, { params }: RouteParams) {
 	try {
-		const session = await requireAuth();
-		const { id } = await params;
+		const session = await requireAuth()
+		const { id } = await params
 
 		// Get period with access check
 		const period = await prisma.period.findUnique({
@@ -27,22 +27,22 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 					},
 				},
 			},
-		});
+		})
 
 		if (!period) {
-			throw new NotFoundError("Period not found");
+			throw new NotFoundError('Period not found')
 		}
 
 		if (period.group.coordinatorGroups.length === 0) {
-			throw new ForbiddenError("You don't have access to this period");
+			throw new ForbiddenError("You don't have access to this period")
 		}
 
 		// Check if already locked
-		if (period.status === "locked") {
+		if (period.status === 'locked') {
 			return apiError({
-				name: "ValidationError",
-				message: "This period is already locked",
-			});
+				name: 'ValidationError',
+				message: 'This period is already locked',
+			})
 		}
 
 		// Lock period and update all "not_finished" to "missed" in transaction
@@ -51,38 +51,38 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 			await tx.participantPeriod.updateMany({
 				where: {
 					periodId: id,
-					progressStatus: "not_finished",
+					progressStatus: 'not_finished',
 				},
 				data: {
-					progressStatus: "missed",
+					progressStatus: 'missed',
 				},
-			});
+			})
 
 			// Lock the period
 			return tx.period.update({
 				where: { id },
 				data: {
-					status: "locked",
+					status: 'locked',
 					lockedAt: new Date(),
 				},
-			});
-		});
+			})
+		})
 
 		// Get updated stats
 		const stats = await prisma.participantPeriod.groupBy({
-			by: ["progressStatus"],
+			by: ['progressStatus'],
 			where: { periodId: id },
 			_count: { progressStatus: true },
-		});
+		})
 
 		const statusCounts = {
 			finished: 0,
 			not_finished: 0,
 			missed: 0,
-		};
+		}
 
 		for (const s of stats) {
-			statusCounts[s.progressStatus as keyof typeof statusCounts] = s._count.progressStatus;
+			statusCounts[s.progressStatus as keyof typeof statusCounts] = s._count.progressStatus
 		}
 
 		return apiSuccess({
@@ -90,8 +90,8 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 			status: lockedPeriod.status,
 			lockedAt: lockedPeriod.lockedAt,
 			statusCounts,
-		});
+		})
 	} catch (error) {
-		return apiError(error);
+		return apiError(error)
 	}
 }

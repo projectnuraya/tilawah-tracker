@@ -1,7 +1,7 @@
-import { NextRequest } from "next/server";
-import { prisma } from "@/components/lib/db";
-import { requireAuth, apiError, apiSuccess } from "@/components/lib/auth-utils";
-import { generatePublicToken } from "@/components/lib/tokens";
+import { apiError, apiSuccess, requireAuth } from '@/components/lib/auth-utils'
+import { prisma } from '@/components/lib/db'
+import { generatePublicToken } from '@/components/lib/tokens'
+import { NextRequest } from 'next/server'
 
 /**
  * GET /api/v1/groups
@@ -9,7 +9,7 @@ import { generatePublicToken } from "@/components/lib/tokens";
  */
 export async function GET() {
 	try {
-		const session = await requireAuth();
+		const session = await requireAuth()
 
 		const coordinatorGroups = await prisma.coordinatorGroup.findMany({
 			where: {
@@ -27,16 +27,16 @@ export async function GET() {
 							},
 						},
 						periods: {
-							where: { status: "active" },
+							where: { status: 'active' },
 							take: 1,
 						},
 					},
 				},
 			},
 			orderBy: {
-				joinedAt: "desc",
+				joinedAt: 'desc',
 			},
-		});
+		})
 
 		const groups = coordinatorGroups.map((cg) => ({
 			id: cg.group.id,
@@ -47,11 +47,11 @@ export async function GET() {
 			hasActivePeriod: cg.group.periods.length > 0,
 			joinedAt: cg.joinedAt,
 			createdAt: cg.group.createdAt,
-		}));
+		}))
 
-		return apiSuccess(groups);
+		return apiSuccess(groups)
 	} catch (error) {
-		return apiError(error);
+		return apiError(error)
 	}
 }
 
@@ -61,37 +61,37 @@ export async function GET() {
  */
 export async function POST(request: NextRequest) {
 	try {
-		const session = await requireAuth();
+		const session = await requireAuth()
 
-		const body = await request.json();
-		const { name } = body;
+		const body = await request.json()
+		const { name } = body
 
-		if (!name || typeof name !== "string" || name.trim().length === 0) {
+		if (!name || typeof name !== 'string' || name.trim().length === 0) {
 			return apiError({
-				name: "ValidationError",
-				message: "Group name is required",
-			});
+				name: 'ValidationError',
+				message: 'Group name is required',
+			})
 		}
 
 		if (name.trim().length > 255) {
 			return apiError({
-				name: "ValidationError",
-				message: "Group name must be less than 255 characters",
-			});
+				name: 'ValidationError',
+				message: 'Group name must be less than 255 characters',
+			})
 		}
 
 		// Generate unique public token
-		let publicToken = generatePublicToken();
+		let publicToken = generatePublicToken()
 
 		// Ensure token is unique (extremely rare collision case)
-		let attempts = 0;
+		let attempts = 0
 		while (attempts < 5) {
 			const existing = await prisma.group.findUnique({
 				where: { publicToken },
-			});
-			if (!existing) break;
-			publicToken = generatePublicToken();
-			attempts++;
+			})
+			if (!existing) break
+			publicToken = generatePublicToken()
+			attempts++
 		}
 
 		// Create group and coordinator-group relationship in transaction
@@ -101,17 +101,17 @@ export async function POST(request: NextRequest) {
 					name: name.trim(),
 					publicToken,
 				},
-			});
+			})
 
 			await tx.coordinatorGroup.create({
 				data: {
 					coordinatorId: session.user.id,
 					groupId: newGroup.id,
 				},
-			});
+			})
 
-			return newGroup;
-		});
+			return newGroup
+		})
 
 		return apiSuccess(
 			{
@@ -120,9 +120,9 @@ export async function POST(request: NextRequest) {
 				publicToken: group.publicToken,
 				createdAt: group.createdAt,
 			},
-			201
-		);
+			201,
+		)
 	} catch (error) {
-		return apiError(error);
+		return apiError(error)
 	}
 }

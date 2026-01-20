@@ -1,9 +1,9 @@
-import { NextRequest } from "next/server";
-import { prisma } from "@/components/lib/db";
-import { requireAuth, requireGroupAccess, apiError, apiSuccess, NotFoundError } from "@/components/lib/auth-utils";
+import { apiError, apiSuccess, NotFoundError, requireAuth, requireGroupAccess } from '@/components/lib/auth-utils'
+import { prisma } from '@/components/lib/db'
+import { NextRequest } from 'next/server'
 
 interface RouteParams {
-	params: Promise<{ id: string }>;
+	params: Promise<{ id: string }>
 }
 
 /**
@@ -12,10 +12,10 @@ interface RouteParams {
  */
 export async function GET(request: NextRequest, { params }: RouteParams) {
 	try {
-		const session = await requireAuth();
-		const { id } = await params;
+		const session = await requireAuth()
+		const { id } = await params
 
-		await requireGroupAccess(session.user.id, id);
+		await requireGroupAccess(session.user.id, id)
 
 		const group = await prisma.group.findUnique({
 			where: { id },
@@ -41,14 +41,14 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 					},
 				},
 				periods: {
-					orderBy: { periodNumber: "desc" },
+					orderBy: { periodNumber: 'desc' },
 					take: 1,
 				},
 			},
-		});
+		})
 
 		if (!group) {
-			throw new NotFoundError("Group not found");
+			throw new NotFoundError('Group not found')
 		}
 
 		return apiSuccess({
@@ -61,9 +61,9 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 			coordinators: group.coordinatorGroups.map((cg) => cg.coordinator),
 			createdAt: group.createdAt,
 			updatedAt: group.updatedAt,
-		});
+		})
 	} catch (error) {
-		return apiError(error);
+		return apiError(error)
 	}
 }
 
@@ -73,41 +73,41 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
  */
 export async function PATCH(request: NextRequest, { params }: RouteParams) {
 	try {
-		const session = await requireAuth();
-		const { id } = await params;
+		const session = await requireAuth()
+		const { id } = await params
 
-		await requireGroupAccess(session.user.id, id);
+		await requireGroupAccess(session.user.id, id)
 
-		const body = await request.json();
-		const { name } = body;
+		const body = await request.json()
+		const { name } = body
 
-		if (!name || typeof name !== "string" || name.trim().length === 0) {
+		if (!name || typeof name !== 'string' || name.trim().length === 0) {
 			return apiError({
-				name: "ValidationError",
-				message: "Group name is required",
-			});
+				name: 'ValidationError',
+				message: 'Group name is required',
+			})
 		}
 
 		if (name.trim().length > 255) {
 			return apiError({
-				name: "ValidationError",
-				message: "Group name must be less than 255 characters",
-			});
+				name: 'ValidationError',
+				message: 'Group name must be less than 255 characters',
+			})
 		}
 
 		const group = await prisma.group.update({
 			where: { id },
 			data: { name: name.trim() },
-		});
+		})
 
 		return apiSuccess({
 			id: group.id,
 			name: group.name,
 			publicToken: group.publicToken,
 			updatedAt: group.updatedAt,
-		});
+		})
 	} catch (error) {
-		return apiError(error);
+		return apiError(error)
 	}
 }
 
@@ -117,17 +117,17 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
  */
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
 	try {
-		const session = await requireAuth();
-		const { id } = await params;
+		const session = await requireAuth()
+		const { id } = await params
 
-		await requireGroupAccess(session.user.id, id);
+		await requireGroupAccess(session.user.id, id)
 
 		await prisma.group.delete({
 			where: { id },
-		});
+		})
 
-		return apiSuccess({ deleted: true });
+		return apiSuccess({ deleted: true })
 	} catch (error) {
-		return apiError(error);
+		return apiError(error)
 	}
 }

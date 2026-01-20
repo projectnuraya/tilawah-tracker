@@ -1,4 +1,4 @@
-import { randomBytes } from "crypto";
+import { randomBytes } from 'crypto'
 
 /**
  * Generate a random public token for group access
@@ -6,13 +6,13 @@ import { randomBytes } from "crypto";
  * Example: kJ8mP2nQ5rT9wX3yZ6aB4cD7eF1gH0iJ
  */
 export function generatePublicToken(): string {
-	const chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	const bytes = randomBytes(32);
-	let token = "";
+	const chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+	const bytes = randomBytes(32)
+	let token = ''
 
 	for (let i = 0; i < 32; i++) {
-		token += chars[bytes[i] % chars.length];
+		token += chars[bytes[i] % chars.length]
 	}
 
-	return token;
+	return token
 }

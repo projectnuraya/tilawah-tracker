@@ -1,26 +1,26 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/components/lib/auth";
-import { prisma } from "@/components/lib/db";
-import { NextResponse } from "next/server";
+import { authOptions } from '@/components/lib/auth'
+import { prisma } from '@/components/lib/db'
+import { getServerSession } from 'next-auth'
+import { NextResponse } from 'next/server'
 
 export class UnauthorizedError extends Error {
-	constructor(message = "Unauthorized") {
-		super(message);
-		this.name = "UnauthorizedError";
+	constructor(message = 'Unauthorized') {
+		super(message)
+		this.name = 'UnauthorizedError'
 	}
 }
 
 export class ForbiddenError extends Error {
-	constructor(message = "Forbidden") {
-		super(message);
-		this.name = "ForbiddenError";
+	constructor(message = 'Forbidden') {
+		super(message)
+		this.name = 'ForbiddenError'
 	}
 }
 
 export class NotFoundError extends Error {
-	constructor(message = "Not Found") {
-		super(message);
-		this.name = "NotFoundError";
+	constructor(message = 'Not Found') {
+		super(message)
+		this.name = 'NotFoundError'
 	}
 }
 
@@ -28,11 +28,11 @@ export class NotFoundError extends Error {
  * Get authenticated session or throw UnauthorizedError
  */
 export async function requireAuth() {
-	const session = await getServerSession(authOptions);
+	const session = await getServerSession(authOptions)
 	if (!session?.user?.id) {
-		throw new UnauthorizedError();
+		throw new UnauthorizedError()
 	}
-	return session;
+	return session
 }
 
 /**
@@ -46,13 +46,13 @@ export async function requireGroupAccess(coordinatorId: string, groupId: string)
 				groupId,
 			},
 		},
-	});
+	})
 
 	if (!access) {
-		throw new ForbiddenError("You don't have access to this group");
+		throw new ForbiddenError("You don't have access to this group")
 	}
 
-	return access;
+	return access
 }
 
 /**
@@ -60,36 +60,24 @@ export async function requireGroupAccess(coordinatorId: string, groupId: string)
  */
 export function apiError(error: unknown) {
 	if (error instanceof UnauthorizedError) {
-		return NextResponse.json(
-			{ success: false, error: { code: "UNAUTHORIZED", message: error.message } },
-			{ status: 401 }
-		);
+		return NextResponse.json({ success: false, error: { code: 'UNAUTHORIZED', message: error.message } }, { status: 401 })
 	}
 
 	if (error instanceof ForbiddenError) {
-		return NextResponse.json(
-			{ success: false, error: { code: "FORBIDDEN", message: error.message } },
-			{ status: 403 }
-		);
+		return NextResponse.json({ success: false, error: { code: 'FORBIDDEN', message: error.message } }, { status: 403 })
 	}
 
 	if (error instanceof NotFoundError) {
-		return NextResponse.json(
-			{ success: false, error: { code: "NOT_FOUND", message: error.message } },
-			{ status: 404 }
-		);
+		return NextResponse.json({ success: false, error: { code: 'NOT_FOUND', message: error.message } }, { status: 404 })
 	}
 
-	console.error("API Error:", error);
-	return NextResponse.json(
-		{ success: false, error: { code: "INTERNAL_ERROR", message: "An unexpected error occurred" } },
-		{ status: 500 }
-	);
+	console.error('API Error:', error)
+	return NextResponse.json({ success: false, error: { code: 'INTERNAL_ERROR', message: 'An unexpected error occurred' } }, { status: 500 })
 }
 
 /**
  * Standard API success response
  */
 export function apiSuccess<T>(data: T, status = 200) {
-	return NextResponse.json({ success: true, data }, { status });
+	return NextResponse.json({ success: true, data }, { status })
 }

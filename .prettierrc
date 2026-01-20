@@ -1,0 +1,21 @@
+{
+  "arrowParens": "always",
+  "bracketSpacing": true,
+  "insertPragma": false,
+  "bracketSameLine": true,
+  "printWidth": 130,
+  "proseWrap": "preserve",
+  "requirePragma": false,
+  "semi": false,
+  "singleQuote": true,
+  "jsxSingleQuote": true,
+  "tabWidth": 4,
+  "trailingComma": "all",
+  "useTabs": true,
+  "importOrderSeparation": true,
+  "importOrderBuiltinModulesToTop": true,
+  "importOrderSortSpecifiers": true,
+  "importOrderCaseInsensitive": true,
+  "importOrder": ["^@/(.*)$", "^../", "^./"],
+  "endOfLine": "auto"
+}
