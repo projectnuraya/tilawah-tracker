@@ -1,6 +1,6 @@
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/db";
+import { authOptions } from "@/components/lib/auth";
+import { prisma } from "@/components/lib/db";
 import { NextResponse } from "next/server";
 
 export class UnauthorizedError extends Error {

@@ -1,8 +1,8 @@
 import { getServerSession } from "next-auth";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
-import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/db";
+import { authOptions } from "@/components/lib/auth";
+import { prisma } from "@/components/lib/db";
 import { ArrowLeft, Users, Calendar, Copy, Settings, ExternalLink, Plus } from "lucide-react";
 import { CopyTokenButton } from "./copy-token-button";
 import { DeleteGroupButton } from "./delete-group-button";

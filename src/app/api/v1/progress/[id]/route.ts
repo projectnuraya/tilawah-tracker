@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { prisma } from "@/components/lib/db";
 import {
 	requireAuth,
 	requireGroupAccess,
 	apiSuccess,
 	apiError,
 	NotFoundError,
-} from "@/lib/auth-utils";
+} from "@/components/lib/auth-utils";
 
 // PATCH /api/v1/progress/[id] - Update progress status
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {

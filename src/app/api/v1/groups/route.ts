@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
-import { prisma } from "@/lib/db";
-import { requireAuth, apiError, apiSuccess } from "@/lib/auth-utils";
-import { generatePublicToken } from "@/lib/tokens";
+import { prisma } from "@/components/lib/db";
+import { requireAuth, apiError, apiSuccess } from "@/components/lib/auth-utils";
+import { generatePublicToken } from "@/components/lib/tokens";
 
 /**
  * GET /api/v1/groups

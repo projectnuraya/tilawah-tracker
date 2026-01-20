@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/db";
+import { authOptions } from "@/components/lib/auth";
+import { prisma } from "@/components/lib/db";
 import { Plus, Users, Calendar, ExternalLink } from "lucide-react";
 
 async function getGroups(userId: string) {
