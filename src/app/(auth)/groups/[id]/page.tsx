@@ -1,5 +1,4 @@
 import { CopyTokenButton } from '@/components/groups/copy-token-button'
-import { DeleteGroupButton } from '@/components/groups/delete-group-button'
 import { authOptions } from '@/components/lib/auth'
 import { prisma } from '@/components/lib/db'
 import { ArrowLeft, Calendar, ExternalLink, Plus, Settings, Users } from 'lucide-react'
@@ -251,14 +250,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
 				</div>
 			)}
 
-			{/* Danger Zone */}
-			<div className='rounded-xl border border-destructive/20 bg-destructive/5 p-4'>
-				<h2 className='font-medium text-destructive mb-2'>Zona Berbahaya</h2>
-				<p className='text-sm text-muted-foreground mb-4'>
-					Menghapus grup ini akan menghapus permanen semua peserta, periode, dan data progress.
-				</p>
-				<DeleteGroupButton groupId={group.id} groupName={group.name} />
-			</div>
+            
 		</div>
 	)
 }

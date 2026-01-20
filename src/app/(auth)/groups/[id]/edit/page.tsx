@@ -1,5 +1,6 @@
 'use client'
 
+import { DeleteGroupButton } from '@/components/groups/delete-group-button'
 import { ArrowLeft, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -93,7 +94,7 @@ export default function EditGroupPage({ params }: PageProps) {
 	}
 
 	return (
-		<div>
+		<div className='flex flex-col min-h-screen'>
 			{/* Back Button */}
 			<Link href={`/groups/${groupId}`} className='inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6'>
 				<ArrowLeft className='h-4 w-4' />
@@ -144,6 +145,16 @@ export default function EditGroupPage({ params }: PageProps) {
 					</div>
 				</form>
 			</div>
+
+			{groupId && originalName && (
+				<div className='mt-auto rounded-xl border border-destructive/20 bg-destructive/5 p-4'>
+					<h2 className='font-medium text-destructive mb-2'>Zona Berbahaya</h2>
+					<p className='text-sm text-muted-foreground mb-4'>
+						Menghapus grup ini akan menghapus permanen semua peserta, periode, dan data progress.
+					</p>
+					<DeleteGroupButton groupId={groupId} groupName={originalName} />
+				</div>
+			)}
 		</div>
 	)
 }
