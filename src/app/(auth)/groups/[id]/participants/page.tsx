@@ -3,7 +3,8 @@ import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { authOptions } from "@/components/lib/auth";
 import { prisma } from "@/components/lib/db";
-import { ArrowLeft, Plus, Phone, UserX, User } from "lucide-react";
+import { ArrowLeft, Plus, Phone, UserX, User, Edit } from "lucide-react";
+import { JuzDropdown } from "@/components/participants/juz-dropdown";
 
 interface PageProps {
 	params: Promise<{ id: string }>;
@@ -56,15 +57,42 @@ export default async function ParticipantsPage({ params }: PageProps) {
 	}
 
 	const activePeriod = group.periods[0];
-	const activeParticipants = group.participants.filter((p) => p.isActive);
+	let activeParticipants = group.participants.filter((p) => p.isActive);
 	const inactiveParticipants = group.participants.filter((p) => !p.isActive);
 
-	// Map participant to their juz in active period
-	const participantJuzMap = new Map<string, number>();
+	// Map participant to their juz and participantPeriodId in active period
+	const participantDataMap = new Map<
+		string,
+		{ juzNumber: number; participantPeriodId: string }
+	>();
 	if (activePeriod) {
 		for (const pp of activePeriod.participantPeriods) {
-			participantJuzMap.set(pp.participantId, pp.juzNumber);
+			participantDataMap.set(pp.participantId, {
+				juzNumber: pp.juzNumber,
+				participantPeriodId: pp.id,
+			});
 		}
+		
+		// Sort by Juz first, then by Name
+		activeParticipants = activeParticipants.sort((a, b) => {
+			const aData = participantDataMap.get(a.id);
+			const bData = participantDataMap.get(b.id);
+			
+			// If both have juz assignments
+			if (aData && bData) {
+				if (aData.juzNumber !== bData.juzNumber) {
+					return aData.juzNumber - bData.juzNumber;
+				}
+				return a.name.localeCompare(b.name);
+			}
+			
+			// Participants without juz come last
+			if (aData && !bData) return -1;
+			if (!aData && bData) return 1;
+			
+			// Both without juz, sort by name
+			return a.name.localeCompare(b.name);
+		});
 	}
 
 	return (
@@ -113,28 +141,51 @@ export default async function ParticipantsPage({ params }: PageProps) {
 				</div>
 			) : (
 				<div className="rounded-xl border border-border bg-card divide-y divide-border">
-					{activeParticipants.map((participant) => (
-						<Link
-							key={participant.id}
-							href={`/groups/${group.id}/participants/${participant.id}`}
-							className="flex items-center justify-between p-4 hover:bg-muted/50 transition"
-						>
-							<div className="flex items-center gap-3">
-								<div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-									<span className="text-primary font-medium">{participant.name.charAt(0).toUpperCase()}</span>
-								</div>
-								<div>
-									<p className="font-medium">{participant.name}</p>
-									{activePeriod && participantJuzMap.has(participant.id) && (
-										<p className="text-sm text-muted-foreground">Juz {participantJuzMap.get(participant.id)}</p>
+					{activeParticipants.map((participant) => {
+						const participantData = participantDataMap.get(participant.id);
+						return (
+							<div
+								key={participant.id}
+								className="flex items-center justify-between p-4 hover:bg-muted/50 transition"
+							>
+								<Link
+									href={`/groups/${group.id}/participants/${participant.id}`}
+									className="flex items-center gap-3 flex-1"
+								>
+									<div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+										<span className="text-primary font-medium">
+											{participant.name.charAt(0).toUpperCase()}
+										</span>
+									</div>
+									<div>
+										<p className="font-medium">{participant.name}</p>
+										{participant.whatsappNumber && (
+											<p className="text-sm text-muted-foreground flex items-center gap-1">
+												<Phone className="h-3 w-3" />
+												{participant.whatsappNumber}
+											</p>
+										)}
+									</div>
+								</Link>
+								<div className="flex items-center gap-3">
+									{activePeriod && participantData && (
+										<JuzDropdown
+											participantPeriodId={participantData.participantPeriodId}
+											currentJuz={participantData.juzNumber}
+											participantName={participant.name}
+										/>
 									)}
+									<Link
+										href={`/groups/${group.id}/participants/${participant.id}`}
+										className="p-2 rounded-lg hover:bg-muted transition"
+										aria-label={`Edit ${participant.name}`}
+									>
+										<Edit className="h-4 w-4 text-muted-foreground" />
+									</Link>
 								</div>
 							</div>
-							<div className="flex items-center gap-2">
-								{participant.whatsappNumber && <Phone className="h-4 w-4 text-muted-foreground" />}
-							</div>
-						</Link>
-					))}
+						);
+					})}
 				</div>
 			)}
 

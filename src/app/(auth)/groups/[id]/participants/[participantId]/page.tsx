@@ -73,7 +73,7 @@ export default async function ParticipantDetailPage({ params }: PageProps) {
 		: null;
 
 	return (
-		<div>
+		<div className="max-w-2xl mx-auto">
 			{/* Back Button */}
 			<Link
 				href={`/groups/${participant.group.id}/participants`}
@@ -83,7 +83,7 @@ export default async function ParticipantDetailPage({ params }: PageProps) {
 				Kembali ke Peserta
 			</Link>
 
-			<div className="max-w-md">
+			<div className="max-w-md mx-auto">
 				{/* Header */}
 				<div className="flex items-start justify-between mb-6">
 					<div>
