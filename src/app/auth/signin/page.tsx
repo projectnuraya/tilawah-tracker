@@ -3,9 +3,9 @@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { signIn } from 'next-auth/react'
 import { useSearchParams } from 'next/navigation'
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 
-export default function SignInPage() {
+function SignInContent() {
 	const [isLoading, setIsLoading] = useState(false)
 	const searchParams = useSearchParams()
 	const error = searchParams.get('error')
@@ -74,6 +74,20 @@ export default function SignInPage() {
 				</DialogContent>
 			</Dialog>
 		</div>
+	)
+}
+
+export default function SignInPage() {
+	return (
+		<Suspense
+			fallback={
+				<div className='min-h-screen flex items-center justify-center bg-background'>
+					<div className='text-muted-foreground'>Memuat...</div>
+				</div>
+			}
+		>
+			<SignInContent />
+		</Suspense>
 	)
 }
 

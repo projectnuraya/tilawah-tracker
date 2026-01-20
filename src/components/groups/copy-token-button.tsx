@@ -12,7 +12,9 @@ export function CopyTokenButton({ url }: CopyTokenButtonProps) {
 
 	const handleCopy = async () => {
 		try {
-			await navigator.clipboard.writeText(url)
+			// If URL doesn't start with http, prepend window.location.origin
+			const fullUrl = url.startsWith('http') ? url : `${window.location.origin}${url}`
+			await navigator.clipboard.writeText(fullUrl)
 			setCopied(true)
 			setTimeout(() => setCopied(false), 2000)
 		} catch (err) {

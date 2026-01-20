@@ -73,7 +73,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
 	}
 
 	const activePeriod = group.periods.find((p) => p.status === 'active')
-	const publicUrl = `${process.env.NEXT_PUBLIC_APP_URL || ''}/public/${group.publicToken}`
+	const publicUrl = `${process.env.NEXT_PUBLIC_APP_URL || ''}/view/${group.publicToken}`
 
 	return (
 		<div>
@@ -138,7 +138,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
 					/>
 					<CopyTokenButton url={publicUrl} />
 					<Link
-						href={`/public/${group.publicToken}`}
+					href={`/view/${group.publicToken}`}
 						target='_blank'
 						className='rounded-lg border border-border p-2 hover:bg-muted transition'
 						title='Open public view'>
