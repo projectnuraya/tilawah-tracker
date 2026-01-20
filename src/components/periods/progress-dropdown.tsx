@@ -22,7 +22,7 @@ export function ProgressStatusDropdown({ participantPeriodId, currentStatus, par
 	const [status, setStatus] = useState(currentStatus)
 	const [isOpen, setIsOpen] = useState(false)
 	const [isSaving, setIsSaving] = useState(false)
-	const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0 })
+	const [dropdownPos, setDropdownPos] = useState<{ top: number; left?: number; right?: number }>({ top: 0, left: 0 })
 	const buttonRef = useRef<HTMLButtonElement>(null)
 
 	const currentOption = STATUS_OPTIONS.find((o) => o.value === status) || STATUS_OPTIONS[0]
@@ -30,10 +30,22 @@ export function ProgressStatusDropdown({ participantPeriodId, currentStatus, par
 	const handleOpenDropdown = () => {
 		if (buttonRef.current) {
 			const rect = buttonRef.current.getBoundingClientRect()
-			setDropdownPos({
-				top: rect.bottom + 8,
-				left: rect.left,
-			})
+			const dropdownWidth = 160 // w-40 = 10rem = 160px
+			const viewportWidth = window.innerWidth
+			const spaceOnRight = viewportWidth - rect.right
+
+			// If not enough space on right, align to right edge instead
+			if (spaceOnRight < dropdownWidth) {
+				setDropdownPos({
+					top: rect.bottom + 8,
+					right: viewportWidth - rect.right,
+				})
+			} else {
+				setDropdownPos({
+					top: rect.bottom + 8,
+					left: rect.left,
+				})
+			}
 		}
 		setIsOpen(!isOpen)
 	}
@@ -115,7 +127,8 @@ export function ProgressStatusDropdown({ participantPeriodId, currentStatus, par
 							className='fixed z-50 w-40 rounded-lg border border-border bg-card shadow-lg overflow-hidden'
 							style={{
 								top: `${dropdownPos.top}px`,
-								left: `${dropdownPos.left}px`,
+								left: dropdownPos.left !== undefined ? `${dropdownPos.left}px` : 'auto',
+								right: dropdownPos.right !== undefined ? `${dropdownPos.right}px` : 'auto',
 							}}>
 							{STATUS_OPTIONS.map((option) => (
 								<button
