@@ -171,20 +171,32 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
 			// Create participant periods with juz assignment
 			if (lastPeriod && lastPeriod.participantPeriods.length > 0) {
-				// Rotation: get previous juz and rotate N → N+1, 30 → 1
-				const previousAssignments = new Map<string, number>()
+				// Get previous assignments with status
+				const previousAssignments = new Map<string, { juzNumber: number; status: string; missedStreak: number }>()
 				for (const pp of lastPeriod.participantPeriods) {
-					previousAssignments.set(pp.participantId, pp.juzNumber)
+					previousAssignments.set(pp.participantId, {
+						juzNumber: pp.juzNumber,
+						status: pp.progressStatus,
+						missedStreak: pp.missedStreak,
+					})
 				}
 
 				// Create records for active participants
 				for (const participant of group.participants) {
-					const previousJuz = previousAssignments.get(participant.id)
+					const previous = previousAssignments.get(participant.id)
 					let newJuz: number
+					let newMissedStreak = 0
 
-					if (previousJuz !== undefined) {
-						// Rotate: N → N+1, 30 → 1
-						newJuz = previousJuz === 30 ? 1 : previousJuz + 1
+					if (previous !== undefined) {
+						// If previous status was "missed", keep same juz and increment streak
+						if (previous.status === 'missed') {
+							newJuz = previous.juzNumber // Keep same juz
+							newMissedStreak = previous.missedStreak + 1 // Increment streak
+						} else {
+							// Otherwise rotate: N → N+1, 30 → 1
+							newJuz = previous.juzNumber === 30 ? 1 : previous.juzNumber + 1
+							newMissedStreak = 0 // Reset streak on rotation
+						}
 					} else {
 						// New participant - find least assigned juz
 						const juzCounts = await tx.participantPeriod.groupBy({
@@ -216,7 +228,8 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 							participantId: participant.id,
 							periodId: newPeriod.id,
 							juzNumber: newJuz,
-							progressStatus: 'not_finished',
+							progressStatus: 'not_finished', // Always start fresh
+							missedStreak: newMissedStreak,
 						},
 					})
 				}
@@ -231,6 +244,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 							periodId: newPeriod.id,
 							juzNumber,
 							progressStatus: 'not_finished',
+							missedStreak: 0,
 						},
 					})
 				}

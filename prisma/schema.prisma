@@ -8,20 +8,19 @@ datasource db {
 }
 
 model Account {
-  id                 String  @id @default(cuid())
-  userId             String  @map("user_id")
-  type               String
-  provider           String
-  providerAccountId  String  @map("provider_account_id")
-  refresh_token      String? @db.Text
-  access_token       String? @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String? @db.Text
-  session_state      String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                String  @id @default(cuid())
+  userId            String  @map("user_id")
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id")
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
   @@map("accounts")
@@ -38,17 +37,16 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(uuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime? @map("email_verified")
-  image         String?   @map("avatar_url")
-  createdAt     DateTime  @default(now()) @map("created_at")
-  updatedAt     DateTime  @updatedAt @map("updated_at")
-
+  id                String             @id @default(uuid())
+  name              String?
+  email             String?            @unique
+  emailVerified     DateTime?          @map("email_verified")
+  image             String?            @map("avatar_url")
+  createdAt         DateTime           @default(now()) @map("created_at")
+  updatedAt         DateTime           @updatedAt @map("updated_at")
   accounts          Account[]
-  sessions          Session[]
   coordinatorGroups CoordinatorGroup[]
+  sessions          Session[]
 
   @@map("coordinators")
 }
@@ -63,12 +61,11 @@ model VerificationToken {
 }
 
 model Group {
-  id          String   @id @default(uuid())
-  name        String
-  publicToken String   @unique @map("public_token")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
-
+  id                String             @id @default(uuid())
+  name              String
+  publicToken       String             @unique @map("public_token")
+  createdAt         DateTime           @default(now()) @map("created_at")
+  updatedAt         DateTime           @updatedAt @map("updated_at")
   coordinatorGroups CoordinatorGroup[]
   participants      Participant[]
   periods           Period[]
@@ -81,25 +78,23 @@ model CoordinatorGroup {
   coordinatorId String   @map("coordinator_id")
   groupId       String   @map("group_id")
   joinedAt      DateTime @default(now()) @map("joined_at")
-
-  coordinator User  @relation(fields: [coordinatorId], references: [id], onDelete: Cascade)
-  group       Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  coordinator   User     @relation(fields: [coordinatorId], references: [id], onDelete: Cascade)
+  group         Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
   @@unique([coordinatorId, groupId])
   @@map("coordinator_groups")
 }
 
 model Participant {
-  id             String   @id @default(uuid())
-  groupId        String   @map("group_id")
-  name           String
-  whatsappNumber String?  @map("whatsapp_number")
-  isActive       Boolean  @default(true) @map("is_active")
-  createdAt      DateTime @default(now()) @map("created_at")
-  updatedAt      DateTime @updatedAt @map("updated_at")
-
-  group              Group               @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  id                 String              @id @default(uuid())
+  groupId            String              @map("group_id")
+  name               String
+  whatsappNumber     String?             @map("whatsapp_number")
+  isActive           Boolean             @default(true) @map("is_active")
+  createdAt          DateTime            @default(now()) @map("created_at")
+  updatedAt          DateTime            @updatedAt @map("updated_at")
   participantPeriods ParticipantPeriod[]
+  group              Group               @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
   @@index([groupId])
   @@index([groupId, isActive])
@@ -107,19 +102,18 @@ model Participant {
 }
 
 model Period {
-  id           String    @id @default(uuid())
-  groupId      String    @map("group_id")
-  periodNumber Int       @map("period_number")
-  startDate    DateTime  @map("start_date") @db.Date
-  endDate      DateTime  @map("end_date") @db.Date
-  status       String // 'active', 'locked'
-  isArchived   Boolean   @default(false) @map("is_archived")
-  lockedAt     DateTime? @map("locked_at")
-  createdAt    DateTime  @default(now()) @map("created_at")
-  updatedAt    DateTime  @updatedAt @map("updated_at")
-
-  group              Group               @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  id                 String              @id @default(uuid())
+  groupId            String              @map("group_id")
+  periodNumber       Int                 @map("period_number")
+  startDate          DateTime            @map("start_date") @db.Date
+  endDate            DateTime            @map("end_date") @db.Date
+  status             String
+  isArchived         Boolean             @default(false) @map("is_archived")
+  lockedAt           DateTime?           @map("locked_at")
+  createdAt          DateTime            @default(now()) @map("created_at")
+  updatedAt          DateTime            @updatedAt @map("updated_at")
   participantPeriods ParticipantPeriod[]
+  group              Group               @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
   @@index([groupId])
   @@index([groupId, status])
@@ -127,15 +121,15 @@ model Period {
 }
 
 model ParticipantPeriod {
-  id             String   @id @default(uuid())
-  participantId  String   @map("participant_id")
-  periodId       String   @map("period_id")
-  juzNumber      Int      @map("juz_number")
-  progressStatus String   @default("not_finished") @map("progress_status") // 'not_finished', 'finished', 'missed'
-  updatedAt      DateTime @updatedAt @map("updated_at")
-
-  participant Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
-  period      Period      @relation(fields: [periodId], references: [id], onDelete: Cascade)
+  id             String      @id @default(uuid())
+  participantId  String      @map("participant_id")
+  periodId       String      @map("period_id")
+  juzNumber      Int         @map("juz_number")
+  progressStatus String      @default("not_finished") @map("progress_status")
+  missedStreak   Int         @default(0) @map("missed_streak")
+  updatedAt      DateTime    @updatedAt @map("updated_at")
+  participant    Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  period         Period      @relation(fields: [periodId], references: [id], onDelete: Cascade)
 
   @@unique([participantId, periodId])
   @@index([periodId, juzNumber])

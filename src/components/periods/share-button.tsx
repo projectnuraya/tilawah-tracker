@@ -12,6 +12,7 @@ interface Period {
 		id: string
 		juzNumber: number
 		progressStatus: string
+		missedStreak: number
 		participant: {
 			id: string
 			name: string
@@ -64,7 +65,8 @@ export function ShareButton({ period, groupName, publicToken }: ShareButtonProps
 							: pp.progressStatus === 'not_finished'
 								? '⏳'
 								: ''
-				text += `- ${pp.participant.name}${statusIcon ? ' ' + statusIcon : ''}\n`
+				const streakText = pp.missedStreak > 0 ? ` 💔×${pp.missedStreak}` : ''
+				text += `- ${pp.participant.name}${statusIcon ? ' ' + statusIcon : ''}${streakText}\n`
 			}
 			text += '\n'
 		}

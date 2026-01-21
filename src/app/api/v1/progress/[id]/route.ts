@@ -53,10 +53,14 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 			);
 		}
 
-		// Update the status
+		// Update the status and reset streak if finished
 		const updated = await prisma.participantPeriod.update({
 			where: { id },
-			data: { progressStatus: status },
+			data: {
+				progressStatus: status,
+				// Reset missed streak when marked as finished
+				...(status === 'finished' && { missedStreak: 0 }),
+			},
 		});
 
 		return apiSuccess(updated);

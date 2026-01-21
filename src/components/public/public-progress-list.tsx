@@ -15,6 +15,7 @@ interface ParticipantPeriod {
 	id: string
 	juzNumber: number
 	progressStatus: string
+	missedStreak: number
 	participant: Participant
 }
 
@@ -175,7 +176,14 @@ export function PublicProgressList({ participantPeriods }: PublicProgressListPro
 													</span>
 												</div>
 												<div>
-													<p className="font-medium text-sm">{pp.participant.name}</p>
+													<div className="flex items-center gap-2">
+														<p className="font-medium text-sm">{pp.participant.name}</p>
+														{pp.missedStreak > 0 && (
+															<span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-destructive/10 text-destructive">
+																💔×{pp.missedStreak}
+															</span>
+														)}
+													</div>
 													{!pp.participant.isActive && <p className="text-xs text-muted-foreground">Tidak Aktif</p>}
 												</div>
 											</div>
