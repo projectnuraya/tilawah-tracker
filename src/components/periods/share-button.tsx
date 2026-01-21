@@ -22,9 +22,10 @@ interface Period {
 interface ShareButtonProps {
 	period: Period
 	groupName: string
+	publicToken: string
 }
 
-export function ShareButton({ period, groupName }: ShareButtonProps) {
+export function ShareButton({ period, groupName, publicToken }: ShareButtonProps) {
 	const [isOpen, setIsOpen] = useState(false)
 	const [customMessage, setCustomMessage] = useState('')
 	const [copied, setCopied] = useState(false)
@@ -55,7 +56,14 @@ export function ShareButton({ period, groupName }: ShareButtonProps) {
 
 			text += `*Juz ${juz}:*\n`
 			for (const pp of participants) {
-				const statusIcon = pp.progressStatus === 'finished' ? '👑' : pp.progressStatus === 'missed' ? '💔' : ''
+				const statusIcon =
+					pp.progressStatus === 'finished'
+						? '👑'
+						: pp.progressStatus === 'missed'
+							? '💔'
+							: pp.progressStatus === 'not_finished'
+								? '⏳'
+								: ''
 				text += `- ${pp.participant.name}${statusIcon ? ' ' + statusIcon : ''}\n`
 			}
 			text += '\n'
@@ -64,6 +72,8 @@ export function ShareButton({ period, groupName }: ShareButtonProps) {
 		if (customMessage.trim()) {
 			text += `---\n${customMessage.trim()}`
 		}
+
+		text += `\n\nanda bisa melihat progress secara real-time pada tautan berikut: ${typeof window !== 'undefined' ? window.location.origin : ''}/public/view/${publicToken}`
 
 		return text
 	}
@@ -143,7 +153,9 @@ export function ShareButton({ period, groupName }: ShareButtonProps) {
 								)}
 							</button>
 
-							<p className='text-xs text-center text-muted-foreground'>Tempel teks yang disalin ke grup WhatsApp Anda.</p>
+							<p className='text-xs text-center text-muted-foreground'>
+								Tempel teks yang disalin ke grup WhatsApp Anda.
+							</p>
 						</div>
 					</div>
 				</>

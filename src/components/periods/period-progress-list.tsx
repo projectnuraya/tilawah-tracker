@@ -95,7 +95,7 @@ export function PeriodProgressList({ period, isActive, notFinishedCount }: Perio
 			{/* Lock Period and Share Buttons */}
 			<div className='mb-6 flex items-center justify-between gap-4'>
 				<div>{isActive && <LockPeriodButton periodId={period.id} notFinishedCount={notFinishedCount} />}</div>
-				<ShareButton period={period} groupName={period.group.name} />
+				<ShareButton period={period} groupName={period.group.name} publicToken={period.group.publicToken} />
 			</div>
 
 			{/* Search and Filters */}
@@ -170,7 +170,9 @@ export function PeriodProgressList({ period, isActive, notFinishedCount }: Perio
 							<Search className='h-8 w-8 text-muted-foreground' />
 						</div>
 						<h3 className='text-lg font-medium mb-2'>Tidak ada hasil</h3>
-						<p className='text-muted-foreground text-sm mb-4'>Tidak ditemukan peserta yang sesuai dengan filter yang dipilih.</p>
+						<p className='text-muted-foreground text-sm mb-4'>
+							Tidak ditemukan peserta yang sesuai dengan filter yang dipilih.
+						</p>
 						{hasActiveFilters && (
 							<button
 								onClick={resetFilters}
@@ -200,7 +202,9 @@ export function PeriodProgressList({ period, isActive, notFinishedCount }: Perio
 												</div>
 												<div>
 													<p className='font-medium text-sm'>{pp.participant.name}</p>
-													{!pp.participant.isActive && <p className='text-xs text-muted-foreground'>Tidak Aktif</p>}
+													{!pp.participant.isActive && (
+														<p className='text-xs text-muted-foreground'>Tidak Aktif</p>
+													)}
 												</div>
 											</div>
 											<div className='flex items-center gap-2'>
