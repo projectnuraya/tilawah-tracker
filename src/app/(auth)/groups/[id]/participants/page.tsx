@@ -95,7 +95,9 @@ export default async function ParticipantsPage({ params }: PageProps) {
 	return (
 		<div>
 			{/* Back Button */}
-			<Link href={`/groups/${group.id}`} className='inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6'>
+			<Link
+				href={`/groups/${group.id}`}
+				className='inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6'>
 				<ArrowLeft className='h-4 w-4' />
 				Kembali ke {group.name}
 			</Link>

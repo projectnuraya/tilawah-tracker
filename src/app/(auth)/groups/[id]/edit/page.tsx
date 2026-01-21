@@ -96,7 +96,9 @@ export default function EditGroupPage({ params }: PageProps) {
 	return (
 		<div className='flex flex-col min-h-screen'>
 			{/* Back Button */}
-			<Link href={`/groups/${groupId}`} className='inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6'>
+			<Link
+				href={`/groups/${groupId}`}
+				className='inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6'>
 				<ArrowLeft className='h-4 w-4' />
 				Kembali ke Grup
 			</Link>

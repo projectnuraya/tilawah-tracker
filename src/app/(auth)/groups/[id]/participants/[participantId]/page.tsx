@@ -87,7 +87,9 @@ export default async function ParticipantDetailPage({ params }: PageProps) {
 				<div className='flex items-start justify-between mb-6'>
 					<div>
 						<h1 className='text-2xl font-semibold'>{participant.name}</h1>
-						<p className='text-muted-foreground text-sm mt-1'>{participant.isActive ? 'Peserta aktif' : 'Peserta tidak aktif'}</p>
+						<p className='text-muted-foreground text-sm mt-1'>
+							{participant.isActive ? 'Peserta aktif' : 'Peserta tidak aktif'}
+						</p>
 					</div>
 					{!participant.isActive && (
 						<span className='inline-flex items-center rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground'>

@@ -78,7 +78,9 @@ export default async function PeriodsListPage({ params }: PageProps) {
 	return (
 		<div>
 			{/* Back Button */}
-			<Link href={`/groups/${group.id}`} className='inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6'>
+			<Link
+				href={`/groups/${group.id}`}
+				className='inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6'>
 				<ArrowLeft className='h-4 w-4' />
 				Kembali ke {group.name}
 			</Link>
@@ -109,8 +111,10 @@ export default async function PeriodsListPage({ params }: PageProps) {
 								<div className='flex items-center gap-4 text-sm text-muted-foreground'>
 									<span className='inline-flex items-center gap-1'>
 										<Calendar className='h-4 w-4' />
-										{new Date(activePeriod.startDate).toLocaleDateString('id-ID', { dateStyle: 'medium' })} -{' '}
-										{new Date(activePeriod.endDate).toLocaleDateString('id-ID', { dateStyle: 'medium' })}
+										{new Date(activePeriod.startDate).toLocaleDateString('id-ID', {
+											dateStyle: 'medium',
+										})}{' '}
+										- {new Date(activePeriod.endDate).toLocaleDateString('id-ID', { dateStyle: 'medium' })}
 									</span>
 									<span className='inline-flex items-center gap-1'>
 										<Users className='h-4 w-4' />
@@ -170,7 +174,9 @@ export default async function PeriodsListPage({ params }: PageProps) {
 						<Calendar className='h-8 w-8 text-primary' />
 					</div>
 					<h2 className='text-lg font-medium mb-2'>Belum ada periode</h2>
-					<p className='text-muted-foreground text-sm mb-6'>Mulai periode tilawah pertama Anda untuk melacak progress.</p>
+					<p className='text-muted-foreground text-sm mb-6'>
+						Mulai periode tilawah pertama Anda untuk melacak progress.
+					</p>
 					<Link
 						href={`/groups/${group.id}/periods/new`}
 						className='inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-white font-medium shadow-sm transition hover:bg-primary/90'>

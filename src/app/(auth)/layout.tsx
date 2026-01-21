@@ -1,17 +1,10 @@
 'use client'
 
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { signOut, useSession } from 'next-auth/react'
 import Link from 'next/link'
-import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-} from '@/components/ui/dialog'
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
 	const { data: session, status } = useSession()
@@ -53,10 +46,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 						</Link>
 						<nav className='flex items-center gap-4'>
 							<span className='text-sm text-muted-foreground hidden sm:inline'>{session.user?.name}</span>
-							<button
-								onClick={() => setShowLogoutModal(true)}
-								className='text-sm text-destructive hover:underline'
-							>
+							<button onClick={() => setShowLogoutModal(true)} className='text-sm text-destructive hover:underline'>
 								Logout
 							</button>
 						</nav>
@@ -83,15 +73,13 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 						<button
 							onClick={() => setShowLogoutModal(false)}
 							disabled={isLoggingOut}
-							className='flex-1 sm:flex-none px-4 py-2 rounded-lg border border-border bg-background hover:bg-muted transition disabled:opacity-50'
-						>
+							className='flex-1 sm:flex-none px-4 py-2 rounded-lg border border-border bg-background hover:bg-muted transition disabled:opacity-50'>
 							Batal
 						</button>
 						<button
 							onClick={handleLogout}
 							disabled={isLoggingOut}
-							className='flex-1 sm:flex-none px-4 py-2 rounded-lg bg-destructive text-destructive-foreground hover:bg-destructive/90 transition disabled:opacity-50'
-						>
+							className='flex-1 sm:flex-none px-4 py-2 rounded-lg bg-destructive text-destructive-foreground hover:bg-destructive/90 transition disabled:opacity-50'>
 							{isLoggingOut ? 'Keluar...' : 'Keluar'}
 						</button>
 					</DialogFooter>

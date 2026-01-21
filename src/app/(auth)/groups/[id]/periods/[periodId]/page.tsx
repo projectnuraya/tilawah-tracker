@@ -120,15 +120,13 @@ export default async function PeriodDetailPage({ params }: PageProps) {
 
 			{/* Period Progress List with Search and Filters */}
 			<PeriodProgressList
-				period={
-					{
-						...period,
-						participantPeriods: period.participantPeriods.map((pp) => ({
-							...pp,
-							progressStatus: pp.progressStatus as 'finished' | 'not_finished' | 'missed',
-						})),
-					} as any
-				}
+				period={{
+					...period,
+					participantPeriods: period.participantPeriods.map((pp) => ({
+						...pp,
+						progressStatus: pp.progressStatus as 'finished' | 'not_finished' | 'missed',
+					})),
+				}}
 				isActive={isActive}
 				notFinishedCount={stats.not_finished}
 			/>

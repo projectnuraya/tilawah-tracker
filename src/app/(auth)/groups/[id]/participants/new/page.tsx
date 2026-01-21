@@ -18,7 +18,9 @@ interface ParticipantInput {
 export default function NewParticipantPage({ params }: PageProps) {
 	const router = useRouter()
 	const [groupId, setGroupId] = useState<string | null>(null)
-	const [participants, setParticipants] = useState<ParticipantInput[]>([{ id: crypto.randomUUID(), name: '', whatsappNumber: '' }])
+	const [participants, setParticipants] = useState<ParticipantInput[]>([
+		{ id: crypto.randomUUID(), name: '', whatsappNumber: '' },
+	])
 	const [isLoading, setIsLoading] = useState(false)
 	const [error, setError] = useState('')
 
@@ -105,7 +107,9 @@ export default function NewParticipantPage({ params }: PageProps) {
 
 			<div className='w-full max-w-2xl'>
 				<h1 className='text-2xl font-semibold mb-2 text-center'>Tambah Peserta</h1>
-				<p className='text-muted-foreground text-sm mb-6 text-center'>Tambahkan satu atau lebih anggota ke grup tilawah ini.</p>
+				<p className='text-muted-foreground text-sm mb-6 text-center'>
+					Tambahkan satu atau lebih anggota ke grup tilawah ini.
+				</p>
 
 				<form onSubmit={handleSubmit} className='space-y-6'>
 					{/* Participant Rows */}

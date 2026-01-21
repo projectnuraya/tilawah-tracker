@@ -49,7 +49,9 @@ export default function NewGroupPage() {
 	return (
 		<div>
 			{/* Back Button */}
-			<Link href='/dashboard' className='inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6'>
+			<Link
+				href='/dashboard'
+				className='inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6'>
 				<ArrowLeft className='h-4 w-4' />
 				Kembali ke Dashboard
 			</Link>

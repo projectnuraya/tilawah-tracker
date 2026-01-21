@@ -78,7 +78,9 @@ export default async function GroupDetailPage({ params }: PageProps) {
 	return (
 		<div>
 			{/* Back Button */}
-			<Link href='/dashboard' className='inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6'>
+			<Link
+				href='/dashboard'
+				className='inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6'>
 				<ArrowLeft className='h-4 w-4' />
 				Kembali ke Dashboard
 			</Link>
@@ -138,7 +140,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
 					/>
 					<CopyTokenButton url={publicUrl} />
 					<Link
-					href={`/view/${group.publicToken}`}
+						href={`/view/${group.publicToken}`}
 						target='_blank'
 						className='rounded-lg border border-border p-2 hover:bg-muted transition'
 						title='Open public view'>
@@ -212,7 +214,9 @@ export default async function GroupDetailPage({ params }: PageProps) {
 								{p.whatsappNumber && <span className='text-xs text-muted-foreground'>📱</span>}
 							</div>
 						))}
-						{group.participants.length > 5 && <p className='text-sm text-muted-foreground'>+{group.participants.length - 5} lainnya</p>}
+						{group.participants.length > 5 && (
+							<p className='text-sm text-muted-foreground'>+{group.participants.length - 5} lainnya</p>
+						)}
 					</div>
 				)}
 			</div>
@@ -240,7 +244,9 @@ export default async function GroupDetailPage({ params }: PageProps) {
 								</div>
 								<span
 									className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-										period.status === 'active' ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'
+										period.status === 'active'
+											? 'bg-primary/10 text-primary'
+											: 'bg-muted text-muted-foreground'
 									}`}>
 									{period.status === 'active' ? 'Aktif' : 'Terkunci'}
 								</span>
@@ -249,8 +255,6 @@ export default async function GroupDetailPage({ params }: PageProps) {
 					</div>
 				</div>
 			)}
-
-            
 		</div>
 	)
 }

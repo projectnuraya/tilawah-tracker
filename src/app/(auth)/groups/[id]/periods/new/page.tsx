@@ -105,7 +105,9 @@ export default function NewPeriodPage({ params }: PageProps) {
 	return (
 		<div>
 			{/* Back Button */}
-			<Link href={`/groups/${groupId}`} className='inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6'>
+			<Link
+				href={`/groups/${groupId}`}
+				className='inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6'>
 				<ArrowLeft className='h-4 w-4' />
 				Kembali ke Grup
 			</Link>
@@ -153,9 +155,19 @@ export default function NewPeriodPage({ params }: PageProps) {
 						<div className='rounded-lg border border-border bg-muted/50 p-4'>
 							<p className='text-sm font-medium mb-2'>Durasi Periode</p>
 							<p className='text-sm text-muted-foreground'>
-								{new Date(startDate).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+								{new Date(startDate).toLocaleDateString('id-ID', {
+									weekday: 'long',
+									year: 'numeric',
+									month: 'long',
+									day: 'numeric',
+								})}
 								{' → '}
-								{new Date(endDate).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+								{new Date(endDate).toLocaleDateString('id-ID', {
+									weekday: 'long',
+									year: 'numeric',
+									month: 'long',
+									day: 'numeric',
+								})}
 							</p>
 						</div>
 					)}
