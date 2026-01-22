@@ -104,7 +104,9 @@ export default async function GroupDetailPage({ params }: PageProps) {
 
 			{/* Stats Cards */}
 			<div className='grid grid-cols-2 gap-4 mb-6'>
-				<div className='rounded-xl border border-border bg-card p-4'>
+				<Link
+					href={`/groups/${group.id}/participants`}
+					className='block rounded-xl border border-border bg-card p-4 hover:bg-muted transition'>
 					<div className='flex items-center gap-3'>
 						<div className='rounded-full bg-primary/10 p-2'>
 							<Users className='h-5 w-5 text-primary' />
@@ -114,8 +116,10 @@ export default async function GroupDetailPage({ params }: PageProps) {
 							<p className='text-sm text-muted-foreground'>Peserta</p>
 						</div>
 					</div>
-				</div>
-				<div className='rounded-xl border border-border bg-card p-4'>
+				</Link>
+				<Link
+					href={`/groups/${group.id}/periods`}
+					className='block rounded-xl border border-border bg-card p-4 hover:bg-muted transition'>
 					<div className='flex items-center gap-3'>
 						<div className='rounded-full bg-amber-500/10 p-2'>
 							<Calendar className='h-5 w-5 text-amber-500' />
@@ -125,7 +129,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
 							<p className='text-sm text-muted-foreground'>Periode</p>
 						</div>
 					</div>
-				</div>
+				</Link>
 			</div>
 
 			{/* Public Link */}
