@@ -23,9 +23,9 @@ export const authOptions: NextAuthOptions = {
 	],
 	callbacks: {
 		async signIn({ user, account, profile }) {
-			// Check if user email is pre-approved in the database
-			if (!user.email) {
-				console.error('Sign in attempt with no email')
+			// Check if user email is pre-approved in the coordinators table
+			if (!user.email || !account) {
+				console.error('Sign in attempt with no email or account')
 				return false
 			}
 
@@ -35,12 +35,43 @@ export const authOptions: NextAuthOptions = {
 				},
 			})
 
-			// Only allow sign in if user already exists in database
+			// Only allow sign in if email exists in coordinators table
 			if (!existingUser) {
 				console.log(`Sign in rejected for unauthorized email: ${user.email}`)
 				return false
 			}
 
+			// Manually create Account record if it doesn't exist
+			// This prevents the OAuthAccountNotLinked error
+			const existingAccount = await prisma.account.findUnique({
+				where: {
+					provider_providerAccountId: {
+						provider: account.provider,
+						providerAccountId: account.providerAccountId,
+					},
+				},
+			})
+
+			if (!existingAccount) {
+				await prisma.account.create({
+					data: {
+						userId: existingUser.id,
+						type: account.type,
+						provider: account.provider,
+						providerAccountId: account.providerAccountId,
+						refresh_token: account.refresh_token,
+						access_token: account.access_token,
+						expires_at: account.expires_at,
+						token_type: account.token_type,
+						scope: account.scope,
+						id_token: account.id_token,
+						session_state: account.session_state,
+					},
+				})
+				console.log(`Created Account record for coordinator: ${user.email}`)
+			}
+
+			console.log(`Sign in allowed for coordinator: ${user.email}`)
 			return true
 		},
 		async session({ token, session }) {
