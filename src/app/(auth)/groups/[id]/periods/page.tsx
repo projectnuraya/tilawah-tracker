@@ -1,6 +1,6 @@
 import { authOptions } from '@/components/lib/auth'
 import { prisma } from '@/components/lib/db'
-import { ArrowLeft, Calendar, Users } from 'lucide-react'
+import { ArrowLeft, Calendar, Plus, Users } from 'lucide-react'
 import { getServerSession } from 'next-auth'
 import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
@@ -91,6 +91,12 @@ export default async function PeriodsListPage({ params }: PageProps) {
 					<h1 className='text-2xl font-semibold'>Periode</h1>
 					<p className='text-muted-foreground text-sm mt-1'>{group.periods.length} total periode</p>
 				</div>
+				<Link
+					href={`/groups/${group.id}/periods/new`}
+					className='inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-white font-medium shadow-sm transition hover:bg-primary/90'>
+					<Plus className='h-4 w-4' />
+					Periode Baru
+				</Link>
 			</div>
 
 			{/* Active Period */}
