@@ -125,6 +125,7 @@ export default async function PeriodDetailPage({ params }: PageProps) {
 					participantPeriods: period.participantPeriods.map((pp) => ({
 						...pp,
 						progressStatus: pp.progressStatus as 'finished' | 'not_finished' | 'missed',
+						missedStreak: pp.missedStreak,
 					})),
 				}}
 				isActive={isActive}
