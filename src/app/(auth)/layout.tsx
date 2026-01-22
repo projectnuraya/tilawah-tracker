@@ -1,8 +1,8 @@
 'use client'
 
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import Header from '@/components/ui/header'
 import { signOut, useSession } from 'next-auth/react'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
@@ -39,19 +39,17 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 		<>
 			<div className='min-h-screen bg-background'>
 				{/* Header */}
-				<header className='sticky top-0 z-50 w-full border-b border-border bg-surface/95 backdrop-blur supports-backdrop-filter:bg-surface/60'>
-					<div className='container mx-auto flex h-14 max-w-3xl items-center justify-between px-4'>
-						<Link href='/dashboard' className='font-semibold text-lg text-primary'>
-							📖 Tilawah Tracker
-						</Link>
+				<Header
+					titleHref='/dashboard'
+					rightContent={
 						<nav className='flex items-center gap-4'>
 							<span className='text-sm text-muted-foreground hidden sm:inline'>{session.user?.name}</span>
 							<button onClick={() => setShowLogoutModal(true)} className='text-sm text-destructive hover:underline'>
 								Logout
 							</button>
 						</nav>
-					</div>
-				</header>
+					}
+				/>
 
 				{/* Main Content */}
 				<main className='container mx-auto max-w-3xl px-4 py-6'>{children}</main>
