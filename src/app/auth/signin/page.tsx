@@ -1,17 +1,22 @@
 'use client'
 
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { signIn } from 'next-auth/react'
 import { useSearchParams } from 'next/navigation'
-import { Suspense, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
+import { toast } from 'sonner'
 
 function SignInContent() {
 	const [isLoading, setIsLoading] = useState(false)
 	const searchParams = useSearchParams()
 	const error = searchParams.get('error')
 
-	// Only show modal when error is present and user hasn't closed it yet
-	const shouldShowError = error === 'AccessDenied'
+	useEffect(() => {
+		if (error === 'AccessDenied') {
+			toast.error('Akun ini belum terdaftar. Silakan hubungi admin grup Anda untuk mendapatkan akses.', {
+				className: 'bg-[#dc2626] text-white border-[#dc2626]',
+			})
+		}
+	}, [error])
 
 	const handleGoogleSignIn = async () => {
 		setIsLoading(true)
@@ -45,34 +50,14 @@ function SignInContent() {
 						)}
 					</button>
 
-					<p className='mt-4 text-xs text-center text-muted-foreground'>Hanya koordinator yang terdaftar yang dapat masuk.</p>
+					<p className='mt-4 text-xs text-center text-muted-foreground'>
+						Hanya koordinator yang terdaftar yang dapat masuk.
+					</p>
 				</div>
 
 				{/* Footer */}
 				<p className='text-center text-sm text-muted-foreground'>Butuh akses? Hubungi admin grup Anda.</p>
 			</div>
-
-			{/* Access Denied Modal */}
-			<Dialog open={shouldShowError} onOpenChange={() => {}}>
-				<DialogContent className='sm:max-w-md'>
-					<DialogHeader>
-						<DialogTitle className='flex items-center gap-2'>
-							<span className='text-2xl'>⚠️</span>
-							<span>Akses Ditolak</span>
-						</DialogTitle>
-						<DialogDescription className='pt-2'>
-							Email Anda belum terdaftar sebagai koordinator. Silakan hubungi admin grup untuk mendapatkan akses ke aplikasi ini.
-						</DialogDescription>
-					</DialogHeader>
-					<DialogFooter>
-						<button
-							onClick={() => (window.location.href = '/auth/signin')}
-							className='w-full px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition'>
-							Mengerti
-						</button>
-					</DialogFooter>
-				</DialogContent>
-			</Dialog>
 		</div>
 	)
 }
@@ -84,8 +69,7 @@ export default function SignInPage() {
 				<div className='min-h-screen flex items-center justify-center bg-background'>
 					<div className='text-muted-foreground'>Memuat...</div>
 				</div>
-			}
-		>
+			}>
 			<SignInContent />
 		</Suspense>
 	)
