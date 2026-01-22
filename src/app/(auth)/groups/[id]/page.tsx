@@ -1,4 +1,5 @@
 import { CopyTokenButton } from '@/components/groups/copy-token-button'
+import { ParticipantsPreview } from '@/components/groups/participants-preview'
 import { authOptions } from '@/components/lib/auth'
 import { prisma } from '@/components/lib/db'
 import { ArrowLeft, Calendar, ExternalLink, Plus, Settings, Users } from 'lucide-react'
@@ -196,29 +197,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
 						Kelola
 					</Link>
 				</div>
-				{group.participants.length === 0 ? (
-					<div className='text-center py-4'>
-						<p className='text-sm text-muted-foreground mb-3'>Belum ada peserta.</p>
-						<Link
-							href={`/groups/${group.id}/participants/new`}
-							className='inline-flex items-center gap-1 text-sm text-primary hover:underline'>
-							<Plus className='h-4 w-4' />
-							Tambah Peserta
-						</Link>
-					</div>
-				) : (
-					<div className='space-y-2'>
-						{group.participants.slice(0, 5).map((p) => (
-							<div key={p.id} className='flex items-center justify-between py-1'>
-								<span className='text-sm'>{p.name}</span>
-								{p.whatsappNumber && <span className='text-xs text-muted-foreground'>📱</span>}
-							</div>
-						))}
-						{group.participants.length > 5 && (
-							<p className='text-sm text-muted-foreground'>+{group.participants.length - 5} lainnya</p>
-						)}
-					</div>
-				)}
+				<ParticipantsPreview participants={group.participants} groupId={group.id} />
 			</div>
 
 			{/* Recent Periods */}
