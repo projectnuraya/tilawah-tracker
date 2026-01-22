@@ -11,9 +11,9 @@ const inter = Inter({
 
 export const metadata: Metadata = {
 	title: 'Tilawah Tracker',
-	description: 'Track group tilawah progress for One Week One Juz programs',
+	description: 'Lacak kemajuan tilawah kelompok untuk program Satu Minggu Satu Juz',
 	icons: {
-		icon: '/favicon.ico',
+		icon: '/favicon.png',
 	},
 }
 
@@ -23,7 +23,7 @@ export default function RootLayout({
 	children: React.ReactNode
 }>) {
 	return (
-		<html lang='en'>
+		<html lang='id'>
 			<body className={`${inter.variable} font-sans antialiased bg-background text-foreground`}>
 				<Providers>{children}</Providers>
 			</body>

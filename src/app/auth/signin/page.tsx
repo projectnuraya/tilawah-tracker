@@ -1,6 +1,7 @@
 'use client'
 
 import { signIn } from 'next-auth/react'
+import Image from 'next/image'
 import { useSearchParams } from 'next/navigation'
 import { Suspense, useEffect, useState } from 'react'
 import { toast } from 'sonner'
@@ -28,7 +29,10 @@ function SignInContent() {
 			<div className='w-full max-w-sm space-y-8'>
 				{/* Logo & Title */}
 				<div className='text-center'>
-					<h1 className='text-3xl font-semibold text-foreground'>📖 Tilawah Tracker</h1>
+					<h1 className='text-3xl font-semibold text-foreground flex items-center justify-center gap-2'>
+						<Image src='/favicon.png' alt='Tilawah Tracker Logo' width={32} height={32} />
+						Tilawah Tracker
+					</h1>
 					<p className='mt-2 text-muted-foreground'>Pantau progress tilawah Al-Qur&apos;an bersama</p>
 				</div>
 
