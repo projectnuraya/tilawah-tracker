@@ -294,7 +294,23 @@ Get period details with participant progress.
     "status": "active",
     "isArchived": false,
     "lockedAt": null,
-    "participantPeriods": [...],
+    "participantPeriods": [
+      {
+        "id": "string",
+        "participantId": "string",
+        "periodId": "string",
+        "juzNumber": 5,
+        "progressStatus": "finished",
+        "missedStreak": 0,
+        "updatedAt": "2024-01-01T00:00:00.000Z",
+        "participant": {
+          "id": "string",
+          "name": "string",
+          "whatsappNumber": "+1234567890",
+          "isActive": true
+        }
+      }
+    ],
     "byJuz": { ... },
     "stats": {
       "total": 5,
