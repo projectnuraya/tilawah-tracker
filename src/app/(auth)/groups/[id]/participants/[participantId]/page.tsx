@@ -98,8 +98,15 @@ export default async function ParticipantDetailPage({ params }: PageProps) {
 					)}
 				</div>
 
+				{/* Edit Form */}
+				<div className='rounded-xl border border-border bg-card p-4 mb-6'>
+					<h2 className='font-medium mb-4'>Edit Detail</h2>
+					<EditParticipantForm participant={participant} />
+				</div>
+
 				{/* WhatsApp Reminder */}
-				{participant.isActive && whatsappLink && (
+				{/* Disable for now */}
+				{/* {participant.isActive && whatsappLink && (
 					<div className='rounded-xl border border-border bg-card p-4 mb-6'>
 						<h2 className='font-medium mb-2'>Aksi Cepat</h2>
 						<a
@@ -111,13 +118,7 @@ export default async function ParticipantDetailPage({ params }: PageProps) {
 							Ingatkan via WhatsApp
 						</a>
 					</div>
-				)}
-
-				{/* Edit Form */}
-				<div className='rounded-xl border border-border bg-card p-4 mb-6'>
-					<h2 className='font-medium mb-4'>Edit Detail</h2>
-					<EditParticipantForm participant={participant} />
-				</div>
+				)} */}
 
 				{/* Recent History */}
 				{participant.participantPeriods.length > 0 && (
