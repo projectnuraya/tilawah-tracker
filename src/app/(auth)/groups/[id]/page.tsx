@@ -2,6 +2,7 @@ import { CopyTokenButton } from '@/components/groups/copy-token-button'
 import { ParticipantsPreview } from '@/components/groups/participants-preview'
 import { authOptions } from '@/components/lib/auth'
 import { prisma } from '@/components/lib/db'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { ArrowLeft, Calendar, ExternalLink, Plus, Settings, Users } from 'lucide-react'
 import { getServerSession } from 'next-auth'
 import Link from 'next/link'
@@ -191,6 +192,23 @@ export default async function GroupDetailPage({ params }: PageProps) {
 							: 'Tidak ada periode aktif. Mulai yang baru untuk melacak progress.'}
 					</p>
 				)}
+			</div>
+
+			{/* Mudabbir */}
+			<div className='rounded-xl border border-border bg-card p-4 mb-6'>
+				<h2 className='font-medium mb-2'>Mudabbir</h2>
+				<p className='text-xs text-muted-foreground mb-3'>Koordinator yang mengelola kelompok ini.</p>
+				<div className='flex gap-3 overflow-x-auto'>
+					{group.coordinatorGroups.map((cg) => (
+						<div key={cg.coordinator.id} className='flex flex-col items-center gap-1 shrink-0'>
+							<Avatar className='h-10 w-10'>
+								<AvatarImage src={cg.coordinator.image || undefined} alt={cg.coordinator.name || 'Coordinator'} />
+								<AvatarFallback>{cg.coordinator.name?.charAt(0) || 'U'}</AvatarFallback>
+							</Avatar>
+							<span className='text-xs text-center'>{cg.coordinator.name || 'Unknown'}</span>
+						</div>
+					))}
+				</div>
 			</div>
 
 			{/* Participants Quick View */}
