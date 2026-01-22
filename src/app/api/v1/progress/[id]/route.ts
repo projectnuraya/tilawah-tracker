@@ -1,12 +1,13 @@
-import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/components/lib/db";
 import {
+	apiError,
+	apiSuccess,
+	NotFoundError,
 	requireAuth,
 	requireGroupAccess,
-	apiSuccess,
-	apiError,
-	NotFoundError,
+	ValidationError,
 } from "@/components/lib/auth-utils";
+import { prisma } from "@/components/lib/db";
+import { NextRequest } from "next/server";
 
 // PATCH /api/v1/progress/[id] - Update progress status
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -20,10 +21,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 		// Validate status
 		const validStatuses = ["not_finished", "finished", "missed"];
 		if (!status || !validStatuses.includes(status)) {
-			return NextResponse.json(
-				{ success: false, error: { code: "BAD_REQUEST", message: "Invalid status. Must be: not_finished, finished, or missed" } },
-				{ status: 400 }
-			);
+			throw new ValidationError("Invalid status. Must be: not_finished, finished, or missed");
 		}
 
 		// Get the participant period with its relations
@@ -47,10 +45,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 
 		// Check if period is locked
 		if (participantPeriod.period.status === "locked") {
-			return NextResponse.json(
-				{ success: false, error: { code: "BAD_REQUEST", message: "Cannot update progress for a locked period" } },
-				{ status: 400 }
-			);
+			throw new ValidationError("Cannot update progress for a locked period");
 		}
 
 		// Update the status and reset streak if finished

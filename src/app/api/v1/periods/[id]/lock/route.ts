@@ -1,4 +1,4 @@
-import { apiError, apiSuccess, ForbiddenError, NotFoundError, requireAuth } from '@/components/lib/auth-utils'
+import { apiError, apiSuccess, ForbiddenError, NotFoundError, requireAuth, ValidationError } from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
 import { NextRequest } from 'next/server'
 
@@ -39,10 +39,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
 		// Check if already locked
 		if (period.status === 'locked') {
-			return apiError({
-				name: 'ValidationError',
-				message: 'This period is already locked',
-			})
+			throw new ValidationError('This period is already locked')
 		}
 
 		// Lock period and update all "not_finished" to "missed" in transaction

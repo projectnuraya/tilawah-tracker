@@ -1,4 +1,4 @@
-import { apiError, apiSuccess, ForbiddenError, NotFoundError, requireAuth } from '@/components/lib/auth-utils'
+import { apiError, apiSuccess, ForbiddenError, NotFoundError, requireAuth, ValidationError } from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
 import { NextRequest } from 'next/server'
 
@@ -82,16 +82,10 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 		// Validate and set name if provided
 		if (name !== undefined) {
 			if (typeof name !== 'string' || name.trim().length === 0) {
-				return apiError({
-					name: 'ValidationError',
-					message: 'Participant name cannot be empty',
-				})
+				throw new ValidationError('Participant name cannot be empty')
 			}
 			if (name.trim().length > 255) {
-				return apiError({
-					name: 'ValidationError',
-					message: 'Name must be less than 255 characters',
-				})
+				throw new ValidationError('Name must be less than 255 characters')
 			}
 			updateData.name = name.trim()
 		}
@@ -106,10 +100,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 					cleaned = '+' + cleaned
 				}
 				if (cleaned.length > 20) {
-					return apiError({
-						name: 'ValidationError',
-						message: 'WhatsApp number is too long',
-					})
+					throw new ValidationError('WhatsApp number is too long')
 				}
 				updateData.whatsappNumber = cleaned || null
 			}
@@ -118,10 +109,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 		// Set isActive if provided
 		if (isActive !== undefined) {
 			if (typeof isActive !== 'boolean') {
-				return apiError({
-					name: 'ValidationError',
-					message: 'isActive must be a boolean',
-				})
+				throw new ValidationError('isActive must be a boolean')
 			}
 			updateData.isActive = isActive
 		}

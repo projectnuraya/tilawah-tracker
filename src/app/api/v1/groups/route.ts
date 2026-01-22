@@ -1,4 +1,4 @@
-import { apiError, apiSuccess, requireAuth } from '@/components/lib/auth-utils'
+import { apiError, apiSuccess, requireAuth, ValidationError } from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
 import { generatePublicToken } from '@/components/lib/tokens'
 import { NextRequest } from 'next/server'
@@ -67,17 +67,11 @@ export async function POST(request: NextRequest) {
 		const { name } = body
 
 		if (!name || typeof name !== 'string' || name.trim().length === 0) {
-			return apiError({
-				name: 'ValidationError',
-				message: 'Group name is required',
-			})
+			throw new ValidationError('Group name is required')
 		}
 
 		if (name.trim().length > 255) {
-			return apiError({
-				name: 'ValidationError',
-				message: 'Group name must be less than 255 characters',
-			})
+			throw new ValidationError('Group name must be less than 255 characters')
 		}
 
 		// Generate unique public token

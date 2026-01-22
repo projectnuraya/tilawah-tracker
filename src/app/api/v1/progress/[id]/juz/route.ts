@@ -1,4 +1,4 @@
-import { apiError, apiSuccess, NotFoundError, requireAuth, requireGroupAccess } from '@/components/lib/auth-utils'
+import { apiError, apiSuccess, NotFoundError, requireAuth, requireGroupAccess, ValidationError } from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -13,10 +13,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 
 		// Validate juzNumber
 		if (!juzNumber || typeof juzNumber !== 'number' || juzNumber < 1 || juzNumber > 30) {
-			return NextResponse.json(
-				{ success: false, error: { code: 'BAD_REQUEST', message: 'Invalid juz number. Must be between 1 and 30' } },
-				{ status: 400 },
-			)
+			throw new ValidationError('Invalid juz number. Must be between 1 and 30')
 		}
 
 		// Get the participant period with its relations
@@ -40,10 +37,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 
 		// Check if period is locked
 		if (participantPeriod.period.status === 'locked') {
-			return NextResponse.json(
-				{ success: false, error: { code: 'BAD_REQUEST', message: 'Cannot update juz for a locked period' } },
-				{ status: 400 },
-			)
+			throw new ValidationError('Cannot update juz for a locked period')
 		}
 
 		// Update the juz assignment

@@ -24,6 +24,13 @@ export class NotFoundError extends Error {
 	}
 }
 
+export class ValidationError extends Error {
+	constructor(message: string) {
+		super(message)
+		this.name = 'ValidationError'
+	}
+}
+
 /**
  * Get authenticated session or throw UnauthorizedError
  */
@@ -69,6 +76,10 @@ export function apiError(error: unknown) {
 
 	if (error instanceof NotFoundError) {
 		return NextResponse.json({ success: false, error: { code: 'NOT_FOUND', message: error.message } }, { status: 404 })
+	}
+
+	if (error instanceof ValidationError) {
+		return NextResponse.json({ success: false, error: { code: 'VALIDATION_ERROR', message: error.message } }, { status: 400 })
 	}
 
 	console.error('API Error:', error)

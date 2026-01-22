@@ -1,4 +1,4 @@
-import { apiError, apiSuccess, NotFoundError, requireAuth, requireGroupAccess } from '@/components/lib/auth-utils'
+import { apiError, apiSuccess, NotFoundError, requireAuth, requireGroupAccess, ValidationError } from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
 import { NextRequest } from 'next/server'
 
@@ -50,17 +50,11 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
 		// Validate name
 		if (!name || typeof name !== 'string' || name.trim().length === 0) {
-			return apiError({
-				name: 'ValidationError',
-				message: 'Participant name is required',
-			})
+			throw new ValidationError('Participant name is required')
 		}
 
 		if (name.trim().length > 255) {
-			return apiError({
-				name: 'ValidationError',
-				message: 'Name must be less than 255 characters',
-			})
+			throw new ValidationError('Name must be less than 255 characters')
 		}
 
 		// Validate WhatsApp number if provided
@@ -72,10 +66,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 				cleanedWhatsapp = '+' + cleanedWhatsapp
 			}
 			if (cleanedWhatsapp.length > 20) {
-				return apiError({
-					name: 'ValidationError',
-					message: 'WhatsApp number is too long',
-				})
+				throw new ValidationError('WhatsApp number is too long')
 			}
 		}
 

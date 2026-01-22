@@ -1,4 +1,4 @@
-import { apiError, apiSuccess, NotFoundError, requireAuth, requireGroupAccess } from '@/components/lib/auth-utils'
+import { apiError, apiSuccess, NotFoundError, requireAuth, requireGroupAccess, ValidationError } from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
 import { NextRequest } from 'next/server'
 
@@ -82,17 +82,11 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 		const { name } = body
 
 		if (!name || typeof name !== 'string' || name.trim().length === 0) {
-			return apiError({
-				name: 'ValidationError',
-				message: 'Group name is required',
-			})
+			throw new ValidationError('Group name is required')
 		}
 
 		if (name.trim().length > 255) {
-			return apiError({
-				name: 'ValidationError',
-				message: 'Group name must be less than 255 characters',
-			})
+			throw new ValidationError('Group name must be less than 255 characters')
 		}
 
 		const group = await prisma.group.update({

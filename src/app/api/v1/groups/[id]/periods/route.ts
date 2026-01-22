@@ -1,4 +1,4 @@
-import { apiError, apiSuccess, NotFoundError, requireAuth, requireGroupAccess } from '@/components/lib/auth-utils'
+import { apiError, apiSuccess, NotFoundError, requireAuth, requireGroupAccess, ValidationError } from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
 import { NextRequest } from 'next/server'
 
@@ -84,18 +84,12 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
 		// Validate start date
 		if (!startDate) {
-			return apiError({
-				name: 'ValidationError',
-				message: 'Start date is required',
-			})
+			throw new ValidationError('Start date is required')
 		}
 
 		const start = new Date(startDate)
 		if (isNaN(start.getTime())) {
-			return apiError({
-				name: 'ValidationError',
-				message: 'Invalid start date',
-			})
+			throw new ValidationError('Invalid start date')
 		}
 
 		// Check if start date is Sunday (0 = Sunday in JS)

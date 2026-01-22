@@ -1,4 +1,4 @@
-import { apiError, apiSuccess, requireAuth, requireGroupAccess } from '@/components/lib/auth-utils'
+import { apiError, apiSuccess, requireAuth, requireGroupAccess, ValidationError } from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
 import { NextRequest } from 'next/server'
 
@@ -22,19 +22,13 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
 		// Validate input
 		if (!Array.isArray(participants) || participants.length === 0) {
-			return apiError({
-				name: 'ValidationError',
-				message: 'Participants array is required and must not be empty',
-			})
+			throw new ValidationError('Participants array is required and must not be empty')
 		}
 
 		// Validate each participant
 		for (const participant of participants) {
 			if (!participant.name || !participant.name.trim()) {
-				return apiError({
-					name: 'ValidationError',
-					message: 'All participants must have a name',
-				})
+				throw new ValidationError('All participants must have a name')
 			}
 		}
 
