@@ -1,4 +1,5 @@
 import { authOptions } from '@/components/lib/auth'
+import { logger } from '@/components/lib/logger'
 import { prisma } from '@/components/lib/db'
 import { getServerSession } from 'next-auth'
 import { NextResponse } from 'next/server'
@@ -82,7 +83,7 @@ export function apiError(error: unknown) {
 		return NextResponse.json({ success: false, error: { code: 'VALIDATION_ERROR', message: error.message } }, { status: 400 })
 	}
 
-	console.error('API Error:', error)
+	logger.error({ error }, 'API Error')
 	return NextResponse.json({ success: false, error: { code: 'INTERNAL_ERROR', message: 'An unexpected error occurred' } }, { status: 500 })
 }
 

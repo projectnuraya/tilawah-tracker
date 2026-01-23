@@ -1,4 +1,5 @@
 import { prisma } from '@/components/lib/db'
+import { logger } from '@/components/lib/logger'
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import { NextAuthOptions } from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
@@ -25,7 +26,7 @@ export const authOptions: NextAuthOptions = {
 		async signIn({ user, account, profile }) {
 			// Check if user email is pre-approved in the coordinators table
 			if (!user.email || !account) {
-				console.error('Sign in attempt with no email or account')
+				logger.error('Sign in attempt with no email or account')
 				return false
 			}
 
@@ -37,7 +38,7 @@ export const authOptions: NextAuthOptions = {
 
 			// Only allow sign in if email exists in coordinators table
 			if (!existingUser) {
-				console.log(`Sign in rejected for unauthorized email: ${user.email}`)
+				logger.warn('Sign in rejected for unauthorized coordinator')
 				return false
 			}
 
@@ -68,10 +69,10 @@ export const authOptions: NextAuthOptions = {
 						session_state: account.session_state,
 					},
 				})
-				console.log(`Created Account record for coordinator: ${user.email}`)
+				logger.info('Created Account record for coordinator')
 			}
 
-			console.log(`Sign in allowed for coordinator: ${user.email}`)
+			logger.info('Sign in allowed for coordinator')
 			return true
 		},
 		async session({ token, session }) {
