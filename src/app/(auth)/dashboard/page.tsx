@@ -91,7 +91,7 @@ export default async function DashboardPage() {
 							key={group.id}
 							href={`/groups/${group.id}`}
 							className='block rounded-xl border border-border bg-card p-4 shadow-sm transition hover:border-primary/50 hover:shadow-md'>
-							<div className='flex items-start justify-between gap-4'>
+							<div className='flex flex-col md:flex-row md:items-start md:justify-between gap-4'>
 								<div className='flex-1 min-w-0'>
 									<h3 className='font-semibold text-lg truncate'>{group.name}</h3>
 									<div className='flex flex-wrap items-center gap-4 mt-2 text-sm text-muted-foreground'>
@@ -105,7 +105,7 @@ export default async function DashboardPage() {
 										</span>
 									</div>
 								</div>
-								<div className='flex flex-col items-end gap-2'>
+								<div className='flex items-center justify-between md:flex-col md:items-end gap-2'>
 									{group.hasActivePeriod ? (
 										<span className='inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary'>
 											Aktif
