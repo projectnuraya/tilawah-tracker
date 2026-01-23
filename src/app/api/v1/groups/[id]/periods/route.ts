@@ -1,5 +1,6 @@
 import { apiError, apiSuccess, NotFoundError, requireAuth, requireGroupAccess, ValidationError } from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
+import { createPeriodSchema, listPeriodsSchema, validateInput } from '@/components/lib/validators'
 import { NextRequest } from 'next/server'
 
 interface RouteParams {
@@ -18,8 +19,16 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 		await requireGroupAccess(session.user.id, groupId)
 
 		const url = new URL(request.url)
-		const limit = parseInt(url.searchParams.get('limit') || '20')
-		const includeArchived = url.searchParams.get('includeArchived') === 'true'
+		const queryValidation = validateInput(listPeriodsSchema, {
+			limit: url.searchParams.get('limit'),
+			includeArchived: url.searchParams.get('includeArchived'),
+		})
+
+		if (!queryValidation.success) {
+			throw new ValidationError(queryValidation.error.message)
+		}
+
+		const { limit, includeArchived } = queryValidation.data
 
 		const periods = await prisma.period.findMany({
 			where: {
@@ -80,25 +89,13 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 		await requireGroupAccess(session.user.id, groupId)
 
 		const body = await request.json()
-		const { startDate } = body
+		const validation = validateInput(createPeriodSchema, body)
 
-		// Validate start date
-		if (!startDate) {
-			throw new ValidationError('Start date is required')
+		if (!validation.success) {
+			throw new ValidationError(validation.error.message)
 		}
 
-		const start = new Date(startDate)
-		if (isNaN(start.getTime())) {
-			throw new ValidationError('Invalid start date')
-		}
-
-		// Check if start date is Sunday (0 = Sunday in JS)
-		if (start.getDay() !== 0) {
-			return apiError({
-				name: 'ValidationError',
-				message: 'Period must start on a Sunday',
-			})
-		}
+		const { startDate } = validation.data
 
 		// Check if group exists
 		const group = await prisma.group.findUnique({
@@ -135,6 +132,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 		}
 
 		// Calculate end date (start + 6 days = 7 days total)
+		const start = new Date(startDate)
 		const end = new Date(start)
 		end.setDate(end.getDate() + 6)
 

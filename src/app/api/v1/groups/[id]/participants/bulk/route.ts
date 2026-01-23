@@ -1,5 +1,6 @@
 import { apiError, apiSuccess, requireAuth, requireGroupAccess, ValidationError } from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
+import { createParticipantBulkSchema, validateInput } from '@/components/lib/validators'
 import { NextRequest } from 'next/server'
 
 interface RouteParams {
@@ -18,19 +19,13 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 		await requireGroupAccess(session.user.id, groupId)
 
 		const body = await request.json()
-		const { participants } = body
+		const validation = validateInput(createParticipantBulkSchema, body)
 
-		// Validate input
-		if (!Array.isArray(participants) || participants.length === 0) {
-			throw new ValidationError('Participants array is required and must not be empty')
+		if (!validation.success) {
+			throw new ValidationError(validation.error.message)
 		}
 
-		// Validate each participant
-		for (const participant of participants) {
-			if (!participant.name || !participant.name.trim()) {
-				throw new ValidationError('All participants must have a name')
-			}
-		}
+		const { participants } = validation.data
 
 		// Get active period if exists
 		const activePeriod = await prisma.period.findFirst({

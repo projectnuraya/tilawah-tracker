@@ -1,5 +1,6 @@
 import { apiError, apiSuccess, NotFoundError, requireAuth, requireGroupAccess, ValidationError } from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
+import { createParticipantSchema, listParticipantsSchema, validateInput } from '@/components/lib/validators'
 import { NextRequest } from 'next/server'
 
 interface RouteParams {
@@ -18,7 +19,15 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 		await requireGroupAccess(session.user.id, groupId)
 
 		const url = new URL(request.url)
-		const includeInactive = url.searchParams.get('includeInactive') === 'true'
+		const queryValidation = validateInput(listParticipantsSchema, {
+			includeInactive: url.searchParams.get('includeInactive'),
+		})
+
+		if (!queryValidation.success) {
+			throw new ValidationError(queryValidation.error.message)
+		}
+
+		const { includeInactive } = queryValidation.data
 
 		const participants = await prisma.participant.findMany({
 			where: {
@@ -46,27 +55,21 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 		await requireGroupAccess(session.user.id, groupId)
 
 		const body = await request.json()
-		const { name, whatsappNumber } = body
+		const validation = validateInput(createParticipantSchema, body)
 
-		// Validate name
-		if (!name || typeof name !== 'string' || name.trim().length === 0) {
-			throw new ValidationError('Participant name is required')
+		if (!validation.success) {
+			throw new ValidationError(validation.error.message)
 		}
 
-		if (name.trim().length > 255) {
-			throw new ValidationError('Name must be less than 255 characters')
-		}
+		const { name, whatsappNumber } = validation.data
 
 		// Validate WhatsApp number if provided
 		let cleanedWhatsapp: string | null = null
-		if (whatsappNumber && typeof whatsappNumber === 'string' && whatsappNumber.trim().length > 0) {
+		if (whatsappNumber && whatsappNumber.trim().length > 0) {
 			// Basic validation: remove non-numeric except + at start
 			cleanedWhatsapp = whatsappNumber.trim().replace(/[^\d+]/g, '')
 			if (cleanedWhatsapp.length > 0 && !cleanedWhatsapp.startsWith('+')) {
 				cleanedWhatsapp = '+' + cleanedWhatsapp
-			}
-			if (cleanedWhatsapp.length > 20) {
-				throw new ValidationError('WhatsApp number is too long')
 			}
 		}
 

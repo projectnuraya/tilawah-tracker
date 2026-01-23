@@ -1,5 +1,5 @@
 import { apiError, apiSuccess } from '@/components/lib/auth-utils'
-import { getPublicGroupWithActivePeriod, getPublicGroupPeriods } from '@/components/lib/public-utils'
+import { getPublicGroupPeriods, getPublicGroupWithActivePeriod } from '@/components/lib/public-utils'
 import { NextRequest } from 'next/server'
 
 interface RouteParams {

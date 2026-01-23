@@ -5,24 +5,24 @@ import {
 	requireAuth,
 	requireGroupAccess,
 	ValidationError,
-} from "@/components/lib/auth-utils";
-import { prisma } from "@/components/lib/db";
-import { NextRequest } from "next/server";
+} from '@/components/lib/auth-utils'
+import { prisma } from '@/components/lib/db'
+import { updateProgressSchema, validateInput } from '@/components/lib/validators'
+import { NextRequest } from 'next/server'
 
-// PATCH /api/v1/progress/[id] - Update progress status
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
 	try {
-		const session = await requireAuth();
-		const { id } = await params;
+		const session = await requireAuth()
+		const { id } = await params
 
-		const body = await request.json();
-		const { status } = body;
+		const body = await request.json()
+		const validation = validateInput(updateProgressSchema, body)
 
-		// Validate status
-		const validStatuses = ["not_finished", "finished", "missed"];
-		if (!status || !validStatuses.includes(status)) {
-			throw new ValidationError("Invalid status. Must be: not_finished, finished, or missed");
+		if (!validation.success) {
+			throw new ValidationError(validation.error.message)
 		}
+
+		const { status } = validation.data
 
 		// Get the participant period with its relations
 		const participantPeriod = await prisma.participantPeriod.findUnique({
@@ -34,18 +34,18 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 					},
 				},
 			},
-		});
+		})
 
 		if (!participantPeriod) {
-			throw new NotFoundError("Participant period not found");
+			throw new NotFoundError('Participant period not found')
 		}
 
 		// Check ownership via CoordinatorGroup
-		await requireGroupAccess(session.user.id, participantPeriod.period.groupId);
+		await requireGroupAccess(session.user.id, participantPeriod.period.groupId)
 
 		// Check if period is locked
-		if (participantPeriod.period.status === "locked") {
-			throw new ValidationError("Cannot update progress for a locked period");
+		if (participantPeriod.period.status === 'locked') {
+			throw new ValidationError('Cannot update progress for a locked period')
 		}
 
 		// Update the status and reset streak if finished
@@ -56,10 +56,10 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 				// Reset missed streak when marked as finished
 				...(status === 'finished' && { missedStreak: 0 }),
 			},
-		});
+		})
 
-		return apiSuccess(updated);
+		return apiSuccess(updated)
 	} catch (error) {
-		return apiError(error);
+		return apiError(error)
 	}
 }

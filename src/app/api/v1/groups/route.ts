@@ -1,6 +1,7 @@
 import { apiError, apiSuccess, requireAuth, ValidationError } from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
 import { generatePublicToken } from '@/components/lib/tokens'
+import { createGroupSchema, validateInput } from '@/components/lib/validators'
 import { NextRequest } from 'next/server'
 
 /**
@@ -64,15 +65,13 @@ export async function POST(request: NextRequest) {
 		const session = await requireAuth()
 
 		const body = await request.json()
-		const { name } = body
+		const validation = validateInput(createGroupSchema, body)
 
-		if (!name || typeof name !== 'string' || name.trim().length === 0) {
-			throw new ValidationError('Group name is required')
+		if (!validation.success) {
+			throw new ValidationError(validation.error.message)
 		}
 
-		if (name.trim().length > 255) {
-			throw new ValidationError('Group name must be less than 255 characters')
-		}
+		const { name } = validation.data
 
 		// Generate unique public token
 		let publicToken = generatePublicToken()

@@ -43,9 +43,14 @@ export const updateParticipantSchema = z.object({
 	isActive: z.boolean().optional(),
 })
 
+export const listParticipantsSchema = z.object({
+	includeInactive: z.string().optional().transform((val) => val === 'true'),
+})
+
 export type CreateParticipantInput = z.infer<typeof createParticipantSchema>
 export type CreateParticipantBulkInput = z.infer<typeof createParticipantBulkSchema>
 export type UpdateParticipantInput = z.infer<typeof updateParticipantSchema>
+export type ListParticipantsInput = z.infer<typeof listParticipantsSchema>
 
 // ==================== Periods ====================
 
@@ -68,7 +73,16 @@ export const createPeriodSchema = z.object({
 		),
 })
 
+export const listPeriodsSchema = z.object({
+	limit: z.string().optional().transform((val) => {
+		const parsed = parseInt(val || '20')
+		return Math.min(Math.max(parsed, 1), 100) // Min 1, max 100
+	}),
+	includeArchived: z.string().optional().transform((val) => val === 'true'),
+})
+
 export type CreatePeriodInput = z.infer<typeof createPeriodSchema>
+export type ListPeriodsInput = z.infer<typeof listPeriodsSchema>
 
 // ==================== Progress ====================
 

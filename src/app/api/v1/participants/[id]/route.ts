@@ -1,5 +1,6 @@
 import { apiError, apiSuccess, ForbiddenError, NotFoundError, requireAuth, ValidationError } from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
+import { updateParticipantSchema, validateInput } from '@/components/lib/validators'
 import { NextRequest } from 'next/server'
 
 interface RouteParams {
@@ -71,7 +72,13 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 		await getParticipantWithAccess(session.user.id, id)
 
 		const body = await request.json()
-		const { name, whatsappNumber, isActive } = body
+		const validation = validateInput(updateParticipantSchema, body)
+
+		if (!validation.success) {
+			throw new ValidationError(validation.error.message)
+		}
+
+		const { name, whatsappNumber, isActive } = validation.data
 
 		const updateData: {
 			name?: string
@@ -79,28 +86,19 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 			isActive?: boolean
 		} = {}
 
-		// Validate and set name if provided
+		// Set name if provided
 		if (name !== undefined) {
-			if (typeof name !== 'string' || name.trim().length === 0) {
-				throw new ValidationError('Participant name cannot be empty')
-			}
-			if (name.trim().length > 255) {
-				throw new ValidationError('Name must be less than 255 characters')
-			}
 			updateData.name = name.trim()
 		}
 
-		// Validate and set WhatsApp number if provided
+		// Set WhatsApp number if provided
 		if (whatsappNumber !== undefined) {
 			if (whatsappNumber === null || whatsappNumber === '') {
 				updateData.whatsappNumber = null
-			} else if (typeof whatsappNumber === 'string') {
+			} else {
 				let cleaned = whatsappNumber.trim().replace(/[^\d+]/g, '')
 				if (cleaned.length > 0 && !cleaned.startsWith('+')) {
 					cleaned = '+' + cleaned
-				}
-				if (cleaned.length > 20) {
-					throw new ValidationError('WhatsApp number is too long')
 				}
 				updateData.whatsappNumber = cleaned || null
 			}
@@ -108,9 +106,6 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 
 		// Set isActive if provided
 		if (isActive !== undefined) {
-			if (typeof isActive !== 'boolean') {
-				throw new ValidationError('isActive must be a boolean')
-			}
 			updateData.isActive = isActive
 		}
 
