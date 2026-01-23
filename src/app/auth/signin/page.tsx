@@ -1,5 +1,6 @@
 'use client'
 
+import { isDemoMode } from '@/components/lib/demo-auth'
 import { signIn } from 'next-auth/react'
 import Image from 'next/image'
 import { useSearchParams } from 'next/navigation'
@@ -8,6 +9,8 @@ import { toast } from 'sonner'
 
 function SignInContent() {
 	const [isLoading, setIsLoading] = useState(false)
+	const [username, setUsername] = useState('')
+	const [password, setPassword] = useState('')
 	const searchParams = useSearchParams()
 	const error = searchParams.get('error')
 
@@ -24,6 +27,19 @@ function SignInContent() {
 		await signIn('google', { callbackUrl: '/dashboard' })
 	}
 
+	const handleDemoSignIn = async (e: React.FormEvent) => {
+		e.preventDefault()
+		setIsLoading(true)
+		await signIn('credentials', {
+			username,
+			password,
+			callbackUrl: '/dashboard',
+		})
+		setIsLoading(false)
+	}
+
+	const isDemoModeEnabled = isDemoMode()
+
 	return (
 		<div className='min-h-screen flex flex-col items-center justify-center bg-background px-4'>
 			<div className='w-full max-w-sm space-y-8'>
@@ -38,25 +54,69 @@ function SignInContent() {
 
 				{/* Sign-in Card */}
 				<div className='rounded-xl border border-border bg-card p-6 shadow-sm'>
-					<h2 className='text-lg font-medium text-center mb-6'>Masuk sebagai Koordinator</h2>
+					<h2 className='text-lg font-medium text-center mb-6'>
+						{isDemoModeEnabled ? 'Demo Mode' : 'Masuk sebagai Koordinator'}
+					</h2>
 
-					<button
-						onClick={handleGoogleSignIn}
-						disabled={isLoading}
-						className='w-full flex items-center justify-center gap-3 rounded-lg border border-border bg-white px-4 py-3 text-foreground font-medium shadow-sm transition hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'>
-						{isLoading ? (
-							<span>Sedang masuk...</span>
-						) : (
-							<>
-								<GoogleIcon />
-								<span>Masuk dengan Google</span>
-							</>
-						)}
-					</button>
+					{isDemoModeEnabled ? (
+						<form onSubmit={handleDemoSignIn} className='space-y-4'>
+							<div>
+								<label htmlFor='username' className='block text-sm font-medium text-foreground mb-1'>
+									Username
+								</label>
+								<input
+									id='username'
+									type='text'
+									value={username}
+									onChange={(e) => setUsername(e.target.value)}
+									className='w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2'
+									placeholder='Enter username'
+									required
+								/>
+							</div>
+							<div>
+								<label htmlFor='password' className='block text-sm font-medium text-foreground mb-1'>
+									Password
+								</label>
+								<input
+									id='password'
+									type='password'
+									value={password}
+									onChange={(e) => setPassword(e.target.value)}
+									className='w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2'
+									placeholder='Enter password'
+									required
+								/>
+							</div>
+							<button
+								type='submit'
+								disabled={isLoading}
+								className='w-full rounded-lg bg-primary px-4 py-3 text-primary-foreground font-medium shadow-sm transition hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'>
+								{isLoading ? 'Sedang masuk...' : 'Masuk ke Demo'}
+							</button>
+							<p className='mt-4 text-xs text-center text-muted-foreground'>Demo credentials: demo / demopass123</p>
+						</form>
+					) : (
+						<>
+							<button
+								onClick={handleGoogleSignIn}
+								disabled={isLoading}
+								className='w-full flex items-center justify-center gap-3 rounded-lg border border-border bg-white px-4 py-3 text-foreground font-medium shadow-sm transition hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'>
+								{isLoading ? (
+									<span>Sedang masuk...</span>
+								) : (
+									<>
+										<GoogleIcon />
+										<span>Masuk dengan Google</span>
+									</>
+								)}
+							</button>
 
-					<p className='mt-4 text-xs text-center text-muted-foreground'>
-						Hanya koordinator yang terdaftar yang dapat masuk.
-					</p>
+							<p className='mt-4 text-xs text-center text-muted-foreground'>
+								Hanya koordinator yang terdaftar yang dapat masuk.
+							</p>
+						</>
+					)}
 				</div>
 
 				{/* Footer */}

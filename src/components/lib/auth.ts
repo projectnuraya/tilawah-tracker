@@ -1,7 +1,9 @@
 import { prisma } from '@/components/lib/db'
+import { handleDemoSignIn, isDemoMode } from '@/components/lib/demo-auth'
 import { logger } from '@/components/lib/logger'
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import { NextAuthOptions } from 'next-auth'
+import CredentialsProvider from 'next-auth/providers/credentials'
 import GoogleProvider from 'next-auth/providers/google'
 
 export const authOptions: NextAuthOptions = {
@@ -14,6 +16,28 @@ export const authOptions: NextAuthOptions = {
 		error: '/auth/signin',
 	},
 	providers: [
+		...(isDemoMode()
+			? [
+					CredentialsProvider({
+						name: 'Demo',
+						credentials: {
+							username: { label: 'Username', type: 'text' },
+							password: { label: 'Password', type: 'password' },
+						},
+						async authorize(credentials) {
+							if (credentials?.username === 'demo' && credentials?.password === 'demopass123') {
+								// Return a demo user object
+								return {
+									id: 'demo-user-id',
+									email: 'demo@example.com',
+									name: 'Demo Coordinator',
+								}
+							}
+							return null
+						},
+					}),
+				]
+			: []),
 		GoogleProvider({
 			clientId: process.env.GOOGLE_CLIENT_ID!,
 			clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
@@ -24,6 +48,11 @@ export const authOptions: NextAuthOptions = {
 	],
 	callbacks: {
 		async signIn({ user, account, profile }) {
+			// Handle demo mode sign in
+			if (isDemoMode() && user.email === 'demo@example.com') {
+				return await handleDemoSignIn(user.email)
+			}
+
 			// Verify user has email and OAuth account data
 			if (!user.email || !account) {
 				logger.error('Sign in attempt with no email or account')
