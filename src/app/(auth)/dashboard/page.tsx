@@ -1,6 +1,6 @@
 import { authOptions } from '@/components/lib/auth'
 import { prisma } from '@/components/lib/db'
-import { Calendar, ExternalLink, Plus, Users } from 'lucide-react'
+import { Calendar, ChevronRight, Plus, Users } from 'lucide-react'
 import { getServerSession } from 'next-auth'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
@@ -54,16 +54,13 @@ export default async function DashboardPage() {
 	return (
 		<div>
 			{/* Header */}
-			<div className='flex items-center justify-between mb-6'>
-				<div>
-					<h1 className='text-2xl font-semibold'>Grup Saya</h1>
-					<p className='text-muted-foreground text-sm mt-1'>Kelola grup tilawah Anda</p>
-				</div>
+			<div className='mb-6'>
+				<h1 className='text-3xl font-bold mb-4'>Grup Saya</h1>
 				<Link
 					href='/groups/new'
-					className='inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-white font-medium shadow-sm transition hover:bg-primary/90'>
-					<Plus className='h-4 w-4' />
-					<span className='hidden sm:inline'>Grup Baru</span>
+					className='flex items-center justify-center gap-2 w-full rounded-xl bg-primary px-4 py-3.5 text-white font-semibold shadow-sm transition hover:bg-primary/90'>
+					<Plus className='h-5 w-5' />
+					<span>Tambah Grup Baru</span>
 				</Link>
 			</div>
 
@@ -85,40 +82,64 @@ export default async function DashboardPage() {
 					</Link>
 				</div>
 			) : (
-				<div className='space-y-4'>
+				<div className='grid grid-cols-1 md:grid-cols-2 gap-5'>
 					{groups.map((group) => (
-						<Link
+						// Group Card
+						<div
 							key={group.id}
-							href={`/groups/${group.id}`}
-							className='block rounded-xl border border-border bg-card p-4 shadow-sm transition hover:border-primary/50 hover:shadow-md'>
-							<div className='flex flex-col md:flex-row md:items-start md:justify-between gap-4'>
-								<div className='flex-1 min-w-0'>
-									<h3 className='font-semibold text-lg truncate'>{group.name}</h3>
-									<div className='flex flex-wrap items-center gap-4 mt-2 text-sm text-muted-foreground'>
-										<span className='inline-flex items-center gap-1'>
-											<Users className='h-4 w-4' />
-											{group.participantCount} peserta
-										</span>
-										<span className='inline-flex items-center gap-1'>
-											<Calendar className='h-4 w-4' />
-											{group.periodCount} periode
-										</span>
+							className='flex flex-col rounded-md border border-border bg-card shadow-sm transition hover:border-primary/50 hover:shadow-md overflow-hidden p-5'>
+							{/* Status Badge */}
+							<div>
+								{group.hasActivePeriod ? (
+									<span className='inline-flex items-center rounded-full bg-green-500/20 px-3 py-1 text-xs font-bold text-green-600'>
+										● SEDANG BERLANGSUNG
+									</span>
+								) : (
+									<span className='inline-flex items-center rounded-full bg-muted px-3 py-1 text-xs font-bold text-muted-foreground'>
+										TIDAK ADA PERIODE AKTIF
+									</span>
+								)}
+							</div>
+
+							{/* Content */}
+							<div className='flex-1 py-5'>
+								<h3 className='font-bold text-lg mb-4 pb-4 border-b border-border leading-tight'>{group.name}</h3>
+
+								{/* Stats - with icons */}
+								<div className='flex items-center gap-8'>
+									<div className='flex items-center gap-3'>
+										<div className='flex items-center justify-center w-10 h-10 rounded-full border-2 border-primary shrink-0'>
+											<Users className='h-5 w-5 text-primary' />
+										</div>
+										<div className='flex flex-col gap-0'>
+											<span className='text-xs font-bold text-muted-foreground tracking-wide'>ANGGOTA</span>
+											<span className='text-base font-bold text-foreground'>
+												{group.participantCount} Orang
+											</span>
+										</div>
+									</div>
+									<div className='flex items-center gap-3'>
+										<div className='flex items-center justify-center w-10 h-10 rounded-full border-2 border-primary shrink-0'>
+											<Calendar className='h-5 w-5 text-primary' />
+										</div>
+										<div className='flex flex-col gap-0'>
+											<span className='text-xs font-bold text-muted-foreground tracking-wide'>PERIODE</span>
+											<span className='text-base font-bold text-foreground'>Ke-{group.periodCount}</span>
+										</div>
 									</div>
 								</div>
-								<div className='flex items-center justify-between md:flex-col md:items-end gap-2'>
-									{group.hasActivePeriod ? (
-										<span className='inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary'>
-											Aktif
-										</span>
-									) : (
-										<span className='inline-flex items-center rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground'>
-											Tidak ada periode aktif
-										</span>
-									)}
-									<ExternalLink className='h-4 w-4 text-muted-foreground' />
-								</div>
 							</div>
-						</Link>
+
+							{/* Button */}
+							<div>
+								<Link
+									href={`/groups/${group.id}`}
+									className='flex items-center justify-center gap-2 w-full rounded-md border-2 border-primary text-primary px-4 py-2.5 font-semibold transition hover:bg-primary/10'>
+									<span>Buka Grup</span>
+									<ChevronRight className='h-5 w-5' />
+								</Link>
+							</div>
+						</div>
 					))}
 				</div>
 			)}
