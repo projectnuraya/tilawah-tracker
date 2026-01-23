@@ -3,7 +3,7 @@ import { prisma } from '@/components/lib/db'
 import { DeactivateButton } from '@/components/participants/deactivate-button'
 import { EditParticipantForm } from '@/components/participants/edit-form'
 import { ReactivateButton } from '@/components/participants/reactivate-button'
-import { ArrowLeft, MessageCircle } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import { getServerSession } from 'next-auth'
 import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
@@ -128,11 +128,11 @@ export default async function ParticipantDetailPage({ params }: PageProps) {
 							{participant.participantPeriods.map((pp) => (
 								<div key={pp.id} className='flex items-center justify-between'>
 									<div>
-										<p className='text-sm font-medium'>Periode #{pp.period.periodNumber}</p>
-										<p className='text-xs text-muted-foreground'>Juz {pp.juzNumber}</p>
+										<p className='text-lg font-medium'>Periode #{pp.period.periodNumber}</p>
+``										<p className='text-lg text-muted-foreground'>Juz {pp.juzNumber}</p>
 									</div>
 									<span
-										className={`inline-flex items-center gap-1 text-sm ${
+										className={`inline-flex items-center gap-1 text-lg ${
 											pp.progressStatus === 'finished'
 												? 'text-primary'
 												: pp.progressStatus === 'missed'

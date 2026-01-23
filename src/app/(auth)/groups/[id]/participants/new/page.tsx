@@ -4,6 +4,7 @@ import { ArrowLeft, Loader2, Plus, X } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { v4 as uuidv4 } from 'uuid'
 
 interface PageProps {
 	params: Promise<{ id: string }>
@@ -18,9 +19,7 @@ interface ParticipantInput {
 export default function NewParticipantPage({ params }: PageProps) {
 	const router = useRouter()
 	const [groupId, setGroupId] = useState<string | null>(null)
-	const [participants, setParticipants] = useState<ParticipantInput[]>([
-		{ id: crypto.randomUUID(), name: '', whatsappNumber: '' },
-	])
+	const [participants, setParticipants] = useState<ParticipantInput[]>([{ id: uuidv4(), name: '', whatsappNumber: '' }])
 	const [isLoading, setIsLoading] = useState(false)
 	const [error, setError] = useState('')
 
@@ -29,7 +28,7 @@ export default function NewParticipantPage({ params }: PageProps) {
 	}, [params])
 
 	const addParticipantRow = () => {
-		setParticipants([...participants, { id: crypto.randomUUID(), name: '', whatsappNumber: '' }])
+		setParticipants([...participants, { id: uuidv4(), name: '', whatsappNumber: '' }])
 	}
 
 	const removeParticipantRow = (id: string) => {
@@ -107,7 +106,7 @@ export default function NewParticipantPage({ params }: PageProps) {
 
 			<div className='w-full max-w-2xl'>
 				<h1 className='text-2xl font-semibold mb-2 text-center'>Tambah Peserta</h1>
-				<p className='text-muted-foreground text-sm mb-6 text-center'>
+				<p className='text-muted-foreground text-lg mb-6 text-center'>
 					Tambahkan satu atau lebih anggota ke grup tilawah ini.
 				</p>
 
@@ -118,7 +117,7 @@ export default function NewParticipantPage({ params }: PageProps) {
 							<div key={participant.id} className='flex gap-3 items-start'>
 								<div className='flex-1 space-y-3'>
 									<div>
-										<label htmlFor={`name-${participant.id}`} className='block text-sm font-medium mb-2'>
+										<label htmlFor={`name-${participant.id}`} className='block text-lg font-medium mb-2'>
 											Nama {index === 0 && <span className='text-destructive'>*</span>}
 										</label>
 										<input
@@ -134,7 +133,7 @@ export default function NewParticipantPage({ params }: PageProps) {
 									</div>
 
 									<div>
-										<label htmlFor={`whatsapp-${participant.id}`} className='block text-sm font-medium mb-2'>
+										<label htmlFor={`whatsapp-${participant.id}`} className='block text-lg font-medium mb-2'>
 											WhatsApp <span className='text-muted-foreground text-xs'>(opsional)</span>
 										</label>
 										<input
@@ -169,8 +168,8 @@ export default function NewParticipantPage({ params }: PageProps) {
 						type='button'
 						onClick={addParticipantRow}
 						disabled={isLoading}
-						className='w-full rounded-lg border-2 border-dashed border-border px-4 py-3 text-sm font-medium text-muted-foreground hover:border-primary hover:text-primary transition disabled:opacity-50'>
-						<Plus className='h-4 w-4 inline-block mr-2' />
+						className='w-full rounded-lg border-2 border-dashed border-border px-4 py-3 text-lg font-medium text-muted-foreground hover:border-primary hover:text-primary transition disabled:opacity-50'>
+						<Plus className='h-5 w-5 inline-block mr-2' />
 						Tambah Peserta Lagi
 					</button>
 
@@ -198,7 +197,7 @@ export default function NewParticipantPage({ params }: PageProps) {
 					</div>
 				</form>
 
-				<p className='mt-6 text-xs text-muted-foreground text-center'>
+				<p className='mt-6 text-sm text-muted-foreground text-center'>
 					Jika ada periode aktif, peserta akan otomatis mendapat nomor juz yang tersedia.
 				</p>
 			</div>

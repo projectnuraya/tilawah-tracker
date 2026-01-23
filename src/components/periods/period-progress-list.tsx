@@ -197,13 +197,13 @@ export function PeriodProgressList({ period, isActive, notFinishedCount }: Perio
 										<div key={pp.id} className='flex items-center justify-between px-4 py-3'>
 											<div className='flex items-center gap-3'>
 												<div className='w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center'>
-													<span className='text-primary text-sm font-medium'>
+													<span className='text-primary font-medium text-lg'>
 														{pp.participant.name.charAt(0).toUpperCase()}
 													</span>
 												</div>
 												<div>
 													<div className='flex items-center gap-2'>
-														<p className='font-medium text-sm'>{pp.participant.name}</p>
+														<p className='font-medium text-lg'>{pp.participant.name}</p>
 														{pp.missedStreak > 0 && (
 															<span className='inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-destructive/10 text-destructive'>
 																💔×{pp.missedStreak}
@@ -225,7 +225,7 @@ export function PeriodProgressList({ period, isActive, notFinishedCount }: Perio
 													/>
 												) : (
 													<span
-														className={`inline-flex items-center gap-1 text-sm ${
+														className={`inline-flex items-center gap-1 text-lg ${
 															pp.progressStatus === 'finished'
 																? 'text-primary'
 																: pp.progressStatus === 'missed'

@@ -106,15 +106,15 @@ export default async function PeriodDetailPage({ params }: PageProps) {
 			<div className='grid grid-cols-3 gap-3 mb-6'>
 				<div className='rounded-lg border border-border bg-card p-3 text-center'>
 					<p className='text-2xl font-semibold text-primary'>{stats.finished}</p>
-					<p className='text-xs text-muted-foreground'>👑 Selesai</p>
+					<p className='text-sm text-muted-foreground'>👑 Selesai</p>
 				</div>
 				<div className='rounded-lg border border-border bg-card p-3 text-center'>
 					<p className='text-2xl font-semibold text-muted-foreground'>{stats.not_finished}</p>
-					<p className='text-xs text-muted-foreground'>⏳ Dalam Proses</p>
+					<p className='text-sm text-muted-foreground'>⏳ Dalam Proses</p>
 				</div>
 				<div className='rounded-lg border border-border bg-card p-3 text-center'>
 					<p className='text-2xl font-semibold text-destructive'>{stats.missed}</p>
-					<p className='text-xs text-muted-foreground'>💔 Terlewat</p>
+					<p className='text-sm text-muted-foreground'>💔 Terlewat</p>
 				</div>
 			</div>
 

@@ -136,7 +136,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
 			{/* Public Link */}
 			<div className='rounded-xl border border-border bg-card p-4 mb-6'>
 				<h2 className='font-medium mb-2'>Link Publik</h2>
-				<p className='text-xs text-muted-foreground mb-3'>Bagikan link ini kepada peserta untuk akses baca saja.</p>
+				<p className='text-sm text-muted-foreground mb-3'>Bagikan link ini kepada peserta untuk akses baca saja.</p>
 				<div className='flex items-center gap-2'>
 					<input
 						type='text'
@@ -197,7 +197,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
 			{/* Mudabbir */}
 			<div className='rounded-xl border border-border bg-card p-4 mb-6'>
 				<h2 className='font-medium mb-2'>Mudabbir</h2>
-				<p className='text-xs text-muted-foreground mb-3'>Koordinator yang mengelola kelompok ini.</p>
+				<p className='text-sm text-muted-foreground mb-3'>Koordinator yang mengelola kelompok ini.</p>
 				<div className='flex gap-3 overflow-x-auto'>
 					{group.coordinatorGroups.map((cg) => (
 						<div key={cg.coordinator.id} className='flex flex-col items-center gap-1 shrink-0'>
@@ -205,7 +205,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
 								<AvatarImage src={cg.coordinator.image || undefined} alt={cg.coordinator.name || 'Coordinator'} />
 								<AvatarFallback>{cg.coordinator.name?.charAt(0) || 'U'}</AvatarFallback>
 							</Avatar>
-							<span className='text-xs text-center'>{cg.coordinator.name || 'Unknown'}</span>
+							<span className='text-sm text-center'>{cg.coordinator.name || 'Unknown'}</span>
 						</div>
 					))}
 				</div>
@@ -215,7 +215,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
 			<div className='rounded-xl border border-border bg-card p-4 mb-6'>
 				<div className='flex items-center justify-between mb-4'>
 					<h2 className='font-medium'>Peserta</h2>
-					<Link href={`/groups/${group.id}/participants`} className='text-sm text-primary hover:underline'>
+					<Link href={`/groups/${group.id}/participants`} className='text-lg text-primary hover:underline'>
 						Kelola
 					</Link>
 				</div>
@@ -227,7 +227,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
 				<div className='rounded-xl border border-border bg-card p-4 mb-6'>
 					<div className='flex items-center justify-between mb-4'>
 						<h2 className='font-medium'>Periode Terbaru</h2>
-						<Link href={`/groups/${group.id}/periods`} className='text-sm text-primary hover:underline'>
+						<Link href={`/groups/${group.id}/periods`} className='text-lg text-primary hover:underline'>
 							Lihat Semua
 						</Link>
 					</div>
@@ -238,13 +238,13 @@ export default async function GroupDetailPage({ params }: PageProps) {
 								href={`/groups/${group.id}/periods/${period.id}`}
 								className='flex items-center justify-between py-2 px-3 rounded-lg hover:bg-muted transition'>
 								<div>
-									<span className='text-sm font-medium'>Periode #{period.periodNumber}</span>
-									<p className='text-xs text-muted-foreground'>
+									<span className='text-lg font-medium'>Periode #{period.periodNumber}</span>
+									<p className='text-sm text-muted-foreground'>
 										{new Date(period.startDate).toLocaleDateString('id-ID', { dateStyle: 'short' })}
 									</p>
 								</div>
 								<span
-									className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+									className={`inline-flex items-center rounded-full px-2 py-0.5 text-sm font-medium ${
 										period.status === 'active'
 											? 'bg-primary/10 text-primary'
 											: 'bg-muted text-muted-foreground'
