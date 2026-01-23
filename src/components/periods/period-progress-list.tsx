@@ -3,7 +3,7 @@
 import { LockPeriodButton } from '@/components/periods/lock-period-button'
 import { ProgressStatusDropdown } from '@/components/periods/progress-dropdown'
 import { ShareButton } from '@/components/periods/share-button'
-import { Filter, Search, X } from 'lucide-react'
+import { ChevronDown, Filter, Search, X } from 'lucide-react'
 import { useMemo, useState } from 'react'
 
 type ProgressStatus = 'finished' | 'not_finished' | 'missed'
@@ -47,6 +47,7 @@ export function PeriodProgressList({ period, isActive, notFinishedCount }: Perio
 	const [searchQuery, setSearchQuery] = useState('')
 	const [filterJuz, setFilterJuz] = useState<number | null>(null)
 	const [filterStatus, setFilterStatus] = useState<ProgressStatus | null>(null)
+	const [expandedJuz, setExpandedJuz] = useState<Record<number, boolean>>({})
 
 	// Filter and search participants
 	const filteredParticipants = useMemo(() => {
@@ -89,6 +90,22 @@ export function PeriodProgressList({ period, isActive, notFinishedCount }: Perio
 		setSearchQuery('')
 		setFilterJuz(null)
 		setFilterStatus(null)
+		setExpandedJuz({})
+	}
+
+	const toggleJuzExpanded = (juzNumber: number) => {
+		setExpandedJuz((prev) => ({
+			...prev,
+			[juzNumber]: !prev[juzNumber],
+		}))
+	}
+
+	const isJuzExpanded = (juzNumber: number) => {
+		// Auto-expand if actively filtered by Juz
+		if (filterJuz === juzNumber) return true
+		// Auto-expand if searching and this Juz has matching participants
+		if (searchQuery.trim() && byJuz[juzNumber]?.length > 0) return true
+		return expandedJuz[juzNumber] || false
 	}
 
 	return (
@@ -108,7 +125,14 @@ export function PeriodProgressList({ period, isActive, notFinishedCount }: Perio
 						type='text'
 						placeholder='Cari nama peserta...'
 						value={searchQuery}
-						onChange={(e) => setSearchQuery(e.target.value)}
+						onChange={(e) => {
+							const newValue = e.target.value
+							setSearchQuery(newValue)
+							// Clear expanded state when search is cleared
+							if (!newValue.trim()) {
+								setExpandedJuz({})
+							}
+						}}
 						className='w-full pl-10 pr-4 py-2.5 rounded-lg border border-border bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent transition'
 					/>
 				</div>
@@ -186,61 +210,79 @@ export function PeriodProgressList({ period, isActive, notFinishedCount }: Perio
 				) : (
 					Object.entries(byJuz).map(([juz, participants]) => {
 						if (participants.length === 0) return null
+						const juzNumber = Number(juz)
+						const isExpanded = isJuzExpanded(juzNumber)
 
 						return (
-							<div key={juz} className='rounded-xl border border-border bg-card'>
-								<div className='bg-muted/50 px-4 py-2 border-b border-border'>
-									<h3 className='font-medium'>Juz {juz}</h3>
-								</div>
-								<div className='divide-y divide-border overflow-hidden'>
-									{participants.map((pp) => (
-										<div key={pp.id} className='flex items-center justify-between px-4 py-3'>
-											<div className='flex items-center gap-3'>
-												<div className='w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center'>
-													<span className='text-primary font-medium text-lg'>
-														{pp.participant.name.charAt(0).toUpperCase()}
-													</span>
-												</div>
-												<div>
-													<div className='flex items-center gap-2'>
-														<p className='font-medium text-lg'>{pp.participant.name}</p>
-														{pp.missedStreak > 0 && (
-															<span className='inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-destructive/10 text-destructive'>
-																💔×{pp.missedStreak}
-															</span>
+							<div key={juz} className='rounded-xl border border-border bg-card overflow-hidden'>
+								{/* Accordion Header */}
+								<button
+									onClick={() => toggleJuzExpanded(juzNumber)}
+									className='w-full bg-muted hover:bg-muted/80 px-4 py-3 border-b-3 border-b-primary flex items-center justify-between transition-colors cursor-pointer'
+									aria-expanded={isExpanded}>
+									<h3 className='font-medium text-left'>Juz {juz}</h3>
+									<div className='flex items-center gap-2'>
+										<span className='text-sm text-muted-foreground'>{participants.length} peserta</span>
+										<ChevronDown
+											className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${
+												isExpanded ? 'rotate-180' : ''
+											}`}
+										/>
+									</div>
+								</button>
+
+								{/* Accordion Content */}
+								{isExpanded && (
+									<div className='divide-y divide-border'>
+										{participants.map((pp) => (
+											<div key={pp.id} className='flex items-center justify-between px-4 py-3'>
+												<div className='flex items-center gap-3'>
+													<div className='w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center'>
+														<span className='text-primary font-medium text-lg'>
+															{pp.participant.name.charAt(0).toUpperCase()}
+														</span>
+													</div>
+													<div>
+														<div className='flex items-center gap-2'>
+															<p className='font-medium text-lg'>{pp.participant.name}</p>
+															{pp.missedStreak > 0 && (
+																<span className='inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-destructive/10 text-destructive'>
+																	💔×{pp.missedStreak}
+																</span>
+															)}
+														</div>
+														{!pp.participant.isActive && (
+															<p className='text-xs text-muted-foreground'>Tidak Aktif</p>
 														)}
 													</div>
-													{!pp.participant.isActive && (
-														<p className='text-xs text-muted-foreground'>Tidak Aktif</p>
+												</div>
+												<div className='flex items-center gap-2'>
+													{isActive ? (
+														<ProgressStatusDropdown
+															participantPeriodId={pp.id}
+															currentStatus={pp.progressStatus}
+															participantName={pp.participant.name}
+															whatsappNumber={pp.participant.whatsappNumber}
+														/>
+													) : (
+														<span
+															className={`inline-flex items-center gap-1 text-lg ${
+																pp.progressStatus === 'finished'
+																	? 'text-primary'
+																	: pp.progressStatus === 'missed'
+																		? 'text-destructive'
+																		: 'text-muted-foreground'
+															}`}>
+															{pp.progressStatus === 'finished' && '👑 Selesai'}
+															{pp.progressStatus === 'missed' && '💔 Terlewat'}
+															{pp.progressStatus === 'not_finished' && '⏳ Belum selesai'}
+														</span>
 													)}
 												</div>
 											</div>
-											<div className='flex items-center gap-2'>
-												{isActive ? (
-													<ProgressStatusDropdown
-														participantPeriodId={pp.id}
-														currentStatus={pp.progressStatus}
-														participantName={pp.participant.name}
-														whatsappNumber={pp.participant.whatsappNumber}
-													/>
-												) : (
-													<span
-														className={`inline-flex items-center gap-1 text-lg ${
-															pp.progressStatus === 'finished'
-																? 'text-primary'
-																: pp.progressStatus === 'missed'
-																	? 'text-destructive'
-																	: 'text-muted-foreground'
-														}`}>
-														{pp.progressStatus === 'finished' && '👑 Selesai'}
-														{pp.progressStatus === 'missed' && '💔 Terlewat'}
-														{pp.progressStatus === 'not_finished' && '⏳ Belum selesai'}
-													</span>
-												)}
-											</div>
-										</div>
-									))}
-								</div>
+										))}
+									</div>
+								)}
 							</div>
 						)
 					})
