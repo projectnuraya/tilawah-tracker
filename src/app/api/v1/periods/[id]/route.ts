@@ -7,7 +7,8 @@ interface RouteParams {
 }
 
 /**
- * Helper to check coordinator has access to period's group
+ * Helper to verify coordinator has access to a period
+ * Checks the period's group's coordinatorGroups relationship
  */
 async function getPeriodWithAccess(coordinatorId: string, periodId: string) {
 	const period = await prisma.period.findUnique({
@@ -36,7 +37,8 @@ async function getPeriodWithAccess(coordinatorId: string, periodId: string) {
 
 /**
  * GET /api/v1/periods/[id]
- * Get period details with all participant progress
+ * Get complete period details including all participant progress
+ * Returns progress organized by juz and calculated summary stats
  */
 export async function GET(request: NextRequest, { params }: RouteParams) {
 	try {
@@ -45,6 +47,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 
 		const period = await getPeriodWithAccess(session.user.id, id)
 
+		// Get all participant-period records for this period
 		const participantPeriods = await prisma.participantPeriod.findMany({
 			where: { periodId: id },
 			include: {
@@ -60,7 +63,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 			orderBy: [{ juzNumber: 'asc' }, { participant: { name: 'asc' } }],
 		})
 
-		// Group by juz for easier display
+		// Organize by juz for UI grouping (Juz 1-30)
 		const byJuz: Record<number, typeof participantPeriods> = {}
 		for (let i = 1; i <= 30; i++) {
 			byJuz[i] = []
@@ -69,7 +72,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 			byJuz[pp.juzNumber].push(pp)
 		}
 
-		// Calculate stats
+		// Calculate progress stats
 		const stats = {
 			total: participantPeriods.length,
 			finished: participantPeriods.filter((pp) => pp.progressStatus === 'finished').length,

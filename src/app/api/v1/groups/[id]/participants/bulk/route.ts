@@ -27,7 +27,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
 		const { participants } = validation.data
 
-		// Get active period if exists
+		// Get active period if exists - participants will be auto-assigned to juz
 		const activePeriod = await prisma.period.findFirst({
 			where: {
 				groupId,
@@ -38,7 +38,8 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 			},
 		})
 
-		// Create participants and assign juz if active period exists
+		// Create participants and assign juz in a single transaction
+		// This ensures consistency: either all participants are added or none
 		const createdParticipants = await prisma.$transaction(async (tx) => {
 			const newParticipants = await Promise.all(
 				participants.map((participant: { name: string; whatsappNumber?: string | null }) =>
@@ -53,14 +54,16 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 				),
 			)
 
-			// If active period exists, auto-assign juz
+			// Auto-assign juz if active period exists
+			// Use load-balancing: assign each participant to the least-assigned juz
 			if (activePeriod) {
-				// Count current assignments per juz
+				// Initialize count map for all 30 juz
 				const juzCounts = new Map<number, number>()
 				for (let i = 1; i <= 30; i++) {
 					juzCounts.set(i, 0)
 				}
 
+				// Count current assignments per juz
 				for (const pp of activePeriod.participantPeriods) {
 					juzCounts.set(pp.juzNumber, (juzCounts.get(pp.juzNumber) || 0) + 1)
 				}
@@ -79,7 +82,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 						}
 					}
 
-					// Create participant period
+					// Create participant period record
 					await tx.participantPeriod.create({
 						data: {
 							participantId: participant.id,
@@ -89,7 +92,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 						},
 					})
 
-					// Update count
+					// Update count for next iteration
 					juzCounts.set(minJuz, minCount + 1)
 				}
 			}

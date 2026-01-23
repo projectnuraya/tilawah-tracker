@@ -10,6 +10,11 @@ import { prisma } from '@/components/lib/db'
 import { updateProgressSchema, validateInput } from '@/components/lib/validators'
 import { NextRequest } from 'next/server'
 
+/**
+ * PATCH /api/v1/progress/[id]
+ * Update participant's progress for a juz (finished, not_finished, or missed)
+ * Automatically resets missed streak when participant completes their juz
+ */
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
 	try {
 		const session = await requireAuth()
@@ -24,7 +29,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 
 		const { status } = validation.data
 
-		// Get the participant period with its relations
+		// Get the participant period record with period and group info for access check
 		const participantPeriod = await prisma.participantPeriod.findUnique({
 			where: { id },
 			include: {
@@ -40,20 +45,20 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 			throw new NotFoundError('Participant period not found')
 		}
 
-		// Check ownership via CoordinatorGroup
+		// Verify coordinator access to the group
 		await requireGroupAccess(session.user.id, participantPeriod.period.groupId)
 
-		// Check if period is locked
+		// Cannot update progress for locked periods (immutable)
 		if (participantPeriod.period.status === 'locked') {
 			throw new ValidationError('Cannot update progress for a locked period')
 		}
 
-		// Update the status and reset streak if finished
+		// Update progress status and reset streak if completed
+		// Streak tracks consecutive missed weeks - resets to 0 when participant finishes
 		const updated = await prisma.participantPeriod.update({
 			where: { id },
 			data: {
 				progressStatus: status,
-				// Reset missed streak when marked as finished
 				...(status === 'finished' && { missedStreak: 0 }),
 			},
 		})

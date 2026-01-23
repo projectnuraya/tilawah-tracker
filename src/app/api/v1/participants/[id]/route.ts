@@ -8,7 +8,8 @@ interface RouteParams {
 }
 
 /**
- * Helper to check coordinator has access to participant's group
+ * Helper to verify coordinator has access to a participant
+ * Checks the participant's group's coordinatorGroups relationship
  */
 async function getParticipantWithAccess(coordinatorId: string, participantId: string) {
 	const participant = await prisma.participant.findUnique({
@@ -62,7 +63,8 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 
 /**
  * PATCH /api/v1/participants/[id]
- * Update participant details
+ * Update participant details (name, WhatsApp number, active status)
+ * Coordinator can edit and deactivate participants here or via DELETE
  */
 export async function PATCH(request: NextRequest, { params }: RouteParams) {
 	try {
@@ -86,12 +88,12 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 			isActive?: boolean
 		} = {}
 
-		// Set name if provided
+		// Update name if provided
 		if (name !== undefined) {
 			updateData.name = name.trim()
 		}
 
-		// Set WhatsApp number if provided
+		// Normalize and update WhatsApp number if provided
 		if (whatsappNumber !== undefined) {
 			if (whatsappNumber === null || whatsappNumber === '') {
 				updateData.whatsappNumber = null
@@ -104,7 +106,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 			}
 		}
 
-		// Set isActive if provided
+		// Update active status if provided
 		if (isActive !== undefined) {
 			updateData.isActive = isActive
 		}
@@ -122,7 +124,9 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 
 /**
  * DELETE /api/v1/participants/[id]
- * Deactivate participant (soft delete)
+ * Deactivate participant (soft delete via isActive flag)
+ * Preserves historical data (periods, progress) for reporting
+ * Can be reactivated via PATCH if needed
  */
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
 	try {
@@ -131,7 +135,8 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
 
 		await getParticipantWithAccess(session.user.id, id)
 
-		// Soft delete - mark as inactive
+		// Soft delete - mark as inactive instead of hard delete
+		// This preserves historical data for archived periods
 		await prisma.participant.update({
 			where: { id },
 			data: { isActive: false },

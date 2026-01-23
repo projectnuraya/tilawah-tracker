@@ -8,16 +8,18 @@ interface RouteParams {
 
 /**
  * GET /api/v1/public/[token]
- * Get public group overview with active period and all periods
+ * Public read-only access to group overview
+ * Returns group info, current active period progress, and list of all periods
+ * No authentication required - token grants access
  */
 export async function GET(request: NextRequest, { params }: RouteParams) {
 	try {
 		const { token } = await params
 
-		// Get group with active period
+		// Get group with active period using helper
 		const { group, activePeriod } = await getPublicGroupWithActivePeriod(token)
 
-		// Get all periods
+		// Get all periods for the group
 		const { periods } = await getPublicGroupPeriods(token)
 
 		return apiSuccess({

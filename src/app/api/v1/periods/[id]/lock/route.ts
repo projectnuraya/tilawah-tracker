@@ -8,14 +8,15 @@ interface RouteParams {
 
 /**
  * POST /api/v1/periods/[id]/lock
- * Lock a period - changes all "not_finished" to "missed"
+ * Lock a period - marks it as immutable and auto-marks all unfinished as "missed"
+ * Once locked, no progress or juz changes can be made. Preserves historical data.
  */
 export async function POST(request: NextRequest, { params }: RouteParams) {
 	try {
 		const session = await requireAuth()
 		const { id } = await params
 
-		// Get period with access check
+		// Get period with access check via coordinator-group relationship
 		const period = await prisma.period.findUnique({
 			where: { id },
 			include: {
@@ -37,14 +38,16 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 			throw new ForbiddenError("You don't have access to this period")
 		}
 
-		// Check if already locked
+		// Cannot lock an already locked period
 		if (period.status === 'locked') {
 			throw new ValidationError('This period is already locked')
 		}
 
-		// Lock period and update all "not_finished" to "missed" in transaction
+		// Lock period and auto-mark all incomplete as "missed" in a transaction
+		// This ensures consistency and auto-calculates missed streaks
 		const lockedPeriod = await prisma.$transaction(async (tx) => {
-			// Update all not_finished to missed
+			// Auto-mark participants who didn't finish as "missed"
+			// This is recorded in the missed streak for future period rotations
 			await tx.participantPeriod.updateMany({
 				where: {
 					periodId: id,
@@ -55,7 +58,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 				},
 			})
 
-			// Lock the period
+			// Lock the period - no further updates allowed
 			return tx.period.update({
 				where: { id },
 				data: {
@@ -65,7 +68,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 			})
 		})
 
-		// Get updated stats
+		// Get updated stats for response
 		const stats = await prisma.participantPeriod.groupBy({
 			by: ['progressStatus'],
 			where: { periodId: id },

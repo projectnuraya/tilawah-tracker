@@ -1,9 +1,11 @@
-import { prisma } from './db'
 import { NotFoundError } from './auth-utils'
+import { prisma } from './db'
 
 /**
  * Validate a public token and return the associated group
- * Throws NotFoundError if token is invalid
+ * Public tokens are permanent and allow read-only access to group progress
+ *
+ * @throws NotFoundError if token is invalid or group doesn't exist
  */
 export async function validatePublicToken(token: string) {
 	const group = await prisma.group.findUnique({
@@ -24,11 +26,13 @@ export async function validatePublicToken(token: string) {
 }
 
 /**
- * Get group with active period for public view
+ * Get group overview with its current active period (if any)
+ * Used to display the main progress view for public token access
  */
 export async function getPublicGroupWithActivePeriod(token: string) {
 	const group = await validatePublicToken(token)
 
+	// Get current active period if exists
 	const activePeriod = await prisma.period.findFirst({
 		where: {
 			groupId: group.id,
@@ -42,7 +46,7 @@ export async function getPublicGroupWithActivePeriod(token: string) {
 		orderBy: { periodNumber: 'desc' },
 	})
 
-	// Get stats for active period if exists
+	// Calculate progress stats for active period
 	let activeWithStats = null
 	if (activePeriod) {
 		const stats = await prisma.participantPeriod.groupBy({
@@ -63,7 +67,8 @@ export async function getPublicGroupWithActivePeriod(token: string) {
 }
 
 /**
- * Get all periods for a public group
+ * Get all past periods for a public group with progress stats
+ * Shows historical data of completed weeks
  */
 export async function getPublicGroupPeriods(token: string) {
 	const group = await validatePublicToken(token)
@@ -78,7 +83,7 @@ export async function getPublicGroupPeriods(token: string) {
 		orderBy: { periodNumber: 'desc' },
 	})
 
-	// Get stats for each period
+	// Attach stats to each period
 	const periodsWithStats = await Promise.all(
 		periods.map(async (period) => {
 			const stats = await prisma.participantPeriod.groupBy({
@@ -100,7 +105,8 @@ export async function getPublicGroupPeriods(token: string) {
 }
 
 /**
- * Get period details for public view
+ * Get full details of a specific period including all participant progress
+ * Returns participant-period records grouped by juz for display
  */
 export async function getPublicPeriodDetails(token: string, periodId: string) {
 	const group = await validatePublicToken(token)

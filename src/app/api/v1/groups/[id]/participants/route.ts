@@ -1,4 +1,11 @@
-import { apiError, apiSuccess, NotFoundError, requireAuth, requireGroupAccess, ValidationError } from '@/components/lib/auth-utils'
+import {
+	apiError,
+	apiSuccess,
+	NotFoundError,
+	requireAuth,
+	requireGroupAccess,
+	ValidationError,
+} from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
 import { createParticipantSchema, listParticipantsSchema, validateInput } from '@/components/lib/validators'
 import { NextRequest } from 'next/server'
@@ -63,17 +70,16 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
 		const { name, whatsappNumber } = validation.data
 
-		// Validate WhatsApp number if provided
+		// Normalize WhatsApp number: ensure it starts with + and contains only digits
 		let cleanedWhatsapp: string | null = null
 		if (whatsappNumber && whatsappNumber.trim().length > 0) {
-			// Basic validation: remove non-numeric except + at start
 			cleanedWhatsapp = whatsappNumber.trim().replace(/[^\d+]/g, '')
 			if (cleanedWhatsapp.length > 0 && !cleanedWhatsapp.startsWith('+')) {
 				cleanedWhatsapp = '+' + cleanedWhatsapp
 			}
 		}
 
-		// Check if group exists
+		// Check if group exists and get active period if any
 		const group = await prisma.group.findUnique({
 			where: { id: groupId },
 			include: {
@@ -88,7 +94,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 			throw new NotFoundError('Group not found')
 		}
 
-		// Create participant
+		// Create participant record
 		const participant = await prisma.participant.create({
 			data: {
 				groupId,
@@ -97,7 +103,8 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 			},
 		})
 
-		// If there's an active period, auto-assign a juz
+		// Auto-assign to the least-loaded juz if period is active
+		// This balances the workload across participants for the current week
 		const activePeriod = group.periods[0]
 		if (activePeriod) {
 			// Find the least assigned juz in this period

@@ -8,7 +8,9 @@ interface RouteParams {
 
 /**
  * GET /api/v1/public/[token]/periods/[periodId]
- * Get public period details with all participant progress
+ * Public read-only access to period details with full progress breakdown
+ * Returns all participant progress organized by juz assignment
+ * No authentication required - token grants access
  */
 export async function GET(request: NextRequest, { params }: RouteParams) {
 	try {
@@ -16,7 +18,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 
 		const period = await getPublicPeriodDetails(token, periodId)
 
-		// Group by juz for easier display
+		// Organize participant-periods by juz for UI display
 		const byJuz: Record<number, typeof period.participantPeriods> = {}
 		for (let i = 1; i <= 30; i++) {
 			byJuz[i] = []
@@ -25,7 +27,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 			byJuz[pp.juzNumber].push(pp)
 		}
 
-		// Calculate stats
+		// Calculate progress summary stats
 		const stats = {
 			total: period.participantPeriods.length,
 			finished: period.participantPeriods.filter((pp) => pp.progressStatus === 'finished').length,

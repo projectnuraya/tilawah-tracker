@@ -10,6 +10,11 @@ import { prisma } from '@/components/lib/db'
 import { updateJuzSchema, validateInput } from '@/components/lib/validators'
 import { NextRequest } from 'next/server'
 
+/**
+ * PATCH /api/v1/progress/[id]/juz
+ * Change the juz assignment for a participant in an active period
+ * Only allowed for active (non-locked) periods
+ */
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
 	try {
 		const session = await requireAuth()
@@ -24,7 +29,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 
 		const { juzNumber } = validation.data
 
-		// Get the participant period with its relations
+		// Get the participant period record with period and group info for access check
 		const participantPeriod = await prisma.participantPeriod.findUnique({
 			where: { id },
 			include: {
@@ -40,10 +45,10 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 			throw new NotFoundError('Participant period not found')
 		}
 
-		// Check ownership via CoordinatorGroup
+		// Verify coordinator access to the group
 		await requireGroupAccess(session.user.id, participantPeriod.period.groupId)
 
-		// Check if period is locked
+		// Cannot change juz for locked periods (immutable history)
 		if (participantPeriod.period.status === 'locked') {
 			throw new ValidationError('Cannot update juz for a locked period')
 		}

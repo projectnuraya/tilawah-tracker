@@ -30,7 +30,10 @@ export const createParticipantSchema = z.object({
 })
 
 export const createParticipantBulkSchema = z.object({
-	participants: z.array(createParticipantSchema).min(1, 'Minimal 1 peserta harus ditambahkan').max(100, 'Maksimal 100 peserta per batch'),
+	participants: z
+		.array(createParticipantSchema)
+		.min(1, 'Minimal 1 peserta harus ditambahkan')
+		.max(100, 'Maksimal 100 peserta per batch'),
 })
 
 export const updateParticipantSchema = z.object({
@@ -44,7 +47,10 @@ export const updateParticipantSchema = z.object({
 })
 
 export const listParticipantsSchema = z.object({
-	includeInactive: z.string().optional().transform((val) => val === 'true'),
+	includeInactive: z
+		.string()
+		.optional()
+		.transform((val) => val === 'true'),
 })
 
 export type CreateParticipantInput = z.infer<typeof createParticipantSchema>
@@ -74,11 +80,17 @@ export const createPeriodSchema = z.object({
 })
 
 export const listPeriodsSchema = z.object({
-	limit: z.string().optional().transform((val) => {
-		const parsed = parseInt(val || '20')
-		return Math.min(Math.max(parsed, 1), 100) // Min 1, max 100
-	}),
-	includeArchived: z.string().optional().transform((val) => val === 'true'),
+	limit: z
+		.string()
+		.optional()
+		.transform((val) => {
+			const parsed = parseInt(val || '20')
+			return Math.min(Math.max(parsed, 1), 100) // Min 1, max 100
+		}),
+	includeArchived: z
+		.string()
+		.optional()
+		.transform((val) => val === 'true'),
 })
 
 export type CreatePeriodInput = z.infer<typeof createPeriodSchema>
@@ -107,15 +119,18 @@ export const generateShareSchema = z.object({
 
 export type GenerateShareInput = z.infer<typeof generateShareSchema>
 
-// ==================== Helper function ====================
-
 /**
- * Validate input and return formatted error response if invalid
+ * Validate input against schema and return typed result with error details
+ * Used throughout API routes for consistent input validation
+ *
+ * @returns success + data on valid input, or success: false + error details if invalid
  */
 export function validateInput<T>(
 	schema: z.ZodSchema<T>,
 	data: unknown,
-): { success: true; data: T } | { success: false; error: { code: string; message: string; details: ReturnType<z.ZodError['flatten']> } } {
+):
+	| { success: true; data: T }
+	| { success: false; error: { code: string; message: string; details: ReturnType<z.ZodError['flatten']> } } {
 	const result = schema.safeParse(data)
 
 	if (!result.success) {

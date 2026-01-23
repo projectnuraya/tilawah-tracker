@@ -1,4 +1,11 @@
-import { apiError, apiSuccess, NotFoundError, requireAuth, requireGroupAccess, ValidationError } from '@/components/lib/auth-utils'
+import {
+	apiError,
+	apiSuccess,
+	NotFoundError,
+	requireAuth,
+	requireGroupAccess,
+	ValidationError,
+} from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
 import { createPeriodSchema, listPeriodsSchema, validateInput } from '@/components/lib/validators'
 import { NextRequest } from 'next/server'
@@ -148,8 +155,9 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 		const periodNumber = (lastPeriod?.periodNumber || 0) + 1
 
 		// Create period and participant periods in transaction
+		// Key logic: auto-rotate juz for returning participants, keep missed juz, assign new participants
 		const period = await prisma.$transaction(async (tx) => {
-			// Create the period
+			// Create the period record
 			const newPeriod = await tx.period.create({
 				data: {
 					groupId,
@@ -161,9 +169,9 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 				},
 			})
 
-			// Create participant periods with juz assignment
+			// Create participant periods with juz assignment logic
 			if (lastPeriod && lastPeriod.participantPeriods.length > 0) {
-				// Get previous assignments with status
+				// Build map of previous assignments for existing participants
 				const previousAssignments = new Map<string, { juzNumber: number; status: string; missedStreak: number }>()
 				for (const pp of lastPeriod.participantPeriods) {
 					previousAssignments.set(pp.participantId, {
@@ -173,24 +181,25 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 					})
 				}
 
-				// Create records for active participants
+				// Assign juz for each active participant in the new period
 				for (const participant of group.participants) {
 					const previous = previousAssignments.get(participant.id)
 					let newJuz: number
 					let newMissedStreak = 0
 
 					if (previous !== undefined) {
-						// If previous status was "missed", keep same juz and increment streak
+						// Existing participant: check previous status
 						if (previous.status === 'missed') {
-							newJuz = previous.juzNumber // Keep same juz
-							newMissedStreak = previous.missedStreak + 1 // Increment streak
+							// Keep same juz to retry and track missed streak
+							newJuz = previous.juzNumber
+							newMissedStreak = previous.missedStreak + 1
 						} else {
-							// Otherwise rotate: N → N+1, 30 → 1
+							// Rotate to next juz: 1→2, 2→3, ..., 30→1
 							newJuz = previous.juzNumber === 30 ? 1 : previous.juzNumber + 1
-							newMissedStreak = 0 // Reset streak on rotation
+							newMissedStreak = 0
 						}
 					} else {
-						// New participant - find least assigned juz
+						// New participant: find least-assigned juz for load balancing
 						const juzCounts = await tx.participantPeriod.groupBy({
 							by: ['juzNumber'],
 							where: { periodId: newPeriod.id },
@@ -215,18 +224,19 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 						}
 					}
 
+					// Create the participant-period record
 					await tx.participantPeriod.create({
 						data: {
 							participantId: participant.id,
 							periodId: newPeriod.id,
 							juzNumber: newJuz,
-							progressStatus: 'not_finished', // Always start fresh
+							progressStatus: 'not_finished',
 							missedStreak: newMissedStreak,
 						},
 					})
 				}
 			} else {
-				// First period - evenly distribute across 30 juz
+				// First period: evenly distribute participants across 30 juz
 				const participants = group.participants
 				for (let i = 0; i < participants.length; i++) {
 					const juzNumber = (i % 30) + 1

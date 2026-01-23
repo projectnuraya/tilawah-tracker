@@ -1,10 +1,10 @@
 import { randomBytes } from 'crypto'
 
 /**
- * Generate a more readable public token for group access
- * Format: 2 Qur'an-themed words in Bahasa Indonesia + '-' + random fill to 32 characters total
- * Random part alphanumeric (0-9, a-z, A-Z)
- * Example: hikmah-nur-aB3k9xY7p2WFD32
+ * Generate a readable public token for group access sharing
+ *
+ * Format: 2 Qur'an-themed words (separated by '-') + random alphanumeric suffix = 32 chars total
+ * Examples: hikmah-nur-aB3k9xY7p2WFD32, sabar-taqwa-X1p2K9qZ5wL8vM3n
  */
 export function generatePublicToken(): string {
 	const quranWords = [
@@ -51,7 +51,7 @@ export function generatePublicToken(): string {
 
 	const chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
-	// Keep regenerating until we get a pair that fits within 32 chars
+	// Pick two random words and ensure total length fits in 32 chars
 	let word1: string, word2: string, base: string, randomLength: number
 	do {
 		word1 = quranWords[Math.floor(Math.random() * quranWords.length)]
@@ -60,6 +60,7 @@ export function generatePublicToken(): string {
 		randomLength = 32 - base.length
 	} while (randomLength <= 0)
 
+	// Generate random suffix using cryptographically secure bytes
 	const bytes = randomBytes(randomLength)
 	let randomPart = ''
 	for (let i = 0; i < randomLength; i++) {

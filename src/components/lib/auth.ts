@@ -24,26 +24,27 @@ export const authOptions: NextAuthOptions = {
 	],
 	callbacks: {
 		async signIn({ user, account, profile }) {
-			// Check if user email is pre-approved in the coordinators table
+			// Verify user has email and OAuth account data
 			if (!user.email || !account) {
 				logger.error('Sign in attempt with no email or account')
 				return false
 			}
 
+			// Pre-approval check: coordinator must be registered in the users table first
+			// This prevents unauthorized signups - only invited coordinators can access the app
 			const existingUser = await prisma.user.findUnique({
 				where: {
 					email: user.email,
 				},
 			})
 
-			// Only allow sign in if email exists in coordinators table
 			if (!existingUser) {
 				logger.warn('Sign in rejected for unauthorized coordinator')
 				return false
 			}
 
-			// Manually create Account record if it doesn't exist
-			// This prevents the OAuthAccountNotLinked error
+			// Manually create Account record if OAuth account is new
+			// Prevents "OAuthAccountNotLinked" error when linking Google to existing user
 			const existingAccount = await prisma.account.findUnique({
 				where: {
 					provider_providerAccountId: {
@@ -76,6 +77,7 @@ export const authOptions: NextAuthOptions = {
 			return true
 		},
 		async session({ token, session }) {
+			// Inject user id from JWT token into session for client-side access
 			if (token) {
 				session.user.id = token.id as string
 				session.user.name = token.name
@@ -86,6 +88,8 @@ export const authOptions: NextAuthOptions = {
 			return session
 		},
 		async jwt({ token, user }) {
+			// Populate JWT token with user data from database
+			// Called on first sign in and on each token refresh
 			const dbUser = await prisma.user.findFirst({
 				where: {
 					email: token.email,
@@ -99,6 +103,7 @@ export const authOptions: NextAuthOptions = {
 				return token
 			}
 
+			// Return token with user data for session injection
 			return {
 				id: dbUser.id,
 				name: dbUser.name,

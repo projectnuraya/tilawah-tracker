@@ -73,10 +73,10 @@ export async function POST(request: NextRequest) {
 
 		const { name } = validation.data
 
-		// Generate unique public token
+		// Generate unique public token for group access
 		let publicToken = generatePublicToken()
 
-		// Ensure token is unique (extremely rare collision case)
+		// Retry up to 5 times in case of rare token collision
 		let attempts = 0
 		while (attempts < 5) {
 			const existing = await prisma.group.findUnique({
@@ -87,7 +87,8 @@ export async function POST(request: NextRequest) {
 			attempts++
 		}
 
-		// Create group and coordinator-group relationship in transaction
+		// Create group and coordinator-group relationship atomically
+		// This ensures both records are created together or neither
 		const group = await prisma.$transaction(async (tx) => {
 			const newGroup = await tx.group.create({
 				data: {

@@ -1,4 +1,11 @@
-import { apiError, apiSuccess, NotFoundError, requireAuth, requireGroupAccess, ValidationError } from '@/components/lib/auth-utils'
+import {
+	apiError,
+	apiSuccess,
+	NotFoundError,
+	requireAuth,
+	requireGroupAccess,
+	ValidationError,
+} from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
 import { updateGroupSchema, validateInput } from '@/components/lib/validators'
 import { NextRequest } from 'next/server'
@@ -9,7 +16,7 @@ interface RouteParams {
 
 /**
  * GET /api/v1/groups/[id]
- * Get group details
+ * Get group details including all coordinators and stats
  */
 export async function GET(request: NextRequest, { params }: RouteParams) {
 	try {
@@ -70,7 +77,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 
 /**
  * PATCH /api/v1/groups/[id]
- * Update group name
+ * Update group name (only coordinator can update their group)
  */
 export async function PATCH(request: NextRequest, { params }: RouteParams) {
 	try {
@@ -106,7 +113,8 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 
 /**
  * DELETE /api/v1/groups/[id]
- * Delete a group (cascades to all related data)
+ * Delete a group - cascades to periods, participants, and all related data
+ * Prevents orphaned data in the database
  */
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
 	try {

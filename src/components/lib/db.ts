@@ -1,5 +1,10 @@
 import { PrismaClient } from '@prisma/client'
 
+/**
+ * Global Prisma Client singleton
+ * Prevents multiple instances in development (Next.js Hot Module Reload)
+ * Configures query logging based on NODE_ENV
+ */
 const globalForPrisma = globalThis as unknown as {
 	prisma: PrismaClient | undefined
 }
