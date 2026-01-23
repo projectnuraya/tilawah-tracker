@@ -218,7 +218,7 @@ export function PeriodProgressList({ period, isActive, notFinishedCount }: Perio
 								{/* Accordion Header */}
 								<button
 									onClick={() => toggleJuzExpanded(juzNumber)}
-									className='w-full bg-muted hover:bg-muted/80 px-4 py-3 border-b-3 border-b-primary flex items-center justify-between transition-colors cursor-pointer'
+									className='w-full hover:bg-muted/80 px-4 py-3 border-b-3 border-b-primary flex items-center justify-between transition-colors cursor-pointer'
 									aria-expanded={isExpanded}>
 									<h3 className='font-medium text-left'>Juz {juz}</h3>
 									<div className='flex items-center gap-2'>
