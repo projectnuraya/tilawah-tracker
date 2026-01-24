@@ -28,6 +28,16 @@ export function PublicProgressList({ participantPeriods }: PublicProgressListPro
 	const [filterJuz, setFilterJuz] = useState<number | null>(null)
 	const [filterStatus, setFilterStatus] = useState<ProgressStatus | null>(null)
 
+	// Define Juz groups
+	const juzGroups = [
+		{ label: 'Juz 1-5', juzNumbers: [1, 2, 3, 4, 5] },
+		{ label: 'Juz 6-10', juzNumbers: [6, 7, 8, 9, 10] },
+		{ label: 'Juz 11-15', juzNumbers: [11, 12, 13, 14, 15] },
+		{ label: 'Juz 16-20', juzNumbers: [16, 17, 18, 19, 20] },
+		{ label: 'Juz 21-25', juzNumbers: [21, 22, 23, 24, 25] },
+		{ label: 'Juz 26-30', juzNumbers: [26, 27, 28, 29, 30] },
+	]
+
 	// Filter and search participants
 	const filteredParticipants = useMemo(() => {
 		let filtered = participantPeriods
@@ -156,16 +166,17 @@ export function PublicProgressList({ participantPeriods }: PublicProgressListPro
 						)}
 					</div>
 				) : (
-					Object.entries(byJuz).map(([juz, participants]) => {
-						if (participants.length === 0) return null
+					juzGroups.map((group, index) => {
+						const participantsInGroup = group.juzNumbers.flatMap((juz) => byJuz[juz] || [])
+						if (participantsInGroup.length === 0) return null
 
 						return (
-							<div key={juz} className='rounded-xl border border-border bg-card'>
+							<div key={index} className='rounded-xl border border-border bg-card'>
 								<div className='bg-muted/50 px-4 py-2 border-b border-border'>
-									<h3 className='font-medium'>Juz {juz}</h3>
+									<h3 className='font-medium'>{group.label}</h3>
 								</div>
 								<div className='divide-y divide-border overflow-hidden'>
-									{participants.map((pp) => (
+									{participantsInGroup.map((pp) => (
 										<div key={pp.id} className='flex items-center justify-between px-4 py-3'>
 											<div className='flex items-center gap-3'>
 												<div className='w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center'>
@@ -182,6 +193,7 @@ export function PublicProgressList({ participantPeriods }: PublicProgressListPro
 															</span>
 														)}
 													</div>
+													<p className='text-sm text-muted-foreground'>Juz {pp.juzNumber}</p>
 													{!pp.participant.isActive && (
 														<p className='text-sm text-muted-foreground'>Tidak Aktif</p>
 													)}

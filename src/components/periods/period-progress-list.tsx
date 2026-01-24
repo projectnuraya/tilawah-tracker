@@ -47,7 +47,17 @@ export function PeriodProgressList({ period, isActive, notFinishedCount }: Perio
 	const [searchQuery, setSearchQuery] = useState('')
 	const [filterJuz, setFilterJuz] = useState<number | null>(null)
 	const [filterStatus, setFilterStatus] = useState<ProgressStatus | null>(null)
-	const [expandedJuz, setExpandedJuz] = useState<Record<number, boolean>>({})
+	const [expandedGroups, setExpandedGroups] = useState<Record<number, boolean>>({})
+
+	// Define Juz groups
+	const juzGroups = [
+		{ label: 'Juz 1-5', juzNumbers: [1, 2, 3, 4, 5] },
+		{ label: 'Juz 6-10', juzNumbers: [6, 7, 8, 9, 10] },
+		{ label: 'Juz 11-15', juzNumbers: [11, 12, 13, 14, 15] },
+		{ label: 'Juz 16-20', juzNumbers: [16, 17, 18, 19, 20] },
+		{ label: 'Juz 21-25', juzNumbers: [21, 22, 23, 24, 25] },
+		{ label: 'Juz 26-30', juzNumbers: [26, 27, 28, 29, 30] },
+	]
 
 	// Filter and search participants
 	const filteredParticipants = useMemo(() => {
@@ -90,22 +100,25 @@ export function PeriodProgressList({ period, isActive, notFinishedCount }: Perio
 		setSearchQuery('')
 		setFilterJuz(null)
 		setFilterStatus(null)
-		setExpandedJuz({})
+		setExpandedGroups({})
 	}
 
-	const toggleJuzExpanded = (juzNumber: number) => {
-		setExpandedJuz((prev) => ({
+	const toggleGroupExpanded = (groupIndex: number) => {
+		setExpandedGroups((prev) => ({
 			...prev,
-			[juzNumber]: !prev[juzNumber],
+			[groupIndex]: !prev[groupIndex],
 		}))
 	}
 
-	const isJuzExpanded = (juzNumber: number) => {
-		// Auto-expand if actively filtered by Juz
-		if (filterJuz === juzNumber) return true
-		// Auto-expand if searching and this Juz has matching participants
-		if (searchQuery.trim() && byJuz[juzNumber]?.length > 0) return true
-		return expandedJuz[juzNumber] || false
+	const isGroupExpanded = (groupIndex: number, group: { label: string; juzNumbers: number[] }) => {
+		// Auto-expand if actively filtered by Juz in this group
+		if (filterJuz !== null && group.juzNumbers.includes(filterJuz)) return true
+		// Auto-expand if searching and this group has matching participants
+		if (searchQuery.trim()) {
+			const participantsInGroup = group.juzNumbers.flatMap((juz) => byJuz[juz] || [])
+			if (participantsInGroup.length > 0) return true
+		}
+		return expandedGroups[groupIndex] || false
 	}
 
 	return (
@@ -130,7 +143,7 @@ export function PeriodProgressList({ period, isActive, notFinishedCount }: Perio
 							setSearchQuery(newValue)
 							// Clear expanded state when search is cleared
 							if (!newValue.trim()) {
-								setExpandedJuz({})
+								setExpandedGroups({})
 							}
 						}}
 						className='w-full pl-10 pr-4 py-2.5 rounded-lg border border-border bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent transition'
@@ -208,21 +221,23 @@ export function PeriodProgressList({ period, isActive, notFinishedCount }: Perio
 						)}
 					</div>
 				) : (
-					Object.entries(byJuz).map(([juz, participants]) => {
-						if (participants.length === 0) return null
-						const juzNumber = Number(juz)
-						const isExpanded = isJuzExpanded(juzNumber)
+					juzGroups.map((group, index) => {
+						const participantsInGroup = group.juzNumbers.flatMap((juz) => byJuz[juz] || [])
+						if (participantsInGroup.length === 0) return null
+						const isExpanded = isGroupExpanded(index, group)
 
 						return (
-							<div key={juz} className='rounded-xl border border-border bg-card overflow-hidden'>
+							<div key={index} className='rounded-xl border border-border bg-card overflow-hidden'>
 								{/* Accordion Header */}
 								<button
-									onClick={() => toggleJuzExpanded(juzNumber)}
-									className='w-full hover:bg-muted/80 px-4 py-3 border-b-3 border-b-primary flex items-center justify-between transition-colors cursor-pointer'
+									onClick={() => toggleGroupExpanded(index)}
+									className='w-full hover:bg-muted/80 px-4 py-3 border-b-2 border-b-accent flex items-center justify-between transition-colors cursor-pointer'
 									aria-expanded={isExpanded}>
-									<h3 className='font-medium text-left'>Juz {juz}</h3>
+									<h3 className='font-medium text-left'>{group.label}</h3>
 									<div className='flex items-center gap-2'>
-										<span className='text-base text-muted-foreground'>{participants.length} peserta</span>
+										<span className='text-base text-muted-foreground'>
+											{participantsInGroup.length} peserta
+										</span>
 										<ChevronDown
 											className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${
 												isExpanded ? 'rotate-180' : ''
@@ -234,7 +249,7 @@ export function PeriodProgressList({ period, isActive, notFinishedCount }: Perio
 								{/* Accordion Content */}
 								{isExpanded && (
 									<div className='divide-y divide-border'>
-										{participants.map((pp) => (
+										{participantsInGroup.map((pp) => (
 											<div key={pp.id} className='flex items-center justify-between px-4 py-3'>
 												<div className='flex items-center gap-3'>
 													<div className='w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center'>
@@ -251,6 +266,7 @@ export function PeriodProgressList({ period, isActive, notFinishedCount }: Perio
 																</span>
 															)}
 														</div>
+														<p className='text-sm text-muted-foreground'>Juz {pp.juzNumber}</p>
 														{!pp.participant.isActive && (
 															<p className='text-sm text-muted-foreground'>Tidak Aktif</p>
 														)}

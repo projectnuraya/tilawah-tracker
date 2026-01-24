@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
 	/* Surfaces */
@@ -60,38 +60,38 @@
 		--primary: 160 79% 39%; /* Emerald Green #10b981 */
 		--primary-foreground: 0 0% 100%; /* White */
 		--primary-hover: 160 100% 31%; /* Deep Emerald #059669 */
-		
+
 		/* Secondary & Accent */
 		--secondary: 172 83% 32%; /* Deep Teal #0d9488 */
 		--secondary-foreground: 0 0% 100%;
 		--accent: 38 92% 50%; /* Warm Gold #f59e0b */
 		--accent-foreground: 0 0% 100%;
 		--warning: 32 95% 44%; /* Amber #d97706 */
-		
+
 		/* Backgrounds & Surfaces */
 		--background: 60 9% 98%; /* Off-White #fafaf9 */
 		--foreground: 24 6% 10%; /* Stone Black #1c1917 */
 		--card: 0 0% 100%; /* White */
 		--card-foreground: 24 6% 10%;
-		
+
 		/* Neutrals */
 		--muted: 60 5% 96%; /* Light Gray #f5f5f4 */
 		--muted-foreground: 25 5% 45%; /* Dark Gray #57534e */
 		--popover: 0 0% 100%;
 		--popover-foreground: 24 6% 10%;
-		
+
 		/* Borders & Inputs */
 		--border: 20 6% 90%; /* Border Gray #e7e5e4 */
 		--input: 20 6% 90%;
 		--ring: 160 79% 39%; /* Emerald focus ring */
-		
+
 		/* Status Colors */
 		--success: 142 71% 45%; /* Success Green #16a34a */
 		--success-foreground: 0 0% 100%;
 		--destructive: 0 72% 51%; /* Soft Red #dc2626 */
 		--destructive-foreground: 0 0% 100%;
 		--info: 221 83% 53%; /* Info Blue #3b82f6 */
-		
+
 		/* Status Backgrounds (for badges) */
 		--success-bg: 138 76% 91%; /* Light green #d1fae5 */
 		--success-bg-foreground: 160 84% 30%; /* Dark green text #047857 */
@@ -99,7 +99,7 @@
 		--error-bg-foreground: 0 70% 35%; /* Dark red text #991b1b */
 		--warning-bg: 43 96% 93%; /* Light yellow #fef3c7 */
 		--warning-bg-foreground: 35 92% 29%; /* Dark yellow text #92400e */
-		
+
 		/* Border Radius */
 		--radius: 0.75rem; /* 12px for cards */
 		--radius-sm: 0.5rem; /* 8px for buttons/inputs */
@@ -107,7 +107,6 @@
 		--radius-full: 9999px; /* pill shape for badges */
 	}
 }
-
 
 @layer base {
 	* {
@@ -117,7 +116,9 @@
 	body {
 		@apply bg-background text-foreground;
 		font-size: 16px;
-		font-feature-settings: "rlig" 1, "calt" 1;
+		font-feature-settings:
+			'rlig' 1,
+			'calt' 1;
 	}
 }
 
@@ -126,11 +127,11 @@
 	.badge-finished {
 		@apply bg-success-bg text-success-bg-foreground border-l-4 border-success;
 	}
-	
+
 	.badge-missed {
 		@apply bg-error-bg text-error-bg-foreground border-l-4 border-destructive;
 	}
-	
+
 	.badge-not-finished {
 		@apply bg-muted text-muted-foreground border-l-4 border-border;
 	}
