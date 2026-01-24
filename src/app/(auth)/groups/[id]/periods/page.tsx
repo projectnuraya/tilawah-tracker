@@ -86,18 +86,20 @@ export default async function PeriodsListPage({ params }: PageProps) {
 			</Link>
 
 			{/* Header */}
-			<div className='flex items-center justify-between mb-6'>
+			<div className='mb-6'>
 				<div>
 					<h1 className='text-2xl font-semibold'>Periode</h1>
 					<p className='text-muted-foreground text-base mt-1'>{group.periods.length} total periode</p>
 				</div>
-				<Link
-					href={`/groups/${group.id}/periods/new`}
-					className='inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-white font-medium shadow-sm transition hover:bg-primary/90'>
-					<Plus className='h-4 w-4' />
-					Periode Baru
-				</Link>
 			</div>
+
+			{/* Add Period Button */}
+			<Link
+				href={`/groups/${group.id}/periods/new`}
+				className='flex items-center justify-center gap-2 w-full rounded-xl bg-primary px-4 py-3.5 text-white font-semibold shadow-sm transition hover:bg-primary/90 mb-6'>
+				<Plus className='h-5 w-5' />
+				<span>Tambah Periode Baru</span>
+			</Link>
 
 			{/* Active Period */}
 			{activePeriod && (
