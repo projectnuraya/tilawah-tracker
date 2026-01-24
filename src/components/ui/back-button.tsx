@@ -22,11 +22,11 @@ export function BackButton({ href, label, className }: BackButtonProps) {
 				'transition-all duration-150 ease-in-out',
 				'focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2',
 				'active:bg-muted/70',
-				'min-h-[44px]',
+				'min-h-11',
 				'shadow-sm',
 				className,
 			)}>
-			<ArrowLeft className='h-5 w-5 flex-shrink-0' aria-hidden='true' />
+			<ArrowLeft className='h-5 w-5 shrink-0' aria-hidden='true' />
 			<span>{label}</span>
 		</Link>
 	)
