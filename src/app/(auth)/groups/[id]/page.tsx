@@ -1,9 +1,9 @@
-import { CopyTokenButton } from '@/components/groups/copy-token-button'
 import { ParticipantsPreview } from '@/components/groups/participants-preview'
+import { ShareFab } from '@/components/groups/share-fab'
 import { authOptions } from '@/components/lib/auth'
 import { prisma } from '@/components/lib/db'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { ArrowLeft, Calendar, ExternalLink, Plus, Settings, Users } from 'lucide-react'
+import { ArrowLeft, Calendar, Plus, Settings, Users } from 'lucide-react'
 import { getServerSession } from 'next-auth'
 import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
@@ -133,28 +133,6 @@ export default async function GroupDetailPage({ params }: PageProps) {
 				</Link>
 			</div>
 
-			{/* Public Link */}
-			<div className='rounded-xl border border-border bg-card p-4 mb-6'>
-				<h2 className='font-medium mb-2'>Link Publik</h2>
-				<p className='text-base text-muted-foreground mb-3'>Bagikan link ini kepada peserta untuk akses baca saja.</p>
-				<div className='flex items-center gap-2'>
-					<input
-						type='text'
-						value={publicUrl}
-						readOnly
-						className='flex-1 rounded-lg border border-border bg-muted px-3 py-2 text-base text-muted-foreground'
-					/>
-					<CopyTokenButton url={publicUrl} />
-					<Link
-						href={`/view/${group.publicToken}`}
-						target='_blank'
-						className='rounded-lg border border-border p-2 hover:bg-muted transition'
-						title='Open public view'>
-						<ExternalLink className='h-4 w-4' />
-					</Link>
-				</div>
-			</div>
-
 			{/* Active Period or Start New */}
 			<div className='rounded-xl border border-border bg-card p-4 mb-6'>
 				<div className='flex items-center justify-between mb-4'>
@@ -256,6 +234,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
 					</div>
 				</div>
 			)}
+			<ShareFab publicUrl={publicUrl} publicToken={group.publicToken} />
 		</div>
 	)
 }
