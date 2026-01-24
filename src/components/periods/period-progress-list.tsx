@@ -33,6 +33,12 @@ interface Period {
 		id: string
 		name: string
 		publicToken: string
+		coordinatorGroups: Array<{
+			coordinator: {
+				id: string
+				name: string | null
+			}
+		}>
 	}
 	participantPeriods: ParticipantPeriod[]
 }
@@ -117,7 +123,12 @@ export function PeriodProgressList({ period, isActive, notFinishedCount }: Perio
 			{/* Lock Period and Share Buttons */}
 			<div className='mb-6 flex items-center justify-between gap-4'>
 				<div>{isActive && <LockPeriodButton periodId={period.id} notFinishedCount={notFinishedCount} />}</div>
-				<ShareButton period={period} groupName={period.group.name} publicToken={period.group.publicToken} />
+				<ShareButton
+					period={period}
+					groupName={period.group.name}
+					publicToken={period.group.publicToken}
+					coordinators={period.group.coordinatorGroups.map((cg) => cg.coordinator)}
+				/>
 			</div>
 
 			{/* Search and Filters */}

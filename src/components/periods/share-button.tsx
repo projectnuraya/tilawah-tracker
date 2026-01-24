@@ -24,9 +24,13 @@ interface ShareButtonProps {
 	period: Period
 	groupName: string
 	publicToken: string
+	coordinators: Array<{
+		id: string
+		name: string | null
+	}>
 }
 
-export function ShareButton({ period, groupName, publicToken }: ShareButtonProps) {
+export function ShareButton({ period, groupName, publicToken, coordinators }: ShareButtonProps) {
 	const [isOpen, setIsOpen] = useState(false)
 	const [customMessage, setCustomMessage] = useState('')
 	const [copied, setCopied] = useState(false)
@@ -48,8 +52,16 @@ export function ShareButton({ period, groupName, publicToken }: ShareButtonProps
 			byJuz[pp.juzNumber].push(pp)
 		}
 
-		let text = `📖 *Grup Tilawah: ${groupName}*\n`
+		let text = `Bismillahirrahmanirrahim\n`
+		text += `_One Week One Juz_\n\n`
+		text += `📖 *Grup Tilawah: ${groupName}*\n`
 		text += `🗓️ Periode ${period.periodNumber}: ${startDate} - ${endDate}\n\n`
+
+		// add mudabbir info from server
+		text += `Mudabbir: ${coordinators
+			.map((c) => c.name)
+			.filter(Boolean)
+			.join(', ')}\n\n`
 
 		for (let juz = 1; juz <= 30; juz++) {
 			const participants = byJuz[juz]
@@ -68,14 +80,13 @@ export function ShareButton({ period, groupName, publicToken }: ShareButtonProps
 				const streakText = pp.missedStreak > 0 ? ` 💔×${pp.missedStreak}` : ''
 				text += `- ${pp.participant.name}${statusIcon ? ' ' + statusIcon : ''}${streakText}\n`
 			}
-			text += '\n'
 		}
 
 		if (customMessage.trim()) {
 			text += `---\n${customMessage.trim()}`
 		}
 
-		text += `\n\nanda bisa melihat progress secara real-time pada tautan berikut: ${typeof window !== 'undefined' ? window.location.origin : ''}/public/view/${publicToken}`
+		text += `\n\nanda bisa melihat progress secara real-time pada tautan berikut: ${typeof window !== 'undefined' ? window.location.origin : ''}/view/${publicToken}/periods/${period.id}`
 
 		return text
 	}

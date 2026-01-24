@@ -29,7 +29,18 @@ async function getPeriod(userId: string, groupId: string, periodId: string) {
 		where: { id: periodId, groupId },
 		include: {
 			group: {
-				select: { id: true, name: true, publicToken: true },
+				select: {
+					id: true,
+					name: true,
+					publicToken: true,
+					coordinatorGroups: {
+						include: {
+							coordinator: {
+								select: { id: true, name: true },
+							},
+						},
+					},
+				},
 			},
 			participantPeriods: {
 				include: {
