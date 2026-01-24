@@ -36,21 +36,35 @@ export function ProgressStatusDropdown({
 		if (buttonRef.current) {
 			const rect = buttonRef.current.getBoundingClientRect()
 			const dropdownWidth = 160 // w-40 = 10rem = 160px
+			const dropdownHeight = 144 // Estimated height for 3 options
 			const viewportWidth = window.innerWidth
+			const viewportHeight = window.innerHeight
 			const spaceOnRight = viewportWidth - rect.right
+			const spaceBelow = viewportHeight - rect.bottom
+			const spaceAbove = rect.top
 
-			// If not enough space on right, align to right edge instead
-			if (spaceOnRight < dropdownWidth) {
-				setDropdownPos({
-					top: rect.bottom + 8,
-					right: viewportWidth - rect.right,
-				})
+			let top: number
+			let left: number | undefined
+			let right: number | undefined
+
+			// Vertical positioning: prefer below, but use above if not enough space
+			if (spaceBelow >= dropdownHeight + 8) {
+				top = rect.bottom + 8
+			} else if (spaceAbove >= dropdownHeight + 8) {
+				top = rect.top - dropdownHeight - 8
 			} else {
-				setDropdownPos({
-					top: rect.bottom + 8,
-					left: rect.left,
-				})
+				// If neither has enough space, default to below
+				top = rect.bottom + 8
 			}
+
+			// Horizontal positioning
+			if (spaceOnRight < dropdownWidth) {
+				right = viewportWidth - rect.right
+			} else {
+				left = rect.left
+			}
+
+			setDropdownPos({ top, left, right })
 		}
 		setIsOpen(!isOpen)
 	}
