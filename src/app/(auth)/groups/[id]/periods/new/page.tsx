@@ -1,7 +1,8 @@
 'use client'
 
-import { AlertCircle, ArrowLeft, Loader2 } from 'lucide-react'
-import Link from 'next/link'
+import { BackButton } from '@/components/ui/back-button'
+import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
+import { AlertCircle, Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
@@ -104,13 +105,17 @@ export default function NewPeriodPage({ params }: PageProps) {
 
 	return (
 		<div>
-			{/* Back Button */}
-			<Link
-				href={`/groups/${groupId}`}
-				className='inline-flex items-center gap-1 text-base text-muted-foreground hover:text-foreground mb-6'>
-				<ArrowLeft className='h-4 w-4' />
-				Kembali ke Grup
-			</Link>
+			{/* Breadcrumb Navigation - Note: groupName would need to be fetched or passed */}
+			<BreadcrumbNav
+				items={[
+					{ label: 'Dashboard', href: '/dashboard' },
+					{ label: 'Grup', href: `/groups/${groupId}` },
+					{ label: 'Periode Baru', href: '#', current: true },
+				]}
+			/>
+
+			{/* Enhanced Back Button */}
+			<BackButton href={`/groups/${groupId}`} label='Kembali ke Grup' className='mb-6' />
 
 			<div className='max-w-md'>
 				<h1 className='text-2xl font-semibold mb-2'>Mulai Periode Baru</h1>

@@ -1,9 +1,10 @@
 import { authOptions } from '@/components/lib/auth'
 import { prisma } from '@/components/lib/db'
 import { PeriodProgressList } from '@/components/periods/period-progress-list'
-import { ArrowLeft, Calendar } from 'lucide-react'
+import { BackButton } from '@/components/ui/back-button'
+import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
+import { Calendar } from 'lucide-react'
 import { getServerSession } from 'next-auth'
-import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
 
 interface PageProps {
@@ -74,13 +75,18 @@ export default async function PeriodDetailPage({ params }: PageProps) {
 
 	return (
 		<div>
-			{/* Back Button */}
-			<Link
-				href={`/groups/${period.group.id}/periods`}
-				className='inline-flex items-center gap-1 text-base text-muted-foreground hover:text-foreground mb-6'>
-				<ArrowLeft className='h-4 w-4' />
-				Kembali ke Periode
-			</Link>
+			{/* Breadcrumb Navigation */}
+			<BreadcrumbNav
+				items={[
+					{ label: 'Dashboard', href: '/dashboard' },
+					{ label: period.group.name, href: `/groups/${period.group.id}` },
+					{ label: 'Periode', href: `/groups/${period.group.id}/periods` },
+					{ label: `Periode #${period.periodNumber}`, href: '#', current: true },
+				]}
+			/>
+
+			{/* Enhanced Back Button */}
+			<BackButton href={`/groups/${period.group.id}/periods`} label='Kembali ke Periode' className='mb-6' />
 
 			{/* Header */}
 			<div className='flex items-start justify-between mb-4'>

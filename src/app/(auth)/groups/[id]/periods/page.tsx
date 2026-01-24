@@ -1,6 +1,8 @@
 import { authOptions } from '@/components/lib/auth'
 import { prisma } from '@/components/lib/db'
-import { ArrowLeft, Calendar, Plus, Users } from 'lucide-react'
+import { BackButton } from '@/components/ui/back-button'
+import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
+import { Calendar, Plus, Users } from 'lucide-react'
 import { getServerSession } from 'next-auth'
 import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
@@ -77,13 +79,17 @@ export default async function PeriodsListPage({ params }: PageProps) {
 
 	return (
 		<div>
-			{/* Back Button */}
-			<Link
-				href={`/groups/${group.id}`}
-				className='inline-flex items-center gap-1 text-base text-muted-foreground hover:text-foreground mb-6'>
-				<ArrowLeft className='h-4 w-4' />
-				Kembali ke {group.name}
-			</Link>
+			{/* Breadcrumb Navigation */}
+			<BreadcrumbNav
+				items={[
+					{ label: 'Dashboard', href: '/dashboard' },
+					{ label: group.name, href: `/groups/${group.id}` },
+					{ label: 'Periode', href: '#', current: true },
+				]}
+			/>
+
+			{/* Enhanced Back Button */}
+			<BackButton href={`/groups/${group.id}`} label={`Kembali ke ${group.name}`} className='mb-6' />
 
 			{/* Header */}
 			<div className='mb-6'>

@@ -3,7 +3,9 @@ import { ShareFab } from '@/components/groups/share-fab'
 import { authOptions } from '@/components/lib/auth'
 import { prisma } from '@/components/lib/db'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { ArrowLeft, Calendar, Plus, Settings, Users } from 'lucide-react'
+import { BackButton } from '@/components/ui/back-button'
+import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
+import { Calendar, Plus, Settings, Users } from 'lucide-react'
 import { getServerSession } from 'next-auth'
 import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
@@ -79,13 +81,16 @@ export default async function GroupDetailPage({ params }: PageProps) {
 
 	return (
 		<div>
-			{/* Back Button */}
-			<Link
-				href='/dashboard'
-				className='inline-flex items-center gap-1 text-base text-muted-foreground hover:text-foreground mb-6'>
-				<ArrowLeft className='h-4 w-4' />
-				Kembali ke Dashboard
-			</Link>
+			{/* Breadcrumb Navigation */}
+			<BreadcrumbNav
+				items={[
+					{ label: 'Dashboard', href: '/dashboard' },
+					{ label: group.name, href: '#', current: true },
+				]}
+			/>
+
+			{/* Enhanced Back Button */}
+			<BackButton href='/dashboard' label='Kembali ke Dashboard' className='mb-6' />
 
 			{/* Group Header */}
 			<div className='flex items-start justify-between gap-4 mb-6'>

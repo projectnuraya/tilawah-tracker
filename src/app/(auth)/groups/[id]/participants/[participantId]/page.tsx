@@ -3,9 +3,9 @@ import { prisma } from '@/components/lib/db'
 import { DeactivateButton } from '@/components/participants/deactivate-button'
 import { EditParticipantForm } from '@/components/participants/edit-form'
 import { ReactivateButton } from '@/components/participants/reactivate-button'
-import { ArrowLeft } from 'lucide-react'
+import { BackButton } from '@/components/ui/back-button'
+import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
 import { getServerSession } from 'next-auth'
-import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
 
 interface PageProps {
@@ -74,13 +74,17 @@ export default async function ParticipantDetailPage({ params }: PageProps) {
 
 	return (
 		<div className='max-w-2xl mx-auto'>
-			{/* Back Button */}
-			<Link
-				href={`/groups/${participant.group.id}/participants`}
-				className='inline-flex items-center gap-1 text-base text-muted-foreground hover:text-foreground mb-6'>
-				<ArrowLeft className='h-4 w-4' />
-				Kembali ke Peserta
-			</Link>
+			{/* Breadcrumb Navigation */}
+			<BreadcrumbNav
+				items={[
+					{ label: 'Grup', href: `/groups/${participant.group.id}` },
+					{ label: 'Peserta', href: `/groups/${participant.group.id}/participants` },
+					{ label: participant.name, href: '#', current: true },
+				]}
+			/>
+
+			{/* Enhanced Back Button */}
+			<BackButton href={`/groups/${participant.group.id}/participants`} label='Kembali ke Peserta' className='mb-6' />
 
 			<div className='max-w-md mx-auto'>
 				{/* Header */}
