@@ -1,8 +1,9 @@
 import { authOptions } from '@/components/lib/auth'
 import { prisma } from '@/components/lib/db'
+import { CreatePeriodButton } from '@/components/periods/create-period-button'
 import { BackButton } from '@/components/ui/back-button'
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
-import { Calendar, Plus, Users } from 'lucide-react'
+import { Calendar, Users } from 'lucide-react'
 import { getServerSession } from 'next-auth'
 import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
@@ -100,12 +101,7 @@ export default async function PeriodsListPage({ params }: PageProps) {
 			</div>
 
 			{/* Add Period Button */}
-			<Link
-				href={`/groups/${group.id}/periods/new`}
-				className='flex items-center justify-center gap-2 w-full rounded-xl bg-primary px-4 py-3.5 text-white font-semibold shadow-sm transition hover:bg-primary/90 mb-6'>
-				<Plus className='h-5 w-5' />
-				<span>Tambah Periode Baru</span>
-			</Link>
+			<CreatePeriodButton groupId={group.id} hasActivePeriod={!!activePeriod} />
 
 			{/* Active Period */}
 			{activePeriod && (
