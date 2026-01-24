@@ -51,7 +51,7 @@ export default async function PublicPeriodDetailPage({ params }: PageProps) {
 				{/* Back Button */}
 				<Link
 					href={`/view/${token}`}
-					className='inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6'>
+					className='inline-flex items-center gap-1 text-base text-muted-foreground hover:text-foreground mb-6'>
 					<ArrowLeft className='h-4 w-4' />
 					Kembali ke Grup
 				</Link>
@@ -61,14 +61,14 @@ export default async function PublicPeriodDetailPage({ params }: PageProps) {
 					<div className='flex items-center gap-3 mb-2'>
 						<h1 className='text-2xl font-semibold'>Periode #{period.periodNumber}</h1>
 						<span
-							className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
+							className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-sm font-medium ${
 								isActive ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'
 							}`}>
 							{isActive ? 'Aktif' : 'Terkunci'}
 						</span>
 					</div>
-					<p className='text-muted-foreground text-sm mb-1'>{period.group.name}</p>
-					<div className='flex items-center gap-2 text-sm text-muted-foreground'>
+					<p className='text-muted-foreground text-base mb-1'>{period.group.name}</p>
+					<div className='flex items-center gap-2 text-base text-muted-foreground'>
 						<Calendar className='h-4 w-4' />
 						{new Date(period.startDate).toLocaleDateString('id-ID', { dateStyle: 'long' })} -{' '}
 						{new Date(period.endDate).toLocaleDateString('id-ID', { dateStyle: 'long' })}
@@ -79,15 +79,15 @@ export default async function PublicPeriodDetailPage({ params }: PageProps) {
 				<div className='grid grid-cols-3 gap-3 mb-8'>
 					<div className='rounded-lg border border-border bg-card p-4 text-center'>
 						<p className='text-3xl font-semibold text-primary mb-1'>{stats.finished}</p>
-						<p className='text-xs text-muted-foreground'>👑 Selesai</p>
+						<p className='text-sm text-muted-foreground'>👑 Selesai</p>
 					</div>
 					<div className='rounded-lg border border-border bg-card p-4 text-center'>
 						<p className='text-3xl font-semibold text-muted-foreground mb-1'>{stats.not_finished}</p>
-						<p className='text-xs text-muted-foreground'>⏳ Dalam Proses</p>
+						<p className='text-sm text-muted-foreground'>⏳ Dalam Proses</p>
 					</div>
 					<div className='rounded-lg border border-border bg-card p-4 text-center'>
 						<p className='text-3xl font-semibold text-destructive mb-1'>{stats.missed}</p>
-						<p className='text-xs text-muted-foreground'>💔 Terlewat</p>
+						<p className='text-sm text-muted-foreground'>💔 Terlewat</p>
 					</div>
 				</div>
 
@@ -95,13 +95,13 @@ export default async function PublicPeriodDetailPage({ params }: PageProps) {
 				<div className='rounded-lg border border-border bg-card p-4 mb-8'>
 					<div className='flex items-center justify-between'>
 						<div>
-							<p className='text-sm text-muted-foreground mb-1'>Progress Keseluruhan</p>
+							<p className='text-base text-muted-foreground mb-1'>Progress Keseluruhan</p>
 							<p className='text-2xl font-semibold'>
 								{stats.finished}/{stats.total}
 							</p>
 						</div>
 						<div className='text-right'>
-							<p className='text-sm text-muted-foreground mb-1'>Persentase</p>
+							<p className='text-base text-muted-foreground mb-1'>Persentase</p>
 							<p className='text-2xl font-semibold text-primary'>
 								{stats.total > 0 ? Math.round((stats.finished / stats.total) * 100) : 0}%
 							</p>
@@ -127,13 +127,13 @@ export default async function PublicPeriodDetailPage({ params }: PageProps) {
 						<div className='mx-auto w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4'>
 							<Calendar className='h-8 w-8 text-muted-foreground' />
 						</div>
-						<h2 className='text-lg font-medium mb-2'>Tidak Ada Peserta</h2>
+						<h2 className='text-xl font-medium mb-2'>Tidak Ada Peserta</h2>
 						<p className='text-muted-foreground text-sm'>Periode ini belum memiliki peserta.</p>
 					</div>
 				)}
 
 				{/* Footer */}
-				<div className='mt-12 pt-6 border-t border-border text-center text-sm text-muted-foreground'>
+				<div className='mt-12 pt-6 border-t border-border text-center text-base text-muted-foreground'>
 					<p>Tilawah Tracker - Sistem tracking tilawah grup</p>
 					<p className='mt-1'>PT Nuraya Digital Nusantara</p>
 				</div>

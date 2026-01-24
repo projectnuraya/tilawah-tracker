@@ -95,7 +95,7 @@ export function ShareButton({ period, groupName, publicToken }: ShareButtonProps
 		<>
 			<button
 				onClick={() => setIsOpen(true)}
-				className='inline-flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm font-medium hover:bg-muted transition'>
+				className='inline-flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-base font-medium hover:bg-muted transition'>
 				<Share2 className='h-4 w-4' />
 				Bagikan
 			</button>
@@ -117,7 +117,7 @@ export function ShareButton({ period, groupName, publicToken }: ShareButtonProps
 						<div className='p-4 space-y-4'>
 							{/* Custom Message Input */}
 							<div>
-								<label htmlFor='customMessage' className='block text-sm font-medium mb-2'>
+								<label htmlFor='customMessage' className='block text-base font-medium mb-2'>
 									Pesan Kustom (opsional)
 								</label>
 								<textarea
@@ -126,15 +126,15 @@ export function ShareButton({ period, groupName, publicToken }: ShareButtonProps
 									onChange={(e) => setCustomMessage(e.target.value)}
 									placeholder='e.g., Semangat semua! Mari kita lanjutkan tilawah minggu ini...'
 									rows={3}
-									className='w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none'
+									className='w-full rounded-lg border border-border bg-background px-3 py-2 text-base placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none'
 								/>
 							</div>
 
 							{/* Preview */}
 							<div>
-								<p className='text-sm font-medium mb-2'>Pratinjau</p>
+								<p className='text-base font-medium mb-2'>Pratinjau</p>
 								<div className='max-h-48 overflow-y-auto rounded-lg border border-border bg-muted/50 p-3'>
-									<pre className='text-xs whitespace-pre-wrap font-sans'>{generateShareText()}</pre>
+									<pre className='text-base whitespace-pre-wrap font-sans'>{generateShareText()}</pre>
 								</div>
 							</div>
 
@@ -155,7 +155,7 @@ export function ShareButton({ period, groupName, publicToken }: ShareButtonProps
 								)}
 							</button>
 
-							<p className='text-xs text-center text-muted-foreground'>
+							<p className='text-base text-center text-muted-foreground'>
 								Tempel teks yang disalin ke grup WhatsApp Anda.
 							</p>
 						</div>

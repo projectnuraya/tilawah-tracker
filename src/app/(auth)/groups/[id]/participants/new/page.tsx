@@ -98,7 +98,7 @@ export default function NewParticipantPage({ params }: PageProps) {
 			<div className='w-full max-w-2xl mb-6'>
 				<Link
 					href={`/groups/${groupId}/participants`}
-					className='inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground'>
+					className='inline-flex items-center gap-1 text-base text-muted-foreground hover:text-foreground'>
 					<ArrowLeft className='h-4 w-4' />
 					Kembali ke Peserta
 				</Link>
@@ -106,7 +106,7 @@ export default function NewParticipantPage({ params }: PageProps) {
 
 			<div className='w-full max-w-2xl'>
 				<h1 className='text-2xl font-semibold mb-2 text-center'>Tambah Peserta</h1>
-				<p className='text-muted-foreground text-lg mb-6 text-center'>
+				<p className='text-muted-foreground text-xl mb-6 text-center'>
 					Tambahkan satu atau lebih anggota ke grup tilawah ini.
 				</p>
 
@@ -117,7 +117,7 @@ export default function NewParticipantPage({ params }: PageProps) {
 							<div key={participant.id} className='flex gap-3 items-start'>
 								<div className='flex-1 space-y-3'>
 									<div>
-										<label htmlFor={`name-${participant.id}`} className='block text-lg font-medium mb-2'>
+										<label htmlFor={`name-${participant.id}`} className='block text-xl font-medium mb-2'>
 											Nama {index === 0 && <span className='text-destructive'>*</span>}
 										</label>
 										<input
@@ -133,8 +133,8 @@ export default function NewParticipantPage({ params }: PageProps) {
 									</div>
 
 									<div>
-										<label htmlFor={`whatsapp-${participant.id}`} className='block text-lg font-medium mb-2'>
-											WhatsApp <span className='text-muted-foreground text-xs'>(opsional)</span>
+										<label htmlFor={`whatsapp-${participant.id}`} className='block text-xl font-medium mb-2'>
+											WhatsApp <span className='text-muted-foreground text-sm'>(opsional)</span>
 										</label>
 										<input
 											type='tel'
@@ -168,14 +168,14 @@ export default function NewParticipantPage({ params }: PageProps) {
 						type='button'
 						onClick={addParticipantRow}
 						disabled={isLoading}
-						className='w-full rounded-lg border-2 border-dashed border-border px-4 py-3 text-lg font-medium text-muted-foreground hover:border-primary hover:text-primary transition disabled:opacity-50'>
+						className='w-full rounded-lg border-2 border-dashed border-border px-4 py-3 text-xl font-medium text-muted-foreground hover:border-primary hover:text-primary transition disabled:opacity-50'>
 						<Plus className='h-5 w-5 inline-block mr-2' />
 						Tambah Peserta Lagi
 					</button>
 
 					{error && (
 						<div className='rounded-lg bg-destructive/10 border border-destructive/20 px-4 py-3'>
-							<p className='text-sm text-destructive'>{error}</p>
+							<p className='text-base text-destructive'>{error}</p>
 						</div>
 					)}
 
@@ -197,7 +197,7 @@ export default function NewParticipantPage({ params }: PageProps) {
 					</div>
 				</form>
 
-				<p className='mt-6 text-sm text-muted-foreground text-center'>
+				<p className='mt-6 text-base text-muted-foreground text-center'>
 					Jika ada periode aktif, peserta akan otomatis mendapat nomor juz yang tersedia.
 				</p>
 			</div>

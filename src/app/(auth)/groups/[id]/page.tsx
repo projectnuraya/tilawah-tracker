@@ -82,7 +82,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
 			{/* Back Button */}
 			<Link
 				href='/dashboard'
-				className='inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6'>
+				className='inline-flex items-center gap-1 text-base text-muted-foreground hover:text-foreground mb-6'>
 				<ArrowLeft className='h-4 w-4' />
 				Kembali ke Dashboard
 			</Link>
@@ -91,13 +91,13 @@ export default async function GroupDetailPage({ params }: PageProps) {
 			<div className='flex items-start justify-between gap-4 mb-6'>
 				<div>
 					<h1 className='text-2xl font-semibold'>{group.name}</h1>
-					<p className='text-muted-foreground text-sm mt-1'>
+					<p className='text-muted-foreground text-base mt-1'>
 						Dibuat {new Date(group.createdAt).toLocaleDateString('id-ID', { dateStyle: 'medium' })}
 					</p>
 				</div>
 				<Link
 					href={`/groups/${group.id}/edit`}
-					className='inline-flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm font-medium hover:bg-muted transition'>
+					className='inline-flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-base font-medium hover:bg-muted transition'>
 					<Settings className='h-4 w-4' />
 					Ubah
 				</Link>
@@ -114,7 +114,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
 						</div>
 						<div>
 							<p className='text-2xl font-semibold'>{group.participants.length}</p>
-							<p className='text-sm text-muted-foreground'>Peserta</p>
+							<p className='text-base text-muted-foreground'>Peserta</p>
 						</div>
 					</div>
 				</Link>
@@ -127,7 +127,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
 						</div>
 						<div>
 							<p className='text-2xl font-semibold'>{group.periods.length}</p>
-							<p className='text-sm text-muted-foreground'>Periode</p>
+							<p className='text-base text-muted-foreground'>Periode</p>
 						</div>
 					</div>
 				</Link>
@@ -136,13 +136,13 @@ export default async function GroupDetailPage({ params }: PageProps) {
 			{/* Public Link */}
 			<div className='rounded-xl border border-border bg-card p-4 mb-6'>
 				<h2 className='font-medium mb-2'>Link Publik</h2>
-				<p className='text-sm text-muted-foreground mb-3'>Bagikan link ini kepada peserta untuk akses baca saja.</p>
+				<p className='text-base text-muted-foreground mb-3'>Bagikan link ini kepada peserta untuk akses baca saja.</p>
 				<div className='flex items-center gap-2'>
 					<input
 						type='text'
 						value={publicUrl}
 						readOnly
-						className='flex-1 rounded-lg border border-border bg-muted px-3 py-2 text-sm text-muted-foreground'
+						className='flex-1 rounded-lg border border-border bg-muted px-3 py-2 text-base text-muted-foreground'
 					/>
 					<CopyTokenButton url={publicUrl} />
 					<Link
@@ -162,7 +162,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
 					{!activePeriod && group.participants.length > 0 && (
 						<Link
 							href={`/groups/${group.id}/periods/new`}
-							className='inline-flex items-center gap-1 text-sm text-primary hover:underline'>
+							className='inline-flex items-center gap-1 text-base text-primary hover:underline'>
 							<Plus className='h-4 w-4' />
 							Mulai Periode Baru
 						</Link>
@@ -175,18 +175,18 @@ export default async function GroupDetailPage({ params }: PageProps) {
 						<div className='flex items-center justify-between'>
 							<div>
 								<p className='font-medium'>Periode #{activePeriod.periodNumber}</p>
-								<p className='text-sm text-muted-foreground'>
+								<p className='text-base text-muted-foreground'>
 									{new Date(activePeriod.startDate).toLocaleDateString('id-ID', { dateStyle: 'medium' })} -{' '}
 									{new Date(activePeriod.endDate).toLocaleDateString('id-ID', { dateStyle: 'medium' })}
 								</p>
 							</div>
-							<span className='inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary'>
+							<span className='inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-sm font-medium text-primary'>
 								Aktif
 							</span>
 						</div>
 					</Link>
 				) : (
-					<p className='text-sm text-muted-foreground'>
+					<p className='text-base text-muted-foreground'>
 						{group.participants.length === 0
 							? 'Tambahkan peserta terlebih dahulu sebelum memulai periode.'
 							: 'Tidak ada periode aktif. Mulai yang baru untuk melacak progress.'}
@@ -197,7 +197,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
 			{/* Mudabbir */}
 			<div className='rounded-xl border border-border bg-card p-4 mb-6'>
 				<h2 className='font-medium mb-2'>Mudabbir</h2>
-				<p className='text-sm text-muted-foreground mb-3'>Koordinator yang mengelola kelompok ini.</p>
+				<p className='text-base text-muted-foreground mb-3'>Koordinator yang mengelola kelompok ini.</p>
 				<div className='flex gap-3 overflow-x-auto'>
 					{group.coordinatorGroups.map((cg) => (
 						<div key={cg.coordinator.id} className='flex flex-col items-center gap-1 shrink-0'>
@@ -205,7 +205,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
 								<AvatarImage src={cg.coordinator.image || undefined} alt={cg.coordinator.name || 'Coordinator'} />
 								<AvatarFallback>{cg.coordinator.name?.charAt(0) || 'U'}</AvatarFallback>
 							</Avatar>
-							<span className='text-sm text-center'>{cg.coordinator.name || 'Unknown'}</span>
+							<span className='text-base text-center'>{cg.coordinator.name || 'Unknown'}</span>
 						</div>
 					))}
 				</div>
@@ -215,7 +215,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
 			<div className='rounded-xl border border-border bg-card p-4 mb-6'>
 				<div className='flex items-center justify-between mb-4'>
 					<h2 className='font-medium'>Peserta</h2>
-					<Link href={`/groups/${group.id}/participants`} className='text-lg text-primary hover:underline'>
+					<Link href={`/groups/${group.id}/participants`} className='text-xl text-primary hover:underline'>
 						Kelola
 					</Link>
 				</div>
@@ -227,7 +227,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
 				<div className='rounded-xl border border-border bg-card p-4 mb-6'>
 					<div className='flex items-center justify-between mb-4'>
 						<h2 className='font-medium'>Periode Terbaru</h2>
-						<Link href={`/groups/${group.id}/periods`} className='text-lg text-primary hover:underline'>
+						<Link href={`/groups/${group.id}/periods`} className='text-xl text-primary hover:underline'>
 							Lihat Semua
 						</Link>
 					</div>
@@ -238,13 +238,13 @@ export default async function GroupDetailPage({ params }: PageProps) {
 								href={`/groups/${group.id}/periods/${period.id}`}
 								className='flex items-center justify-between py-2 px-3 rounded-lg hover:bg-muted transition'>
 								<div>
-									<span className='text-lg font-medium'>Periode #{period.periodNumber}</span>
-									<p className='text-sm text-muted-foreground'>
+									<span className='text-xl font-medium'>Periode #{period.periodNumber}</span>
+									<p className='text-base text-muted-foreground'>
 										{new Date(period.startDate).toLocaleDateString('id-ID', { dateStyle: 'short' })}
 									</p>
 								</div>
 								<span
-									className={`inline-flex items-center rounded-full px-2 py-0.5 text-sm font-medium ${
+									className={`inline-flex items-center rounded-full px-2 py-0.5 text-base font-medium ${
 										period.status === 'active'
 											? 'bg-primary/10 text-primary'
 											: 'bg-muted text-muted-foreground'

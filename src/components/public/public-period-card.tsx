@@ -35,12 +35,12 @@ export function PublicPeriodCard({ period, token }: PublicPeriodCardProps) {
 					<div className='flex items-center gap-2 mb-1'>
 						<span className='font-medium'>Periode #{period.periodNumber}</span>
 						{isActive && (
-							<span className='inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary'>
+							<span className='inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-sm font-medium text-primary'>
 								Aktif
 							</span>
 						)}
 					</div>
-					<div className='flex items-center gap-2 text-sm text-muted-foreground'>
+					<div className='flex items-center gap-2 text-base text-muted-foreground'>
 						<Calendar className='h-3.5 w-3.5' />
 						<span>
 							{new Date(period.startDate).toLocaleDateString('id-ID', { dateStyle: 'medium' })} -{' '}
@@ -51,7 +51,7 @@ export function PublicPeriodCard({ period, token }: PublicPeriodCardProps) {
 			</div>
 
 			<div className='flex items-center justify-between'>
-				<div className='flex items-center gap-4 text-sm'>
+				<div className='flex items-center gap-4 text-base'>
 					<span className='inline-flex items-center gap-1'>
 						<Users className='h-3.5 w-3.5' />
 						{total}
@@ -60,10 +60,10 @@ export function PublicPeriodCard({ period, token }: PublicPeriodCardProps) {
 					<span className='text-destructive'>💔 {period.statusCounts.missed}</span>
 				</div>
 				<div className='text-right'>
-					<p className='text-lg font-semibold text-primary'>
+					<p className='text-xl font-semibold text-primary'>
 						{period.statusCounts.finished}/{total}
 					</p>
-					<p className='text-xs text-muted-foreground'>Selesai</p>
+					<p className='text-sm text-muted-foreground'>Selesai</p>
 				</div>
 			</div>
 		</Link>

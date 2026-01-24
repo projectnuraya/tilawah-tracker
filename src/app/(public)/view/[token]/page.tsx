@@ -56,7 +56,7 @@ export default async function PublicGroupPage({ params }: PageProps) {
 				<div className='rounded-lg border border-blue-200 bg-blue-50 p-4 mb-6'>
 					<div className='flex gap-3'>
 						<AlertCircle className='h-5 w-5 text-blue-600 shrink-0 mt-0.5' />
-						<div className='text-sm text-blue-800'>
+						<div className='text-base text-blue-800'>
 							<p className='font-medium mb-1'>Tampilan Publik</p>
 							<p className='text-blue-700'>
 								Halaman ini menampilkan progress tilawah grup secara real-time. Hanya koordinator yang dapat
@@ -77,7 +77,7 @@ export default async function PublicGroupPage({ params }: PageProps) {
 						<div className='mx-auto w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4'>
 							<Calendar className='h-8 w-8 text-muted-foreground' />
 						</div>
-						<h2 className='text-lg font-medium mb-2'>Tidak Ada Periode Aktif</h2>
+						<h2 className='text-xl font-medium mb-2'>Tidak Ada Periode Aktif</h2>
 						<p className='text-muted-foreground text-sm'>Koordinator belum memulai periode tilawah untuk grup ini.</p>
 					</div>
 				)}
@@ -100,13 +100,15 @@ export default async function PublicGroupPage({ params }: PageProps) {
 						<div className='mx-auto w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4'>
 							<Calendar className='h-8 w-8 text-muted-foreground' />
 						</div>
-						<h2 className='text-lg font-medium mb-2'>Belum Ada Periode</h2>
-						<p className='text-muted-foreground text-sm'>Koordinator belum membuat periode tilawah untuk grup ini.</p>
+						<h2 className='text-xl font-medium mb-2'>Belum Ada Periode</h2>
+						<p className='text-muted-foreground text-base'>
+							Koordinator belum membuat periode tilawah untuk grup ini.
+						</p>
 					</div>
 				)}
 
 				{/* Footer */}
-				<div className='mt-12 pt-6 border-t border-border text-center text-sm text-muted-foreground'>
+				<div className='mt-12 pt-6 border-t border-border text-center text-base text-muted-foreground'>
 					<p>Tilawah Tracker - Sistem tracking tilawah grup</p>
 					<p className='mt-1'>PT Nuraya Digital Nusantara</p>
 				</div>

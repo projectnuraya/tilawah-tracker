@@ -55,7 +55,7 @@ export default async function DashboardPage() {
 		<div>
 			{/* Header */}
 			<div className='mb-6'>
-				<h1 className='text-3xl font-bold mb-4'>Grup Saya</h1>
+				<h1 className='text-4xl font-bold mb-4'>Grup Saya</h1>
 				<Link
 					href='/groups/new'
 					className='flex items-center justify-center gap-2 w-full rounded-xl bg-primary px-4 py-3.5 text-white font-semibold shadow-sm transition hover:bg-primary/90'>
@@ -70,8 +70,8 @@ export default async function DashboardPage() {
 					<div className='mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4'>
 						<Users className='h-8 w-8 text-primary' />
 					</div>
-					<h2 className='text-lg font-medium mb-2'>Belum ada grup</h2>
-					<p className='text-muted-foreground text-sm mb-6'>
+					<h2 className='text-2xl font-medium mb-2'>Belum ada grup</h2>
+					<p className='text-muted-foreground text-base mb-6'>
 						Buat grup tilawah pertama Anda untuk mulai melacak progress.
 					</p>
 					<Link
@@ -91,11 +91,11 @@ export default async function DashboardPage() {
 							{/* Status Badge */}
 							<div>
 								{group.hasActivePeriod ? (
-									<span className='inline-flex items-center rounded-full bg-green-500/20 px-3 py-1 text-xs font-bold text-green-600'>
+									<span className='inline-flex items-center rounded-full bg-green-500/20 px-3 py-1 text-sm font-bold text-green-600'>
 										● SEDANG BERLANGSUNG
 									</span>
 								) : (
-									<span className='inline-flex items-center rounded-full bg-muted px-3 py-1 text-xs font-bold text-muted-foreground'>
+									<span className='inline-flex items-center rounded-full bg-muted px-3 py-1 text-sm font-bold text-muted-foreground'>
 										TIDAK ADA PERIODE AKTIF
 									</span>
 								)}
@@ -103,7 +103,7 @@ export default async function DashboardPage() {
 
 							{/* Content */}
 							<div className='flex-1 py-5'>
-								<h3 className='font-bold text-lg mb-4 pb-4 border-b border-border leading-tight'>{group.name}</h3>
+								<h3 className='font-bold text-xl mb-4 pb-4 border-b border-border leading-tight'>{group.name}</h3>
 
 								{/* Stats - with icons */}
 								<div className='flex items-center gap-8'>
@@ -112,7 +112,7 @@ export default async function DashboardPage() {
 											<Users className='h-5 w-5 text-primary' />
 										</div>
 										<div className='flex flex-col gap-0'>
-											<span className='text-xs font-bold text-muted-foreground tracking-wide'>ANGGOTA</span>
+											<span className='text-sm font-bold text-muted-foreground tracking-wide'>ANGGOTA</span>
 											<span className='text-base font-bold text-foreground'>
 												{group.participantCount} Orang
 											</span>
@@ -123,7 +123,7 @@ export default async function DashboardPage() {
 											<Calendar className='h-5 w-5 text-primary' />
 										</div>
 										<div className='flex flex-col gap-0'>
-											<span className='text-xs font-bold text-muted-foreground tracking-wide'>PERIODE</span>
+											<span className='text-sm font-bold text-muted-foreground tracking-wide'>PERIODE</span>
 											<span className='text-base font-bold text-foreground'>Ke-{group.periodCount}</span>
 										</div>
 									</div>

@@ -54,14 +54,14 @@ function SignInContent() {
 
 				{/* Sign-in Card */}
 				<div className='rounded-xl border border-border bg-card p-6 shadow-sm'>
-					<h2 className='text-lg font-medium text-center mb-6'>
+					<h2 className='text-xl font-medium text-center mb-6'>
 						{isDemoModeEnabled ? 'Demo Mode' : 'Masuk sebagai Koordinator'}
 					</h2>
 
 					{isDemoModeEnabled ? (
 						<form onSubmit={handleDemoSignIn} className='space-y-4'>
 							<div>
-								<label htmlFor='username' className='block text-sm font-medium text-foreground mb-1'>
+								<label htmlFor='username' className='block text-base font-medium text-foreground mb-1'>
 									Username
 								</label>
 								<input
@@ -75,7 +75,7 @@ function SignInContent() {
 								/>
 							</div>
 							<div>
-								<label htmlFor='password' className='block text-sm font-medium text-foreground mb-1'>
+								<label htmlFor='password' className='block text-base font-medium text-foreground mb-1'>
 									Password
 								</label>
 								<input
@@ -94,7 +94,7 @@ function SignInContent() {
 								className='w-full rounded-lg bg-primary px-4 py-3 text-primary-foreground font-medium shadow-sm transition hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'>
 								{isLoading ? 'Sedang masuk...' : 'Masuk ke Demo'}
 							</button>
-							<p className='mt-4 text-xs text-center text-muted-foreground'>Demo credentials: demo / demopass123</p>
+							<p className='mt-4 text-sm text-center text-muted-foreground'>Demo credentials: demo / demopass123</p>
 						</form>
 					) : (
 						<>
@@ -112,7 +112,7 @@ function SignInContent() {
 								)}
 							</button>
 
-							<p className='mt-4 text-xs text-center text-muted-foreground'>
+							<p className='mt-4 text-sm text-center text-muted-foreground'>
 								Hanya koordinator yang terdaftar yang dapat masuk.
 							</p>
 						</>
@@ -120,7 +120,7 @@ function SignInContent() {
 				</div>
 
 				{/* Footer */}
-				<p className='text-center text-sm text-muted-foreground'>Butuh akses? Hubungi admin grup Anda.</p>
+				<p className='text-center text-base text-muted-foreground'>Butuh akses? Hubungi admin grup Anda.</p>
 			</div>
 		</div>
 	)

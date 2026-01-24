@@ -9,7 +9,7 @@ export default function HomePage() {
 					<Image src='/favicon.png' alt='Tilawah Tracker Logo' width={40} height={40} />
 					Tilawah Tracker
 				</h1>
-				<p className='text-lg text-muted-foreground'>
+				<p className='text-xl text-muted-foreground'>
 					Lacak kemajuan membaca Al-Qur&apos;an kelompok untuk program &quot;Satu Minggu Satu Juz&quot;.
 				</p>
 
@@ -21,7 +21,7 @@ export default function HomePage() {
 					</Link>
 				</div>
 
-				<p className='text-sm text-muted-foreground mt-8'>
+				<p className='text-base text-muted-foreground mt-8'>
 					Punya tautan publik? Tempelkan langsung di browser Anda untuk melihat kemajuan kelompok.
 				</p>
 			</div>

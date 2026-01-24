@@ -67,7 +67,7 @@ export function EditParticipantForm({ participant }: EditParticipantFormProps) {
 	return (
 		<form onSubmit={handleSubmit} className='space-y-4'>
 			<div>
-				<label htmlFor='name' className='block text-sm font-medium mb-2'>
+				<label htmlFor='name' className='block text-base font-medium mb-2'>
 					Nama
 				</label>
 				<input
@@ -81,7 +81,7 @@ export function EditParticipantForm({ participant }: EditParticipantFormProps) {
 			</div>
 
 			<div>
-				<label htmlFor='whatsapp' className='block text-sm font-medium mb-2'>
+				<label htmlFor='whatsapp' className='block text-base font-medium mb-2'>
 					Nomor WhatsApp
 				</label>
 				<input
@@ -95,8 +95,8 @@ export function EditParticipantForm({ participant }: EditParticipantFormProps) {
 				/>
 			</div>
 
-			{error && <p className='text-sm text-destructive'>{error}</p>}
-			{success && <p className='text-sm text-primary'>Berhasil disimpan!</p>}
+			{error && <p className='text-base text-destructive'>{error}</p>}
+			{success && <p className='text-base text-primary'>Berhasil disimpan!</p>}
 
 			<button
 				type='submit'

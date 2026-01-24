@@ -77,7 +77,7 @@ export default async function PeriodDetailPage({ params }: PageProps) {
 			{/* Back Button */}
 			<Link
 				href={`/groups/${period.group.id}/periods`}
-				className='inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6'>
+				className='inline-flex items-center gap-1 text-base text-muted-foreground hover:text-foreground mb-6'>
 				<ArrowLeft className='h-4 w-4' />
 				Kembali ke Periode
 			</Link>
@@ -88,13 +88,13 @@ export default async function PeriodDetailPage({ params }: PageProps) {
 					<div className='flex items-center gap-3 mb-1'>
 						<h1 className='text-2xl font-semibold'>Periode #{period.periodNumber}</h1>
 						<span
-							className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
+							className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-sm font-medium ${
 								isActive ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'
 							}`}>
 							{isActive ? 'Aktif' : 'Terkunci'}
 						</span>
 					</div>
-					<div className='flex items-center gap-2 text-sm text-muted-foreground'>
+					<div className='flex items-center gap-2 text-base text-muted-foreground'>
 						<Calendar className='h-4 w-4' />
 						{new Date(period.startDate).toLocaleDateString('id-ID', { dateStyle: 'long' })} -{' '}
 						{new Date(period.endDate).toLocaleDateString('id-ID', { dateStyle: 'long' })}
@@ -106,15 +106,15 @@ export default async function PeriodDetailPage({ params }: PageProps) {
 			<div className='grid grid-cols-3 gap-3 mb-6'>
 				<div className='rounded-lg border border-border bg-card p-3 text-center'>
 					<p className='text-2xl font-semibold text-primary'>{stats.finished}</p>
-					<p className='text-sm text-muted-foreground'>👑 Selesai</p>
+					<p className='text-base text-muted-foreground'>👑 Selesai</p>
 				</div>
 				<div className='rounded-lg border border-border bg-card p-3 text-center'>
 					<p className='text-2xl font-semibold text-muted-foreground'>{stats.not_finished}</p>
-					<p className='text-sm text-muted-foreground'>⏳ Dalam Proses</p>
+					<p className='text-base text-muted-foreground'>⏳ Dalam Proses</p>
 				</div>
 				<div className='rounded-lg border border-border bg-card p-3 text-center'>
 					<p className='text-2xl font-semibold text-destructive'>{stats.missed}</p>
-					<p className='text-sm text-muted-foreground'>💔 Terlewat</p>
+					<p className='text-base text-muted-foreground'>💔 Terlewat</p>
 				</div>
 			</div>
 

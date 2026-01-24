@@ -107,20 +107,20 @@ export default function NewPeriodPage({ params }: PageProps) {
 			{/* Back Button */}
 			<Link
 				href={`/groups/${groupId}`}
-				className='inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6'>
+				className='inline-flex items-center gap-1 text-base text-muted-foreground hover:text-foreground mb-6'>
 				<ArrowLeft className='h-4 w-4' />
 				Kembali ke Grup
 			</Link>
 
 			<div className='max-w-md'>
 				<h1 className='text-2xl font-semibold mb-2'>Mulai Periode Baru</h1>
-				<p className='text-muted-foreground text-sm mb-6'>Buat periode tilawah mingguan baru untuk grup Anda.</p>
+				<p className='text-muted-foreground text-base mb-6'>Buat periode tilawah mingguan baru untuk grup Anda.</p>
 
 				{/* Info Card */}
 				<div className='rounded-lg border border-blue-200 bg-blue-50 p-4 mb-6'>
 					<div className='flex gap-3'>
 						<AlertCircle className='h-5 w-5 text-blue-600 shrink-0 mt-0.5' />
-						<div className='text-sm text-blue-800'>
+						<div className='text-base text-blue-800'>
 							<p className='font-medium mb-1'>Aturan Periode</p>
 							<ul className='list-disc list-inside space-y-1 text-blue-700'>
 								<li>Harus dimulai pada hari Ahad</li>
@@ -133,7 +133,7 @@ export default function NewPeriodPage({ params }: PageProps) {
 
 				<form onSubmit={handleSubmit} className='space-y-4'>
 					<div>
-						<label htmlFor='startDate' className='block text-sm font-medium mb-2'>
+						<label htmlFor='startDate' className='block text-base font-medium mb-2'>
 							Tanggal Mulai (Ahad)
 						</label>
 						<div className='relative'>
@@ -148,13 +148,13 @@ export default function NewPeriodPage({ params }: PageProps) {
 								disabled={isLoading}
 							/>
 						</div>
-						{dateError && <p className='mt-2 text-sm text-destructive'>{dateError}</p>}
+						{dateError && <p className='mt-2 text-base text-destructive'>{dateError}</p>}
 					</div>
 
 					{startDate && !dateError && (
 						<div className='rounded-lg border border-border bg-muted/50 p-4'>
-							<p className='text-sm font-medium mb-2'>Durasi Periode</p>
-							<p className='text-sm text-muted-foreground'>
+							<p className='text-base font-medium mb-2'>Durasi Periode</p>
+							<p className='text-base text-muted-foreground'>
 								{new Date(startDate).toLocaleDateString('id-ID', {
 									weekday: 'long',
 									year: 'numeric',
@@ -174,7 +174,7 @@ export default function NewPeriodPage({ params }: PageProps) {
 
 					{error && (
 						<div className='rounded-lg bg-destructive/10 border border-destructive/20 px-4 py-3'>
-							<p className='text-sm text-destructive'>{error}</p>
+							<p className='text-base text-destructive'>{error}</p>
 						</div>
 					)}
 

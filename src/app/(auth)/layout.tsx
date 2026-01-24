@@ -43,8 +43,10 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 					titleHref='/dashboard'
 					rightContent={
 						<nav className='flex items-center gap-4'>
-							<span className='text-sm text-muted-foreground hidden sm:inline'>{session.user?.name}</span>
-							<button onClick={() => setShowLogoutModal(true)} className='text-sm text-destructive hover:underline'>
+							<span className='text-base text-muted-foreground hidden sm:inline'>{session.user?.name}</span>
+							<button
+								onClick={() => setShowLogoutModal(true)}
+								className='text-base text-destructive hover:underline'>
 								Logout
 							</button>
 						</nav>

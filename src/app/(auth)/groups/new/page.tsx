@@ -51,18 +51,18 @@ export default function NewGroupPage() {
 			{/* Back Button */}
 			<Link
 				href='/dashboard'
-				className='inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6'>
+				className='inline-flex items-center gap-1 text-base text-muted-foreground hover:text-foreground mb-6'>
 				<ArrowLeft className='h-4 w-4' />
 				Kembali ke Dashboard
 			</Link>
 
 			<div className='max-w-md'>
 				<h1 className='text-2xl font-semibold mb-2'>Buat Grup Baru</h1>
-				<p className='text-muted-foreground text-sm mb-6'>Mulai grup tilawah baru untuk komunitas Anda.</p>
+				<p className='text-muted-foreground text-base mb-6'>Mulai grup tilawah baru untuk komunitas Anda.</p>
 
 				<form onSubmit={handleSubmit} className='space-y-4'>
 					<div>
-						<label htmlFor='name' className='block text-sm font-medium mb-2'>
+						<label htmlFor='name' className='block text-base font-medium mb-2'>
 							Nama Grup
 						</label>
 						<input
@@ -75,7 +75,7 @@ export default function NewGroupPage() {
 							disabled={isLoading}
 							autoFocus
 						/>
-						{error && <p className='mt-2 text-sm text-destructive'>{error}</p>}
+						{error && <p className='mt-2 text-base text-destructive'>{error}</p>}
 					</div>
 
 					<div className='pt-2'>
@@ -95,7 +95,7 @@ export default function NewGroupPage() {
 					</div>
 				</form>
 
-				<p className='mt-6 text-xs text-muted-foreground'>
+				<p className='mt-6 text-sm text-muted-foreground'>
 					Link publik akan dibuat secara otomatis. Anda dapat membagikan link ini kepada peserta untuk akses baca saja.
 				</p>
 			</div>

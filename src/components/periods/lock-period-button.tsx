@@ -36,11 +36,11 @@ export function LockPeriodButton({ periodId, notFinishedCount }: LockPeriodButto
 	if (isConfirming) {
 		return (
 			<div className='rounded-xl border border-amber-200 bg-amber-50 p-4'>
-				<p className='text-sm text-amber-800 mb-3'>
+				<p className='text-base text-amber-800 mb-3'>
 					{notFinishedCount > 0 ? (
 						<>
-							<strong>{notFinishedCount} peserta</strong> akan ditandai sebagai <strong>Terlewat (💔)</strong>. Tindakan ini tidak dapat
-							dibatalkan.
+							<strong>{notFinishedCount} peserta</strong> akan ditandai sebagai <strong>Terlewat (💔)</strong>.
+							Tindakan ini tidak dapat dibatalkan.
 						</>
 					) : (
 						<>Apakah Anda yakin ingin mengunci periode ini? Tindakan ini tidak dapat dibatalkan.</>
@@ -50,7 +50,7 @@ export function LockPeriodButton({ periodId, notFinishedCount }: LockPeriodButto
 					<button
 						onClick={handleLock}
 						disabled={isLocking}
-						className='rounded-lg bg-amber-600 px-4 py-2 text-sm text-white font-medium hover:bg-amber-700 disabled:opacity-50'>
+						className='rounded-lg bg-amber-600 px-4 py-2 text-base text-white font-medium hover:bg-amber-700 disabled:opacity-50'>
 						{isLocking ? (
 							<span className='inline-flex items-center gap-2'>
 								<Loader2 className='h-4 w-4 animate-spin' />
@@ -63,7 +63,7 @@ export function LockPeriodButton({ periodId, notFinishedCount }: LockPeriodButto
 					<button
 						onClick={() => setIsConfirming(false)}
 						disabled={isLocking}
-						className='rounded-lg border border-border px-4 py-2 text-sm font-medium hover:bg-muted disabled:opacity-50'>
+						className='rounded-lg border border-border px-4 py-2 text-base font-medium hover:bg-muted disabled:opacity-50'>
 						Batal
 					</button>
 				</div>
@@ -74,7 +74,7 @@ export function LockPeriodButton({ periodId, notFinishedCount }: LockPeriodButto
 	return (
 		<button
 			onClick={() => setIsConfirming(true)}
-			className='inline-flex items-center gap-2 rounded-lg border border-amber-500/50 px-4 py-2.5 text-sm font-medium text-amber-600 hover:bg-amber-50 transition'>
+			className='inline-flex items-center gap-2 rounded-lg border border-amber-500/50 px-4 py-2.5 text-base font-medium text-amber-600 hover:bg-amber-50 transition'>
 			<Lock className='h-4 w-4' />
 			Kunci Periode
 		</button>

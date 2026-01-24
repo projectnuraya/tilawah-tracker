@@ -77,7 +77,7 @@ export default async function ParticipantDetailPage({ params }: PageProps) {
 			{/* Back Button */}
 			<Link
 				href={`/groups/${participant.group.id}/participants`}
-				className='inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6'>
+				className='inline-flex items-center gap-1 text-base text-muted-foreground hover:text-foreground mb-6'>
 				<ArrowLeft className='h-4 w-4' />
 				Kembali ke Peserta
 			</Link>
@@ -87,12 +87,12 @@ export default async function ParticipantDetailPage({ params }: PageProps) {
 				<div className='flex items-start justify-between mb-6'>
 					<div>
 						<h1 className='text-2xl font-semibold'>{participant.name}</h1>
-						<p className='text-muted-foreground text-sm mt-1'>
+						<p className='text-muted-foreground text-base mt-1'>
 							{participant.isActive ? 'Peserta aktif' : 'Peserta tidak aktif'}
 						</p>
 					</div>
 					{!participant.isActive && (
-						<span className='inline-flex items-center rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground'>
+						<span className='inline-flex items-center rounded-full bg-muted px-2.5 py-0.5 text-sm font-medium text-muted-foreground'>
 							Tidak Aktif
 						</span>
 					)}
@@ -128,11 +128,11 @@ export default async function ParticipantDetailPage({ params }: PageProps) {
 							{participant.participantPeriods.map((pp) => (
 								<div key={pp.id} className='flex items-center justify-between'>
 									<div>
-										<p className='text-lg font-medium'>Periode #{pp.period.periodNumber}</p>
-``										<p className='text-lg text-muted-foreground'>Juz {pp.juzNumber}</p>
+										<p className='text-xl font-medium'>Periode #{pp.period.periodNumber}</p>
+										`` <p className='text-xl text-muted-foreground'>Juz {pp.juzNumber}</p>
 									</div>
 									<span
-										className={`inline-flex items-center gap-1 text-lg ${
+										className={`inline-flex items-center gap-1 text-xl ${
 											pp.progressStatus === 'finished'
 												? 'text-primary'
 												: pp.progressStatus === 'missed'
@@ -154,7 +154,7 @@ export default async function ParticipantDetailPage({ params }: PageProps) {
 					{participant.isActive ? (
 						<>
 							<h2 className='font-medium mb-2'>Nonaktifkan Peserta</h2>
-							<p className='text-sm text-muted-foreground mb-4'>
+							<p className='text-base text-muted-foreground mb-4'>
 								Peserta yang dinonaktifkan tidak akan muncul di periode baru tetapi riwayatnya tetap tersimpan.
 							</p>
 							<DeactivateButton participantId={participant.id} groupId={participant.group.id} />
@@ -162,7 +162,7 @@ export default async function ParticipantDetailPage({ params }: PageProps) {
 					) : (
 						<>
 							<h2 className='font-medium mb-2'>Aktifkan Kembali Peserta</h2>
-							<p className='text-sm text-muted-foreground mb-4'>
+							<p className='text-base text-muted-foreground mb-4'>
 								Aktifkan kembali peserta ini untuk menyertakan mereka di periode mendatang.
 							</p>
 							<ReactivateButton participantId={participant.id} groupId={participant.group.id} />

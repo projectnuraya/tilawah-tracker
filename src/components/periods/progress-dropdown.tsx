@@ -17,7 +17,12 @@ const STATUS_OPTIONS = [
 	{ value: 'missed', label: 'Terlewat', icon: '💔' },
 ]
 
-export function ProgressStatusDropdown({ participantPeriodId, currentStatus, participantName, whatsappNumber }: ProgressStatusDropdownProps) {
+export function ProgressStatusDropdown({
+	participantPeriodId,
+	currentStatus,
+	participantName,
+	whatsappNumber,
+}: ProgressStatusDropdownProps) {
 	const router = useRouter()
 	const [status, setStatus] = useState(currentStatus)
 	const [isOpen, setIsOpen] = useState(false)
@@ -108,7 +113,7 @@ export function ProgressStatusDropdown({ participantPeriodId, currentStatus, par
 					ref={buttonRef}
 					onClick={handleOpenDropdown}
 					disabled={isSaving}
-					className={`inline-flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm font-medium transition ${
+					className={`inline-flex items-center gap-2 rounded-lg border px-3 py-1.5 text-base font-medium transition ${
 						status === 'finished'
 							? 'border-primary/30 bg-primary/10 text-primary'
 							: status === 'missed'
@@ -134,7 +139,7 @@ export function ProgressStatusDropdown({ participantPeriodId, currentStatus, par
 								<button
 									key={option.value}
 									onClick={() => handleStatusChange(option.value)}
-									className='flex items-center justify-between w-full px-3 py-2 text-sm hover:bg-muted transition'>
+									className='flex items-center justify-between w-full px-3 py-2 text-base hover:bg-muted transition'>
 									<span className='flex items-center gap-2'>
 										<span>{option.icon}</span>
 										<span>{option.label}</span>

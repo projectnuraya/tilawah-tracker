@@ -98,18 +98,18 @@ export default function EditGroupPage({ params }: PageProps) {
 			{/* Back Button */}
 			<Link
 				href={`/groups/${groupId}`}
-				className='inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6'>
+				className='inline-flex items-center gap-1 text-base text-muted-foreground hover:text-foreground mb-6'>
 				<ArrowLeft className='h-4 w-4' />
 				Kembali ke Grup
 			</Link>
 
 			<div className='max-w-md'>
 				<h1 className='text-2xl font-semibold mb-2'>Edit Grup</h1>
-				<p className='text-muted-foreground text-sm mb-6'>Perbarui pengaturan grup Anda.</p>
+				<p className='text-muted-foreground text-base mb-6'>Perbarui pengaturan grup Anda.</p>
 
 				<form onSubmit={handleSubmit} className='space-y-4'>
 					<div>
-						<label htmlFor='name' className='block text-sm font-medium mb-2'>
+						<label htmlFor='name' className='block text-base font-medium mb-2'>
 							Nama Grup
 						</label>
 						<input
@@ -122,7 +122,7 @@ export default function EditGroupPage({ params }: PageProps) {
 							disabled={isSaving}
 							autoFocus
 						/>
-						{error && <p className='mt-2 text-sm text-destructive'>{error}</p>}
+						{error && <p className='mt-2 text-base text-destructive'>{error}</p>}
 					</div>
 
 					<div className='flex gap-3 pt-2'>
@@ -151,7 +151,7 @@ export default function EditGroupPage({ params }: PageProps) {
 			{groupId && originalName && (
 				<div className='mt-auto rounded-xl border border-destructive/20 bg-destructive/5 p-4'>
 					<h2 className='font-medium text-destructive mb-2'>Zona Berbahaya</h2>
-					<p className='text-sm text-muted-foreground mb-4'>
+					<p className='text-base text-muted-foreground mb-4'>
 						Menghapus grup ini akan menghapus permanen semua peserta, periode, dan data progress.
 					</p>
 					<DeleteGroupButton groupId={groupId} groupName={originalName} />

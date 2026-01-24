@@ -8,7 +8,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
 			<Header
 				titleHref='/'
 				rightContent={
-					<Link href='/auth/signin' className='text-sm text-primary hover:underline'>
+					<Link href='/auth/signin' className='text-base text-primary hover:underline'>
 						Login
 					</Link>
 				}

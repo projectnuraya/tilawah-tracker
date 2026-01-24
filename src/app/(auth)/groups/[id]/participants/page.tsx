@@ -97,7 +97,7 @@ export default async function ParticipantsPage({ params }: PageProps) {
 			{/* Back Button */}
 			<Link
 				href={`/groups/${group.id}`}
-				className='inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6'>
+				className='inline-flex items-center gap-1 text-base text-muted-foreground hover:text-foreground mb-6'>
 				<ArrowLeft className='h-4 w-4' />
 				Kembali ke {group.name}
 			</Link>
@@ -106,7 +106,7 @@ export default async function ParticipantsPage({ params }: PageProps) {
 			<div className='flex items-center justify-between mb-6'>
 				<div>
 					<h1 className='text-2xl font-semibold'>Peserta</h1>
-					<p className='text-muted-foreground text-sm mt-1'>{activeParticipants.length} peserta aktif</p>
+					<p className='text-muted-foreground text-base mt-1'>{activeParticipants.length} peserta aktif</p>
 				</div>
 				<Link
 					href={`/groups/${group.id}/participants/new`}

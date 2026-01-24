@@ -61,7 +61,7 @@ export function JuzDropdown({ participantPeriodId, currentJuz, participantName }
 				value={selectedJuz}
 				onChange={handleChange}
 				disabled={isUpdating}
-				className='appearance-none bg-transparent border border-border rounded-lg px-3 py-1.5 pr-8 text-lg font-medium text-foreground hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer'
+				className='appearance-none bg-transparent border border-border rounded-lg px-3 py-1.5 pr-8 text-base font-medium text-foreground hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer'
 				aria-label={`Ubah juz untuk ${participantName}`}>
 				{Array.from({ length: 30 }, (_, i) => i + 1).map((juz) => (
 					<option key={juz} value={juz}>
@@ -71,7 +71,7 @@ export function JuzDropdown({ participantPeriodId, currentJuz, participantName }
 			</select>
 			<ChevronDown className='absolute right-2 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none' />
 			{error && (
-				<div className='absolute top-full mt-1 left-0 right-0 text-sm text-destructive bg-background border border-destructive rounded px-2 py-1 shadow-sm whitespace-nowrap'>
+				<div className='absolute top-full mt-1 left-0 right-0 text-base text-destructive bg-background border border-destructive rounded px-2 py-1 shadow-sm whitespace-nowrap'>
 					{error}
 				</div>
 			)}

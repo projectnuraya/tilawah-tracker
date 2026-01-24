@@ -25,7 +25,13 @@ interface ParticipantsListProps {
 	participantDataMap: Map<string, ParticipantData>
 }
 
-export function ParticipantsList({ groupId, activeParticipants, inactiveParticipants, activePeriod, participantDataMap }: ParticipantsListProps) {
+export function ParticipantsList({
+	groupId,
+	activeParticipants,
+	inactiveParticipants,
+	activePeriod,
+	participantDataMap,
+}: ParticipantsListProps) {
 	const [searchQuery, setSearchQuery] = useState('')
 
 	// Filter participants based on search query
@@ -75,8 +81,10 @@ export function ParticipantsList({ groupId, activeParticipants, inactiveParticip
 					<div className='mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4'>
 						<Search className='h-8 w-8 text-primary' />
 					</div>
-					<h2 className='text-lg font-medium mb-2'>Belum ada peserta</h2>
-					<p className='text-muted-foreground text-sm mb-6'>Tambahkan peserta untuk mulai melacak progress tilawah mereka.</p>
+					<h2 className='text-xl font-medium mb-2'>Belum ada peserta</h2>
+					<p className='text-muted-foreground text-base mb-6'>
+						Tambahkan peserta untuk mulai melacak progress tilawah mereka.
+					</p>
 					<Link
 						href={`/groups/${groupId}/participants/new`}
 						className='inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-white font-medium shadow-sm transition hover:bg-primary/90'>
@@ -88,23 +96,31 @@ export function ParticipantsList({ groupId, activeParticipants, inactiveParticip
 					<div className='mx-auto w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4'>
 						<Search className='h-8 w-8 text-muted-foreground' />
 					</div>
-					<h2 className='text-lg font-medium mb-2'>Tidak ada hasil</h2>
-					<p className='text-muted-foreground text-sm'>Tidak ditemukan peserta yang sesuai dengan pencarian &quot;{searchQuery}&quot;.</p>
+					<h2 className='text-xl font-medium mb-2'>Tidak ada hasil</h2>
+					<p className='text-muted-foreground text-sm'>
+						Tidak ditemukan peserta yang sesuai dengan pencarian &quot;{searchQuery}&quot;.
+					</p>
 				</div>
 			) : (
 				<div className='rounded-xl border border-border bg-card divide-y divide-border'>
 					{filteredActiveParticipants.map((participant) => {
 						const participantData = participantDataMap.get(participant.id)
 						return (
-							<div key={participant.id} className='flex items-center justify-between p-4 hover:bg-muted/50 transition'>
-								<Link href={`/groups/${groupId}/participants/${participant.id}`} className='flex items-center gap-3 flex-1'>
+							<div
+								key={participant.id}
+								className='flex items-center justify-between p-4 hover:bg-muted/50 transition'>
+								<Link
+									href={`/groups/${groupId}/participants/${participant.id}`}
+									className='flex items-center gap-3 flex-1'>
 									<div className='w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center'>
-										<span className='text-primary font-medium'>{participant.name.charAt(0).toUpperCase()}</span>
+										<span className='text-primary font-medium'>
+											{participant.name.charAt(0).toUpperCase()}
+										</span>
 									</div>
 									<div>
 										<p className='font-medium'>{participant.name}</p>
 										{participant.whatsappNumber && (
-											<p className='text-sm text-muted-foreground flex items-center gap-1'>
+											<p className='text-base text-muted-foreground flex items-center gap-1'>
 												<Phone className='h-3 w-3' />
 												{participant.whatsappNumber}
 											</p>
@@ -135,13 +151,15 @@ export function ParticipantsList({ groupId, activeParticipants, inactiveParticip
 			{/* Inactive Participants */}
 			{inactiveParticipants.length > 0 && (
 				<div className='mt-8'>
-					<h2 className='text-lg font-medium mb-4 flex items-center gap-2'>
+					<h2 className='text-xl font-medium mb-4 flex items-center gap-2'>
 						<UserX className='h-5 w-5 text-muted-foreground' />
 						Tidak Aktif ({filteredInactiveParticipants.length})
 					</h2>
 					{filteredInactiveParticipants.length === 0 && searchQuery ? (
 						<div className='rounded-xl border border-border bg-card/50 p-8 text-center'>
-							<p className='text-muted-foreground text-sm'>Tidak ditemukan peserta tidak aktif yang sesuai dengan pencarian.</p>
+							<p className='text-muted-foreground text-base'>
+								Tidak ditemukan peserta tidak aktif yang sesuai dengan pencarian.
+							</p>
 						</div>
 					) : (
 						<div className='rounded-xl border border-border bg-card/50 divide-y divide-border'>
@@ -152,11 +170,13 @@ export function ParticipantsList({ groupId, activeParticipants, inactiveParticip
 									className='flex items-center justify-between p-4 hover:bg-muted/50 transition opacity-60'>
 									<div className='flex items-center gap-3'>
 										<div className='w-10 h-10 rounded-full bg-muted flex items-center justify-center'>
-											<span className='text-muted-foreground font-medium'>{participant.name.charAt(0).toUpperCase()}</span>
+											<span className='text-muted-foreground font-medium'>
+												{participant.name.charAt(0).toUpperCase()}
+											</span>
 										</div>
 										<div>
 											<p className='font-medium'>{participant.name}</p>
-											<p className='text-sm text-muted-foreground'>Tidak Aktif</p>
+											<p className='text-base text-muted-foreground'>Tidak Aktif</p>
 										</div>
 									</div>
 								</Link>

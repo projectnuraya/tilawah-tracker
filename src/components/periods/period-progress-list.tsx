@@ -139,7 +139,7 @@ export function PeriodProgressList({ period, isActive, notFinishedCount }: Perio
 
 				{/* Filter Row */}
 				<div className='flex flex-wrap items-center gap-3'>
-					<div className='flex items-center gap-2 text-sm text-muted-foreground'>
+					<div className='flex items-center gap-2 text-base text-muted-foreground'>
 						<Filter className='h-4 w-4' />
 						<span>Filter:</span>
 					</div>
@@ -148,7 +148,7 @@ export function PeriodProgressList({ period, isActive, notFinishedCount }: Perio
 					<select
 						value={filterJuz ?? ''}
 						onChange={(e) => setFilterJuz(e.target.value ? Number(e.target.value) : null)}
-						className='px-3 py-1.5 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent transition'>
+						className='px-3 py-1.5 rounded-lg border border-border bg-background text-base focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent transition'>
 						<option value=''>Semua Juz</option>
 						{Array.from({ length: 30 }, (_, i) => i + 1).map((juz) => (
 							<option key={juz} value={juz}>
@@ -161,7 +161,7 @@ export function PeriodProgressList({ period, isActive, notFinishedCount }: Perio
 					<select
 						value={filterStatus ?? ''}
 						onChange={(e) => setFilterStatus(e.target.value ? (e.target.value as ProgressStatus) : null)}
-						className='px-3 py-1.5 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent transition'>
+						className='px-3 py-1.5 rounded-lg border border-border bg-background text-base focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent transition'>
 						<option value=''>Semua Status</option>
 						<option value='finished'>👑 Selesai</option>
 						<option value='not_finished'>⏳ Dalam Proses</option>
@@ -172,14 +172,14 @@ export function PeriodProgressList({ period, isActive, notFinishedCount }: Perio
 					{hasActiveFilters && (
 						<button
 							onClick={resetFilters}
-							className='inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-background text-sm hover:bg-muted transition'>
+							className='inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-background text-base hover:bg-muted transition'>
 							<X className='h-3.5 w-3.5' />
 							Reset
 						</button>
 					)}
 
 					{/* Results Count */}
-					<span className='text-sm text-muted-foreground ml-auto'>
+					<span className='text-base text-muted-foreground ml-auto'>
 						{filteredParticipants.length} dari {period.participantPeriods.length} peserta
 					</span>
 				</div>
@@ -187,21 +187,21 @@ export function PeriodProgressList({ period, isActive, notFinishedCount }: Perio
 
 			{/* Progress by Juz */}
 			<div className='space-y-4'>
-				<h2 className='text-lg font-medium'>Progress per Juz</h2>
+				<h2 className='text-xl font-medium'>Progress per Juz</h2>
 
 				{filteredParticipants.length === 0 ? (
 					<div className='rounded-xl border border-border bg-card p-8 text-center'>
 						<div className='mx-auto w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4'>
 							<Search className='h-8 w-8 text-muted-foreground' />
 						</div>
-						<h3 className='text-lg font-medium mb-2'>Tidak ada hasil</h3>
-						<p className='text-muted-foreground text-sm mb-4'>
+						<h3 className='text-xl font-medium mb-2'>Tidak ada hasil</h3>
+						<p className='text-muted-foreground text-base mb-4'>
 							Tidak ditemukan peserta yang sesuai dengan filter yang dipilih.
 						</p>
 						{hasActiveFilters && (
 							<button
 								onClick={resetFilters}
-								className='inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary/90 transition'>
+								className='inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-white text-base font-medium hover:bg-primary/90 transition'>
 								<X className='h-4 w-4' />
 								Reset Filter
 							</button>
@@ -222,7 +222,7 @@ export function PeriodProgressList({ period, isActive, notFinishedCount }: Perio
 									aria-expanded={isExpanded}>
 									<h3 className='font-medium text-left'>Juz {juz}</h3>
 									<div className='flex items-center gap-2'>
-										<span className='text-sm text-muted-foreground'>{participants.length} peserta</span>
+										<span className='text-base text-muted-foreground'>{participants.length} peserta</span>
 										<ChevronDown
 											className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${
 												isExpanded ? 'rotate-180' : ''
@@ -238,21 +238,21 @@ export function PeriodProgressList({ period, isActive, notFinishedCount }: Perio
 											<div key={pp.id} className='flex items-center justify-between px-4 py-3'>
 												<div className='flex items-center gap-3'>
 													<div className='w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center'>
-														<span className='text-primary font-medium text-lg'>
+														<span className='text-primary font-medium text-base'>
 															{pp.participant.name.charAt(0).toUpperCase()}
 														</span>
 													</div>
 													<div>
 														<div className='flex items-center gap-2'>
-															<p className='font-medium text-lg'>{pp.participant.name}</p>
+															<p className='font-medium text-base'>{pp.participant.name}</p>
 															{pp.missedStreak > 0 && (
-																<span className='inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-destructive/10 text-destructive'>
+																<span className='inline-flex items-center px-1.5 py-0.5 rounded text-sm font-medium bg-destructive/10 text-destructive'>
 																	💔×{pp.missedStreak}
 																</span>
 															)}
 														</div>
 														{!pp.participant.isActive && (
-															<p className='text-xs text-muted-foreground'>Tidak Aktif</p>
+															<p className='text-sm text-muted-foreground'>Tidak Aktif</p>
 														)}
 													</div>
 												</div>
@@ -266,7 +266,7 @@ export function PeriodProgressList({ period, isActive, notFinishedCount }: Perio
 														/>
 													) : (
 														<span
-															className={`inline-flex items-center gap-1 text-lg ${
+															className={`inline-flex items-center gap-1 text-base ${
 																pp.progressStatus === 'finished'
 																	? 'text-primary'
 																	: pp.progressStatus === 'missed'
