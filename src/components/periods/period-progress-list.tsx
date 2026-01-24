@@ -3,7 +3,7 @@
 import { LockPeriodButton } from '@/components/periods/lock-period-button'
 import { ProgressStatusDropdown } from '@/components/periods/progress-dropdown'
 import { ShareButton } from '@/components/periods/share-button'
-import { ChevronDown, Filter, Search, X } from 'lucide-react'
+import { ChevronDown, Search, X } from 'lucide-react'
 import { useMemo, useState } from 'react'
 
 type ProgressStatus = 'finished' | 'not_finished' | 'missed'
@@ -45,7 +45,6 @@ interface PeriodProgressListProps {
 
 export function PeriodProgressList({ period, isActive, notFinishedCount }: PeriodProgressListProps) {
 	const [searchQuery, setSearchQuery] = useState('')
-	const [filterJuz, setFilterJuz] = useState<number | null>(null)
 	const [filterStatus, setFilterStatus] = useState<ProgressStatus | null>(null)
 	const [expandedGroups, setExpandedGroups] = useState<Record<number, boolean>>({})
 
@@ -69,18 +68,13 @@ export function PeriodProgressList({ period, isActive, notFinishedCount }: Perio
 			filtered = filtered.filter((pp) => pp.participant.name.toLowerCase().includes(query))
 		}
 
-		// Apply Juz filter
-		if (filterJuz !== null) {
-			filtered = filtered.filter((pp) => pp.juzNumber === filterJuz)
-		}
-
 		// Apply status filter
 		if (filterStatus !== null) {
 			filtered = filtered.filter((pp) => pp.progressStatus === filterStatus)
 		}
 
 		return filtered
-	}, [searchQuery, filterJuz, filterStatus, period.participantPeriods])
+	}, [searchQuery, filterStatus, period.participantPeriods])
 
 	// Group by juz for display
 	const byJuz: Record<number, ParticipantPeriod[]> = useMemo(() => {
@@ -94,11 +88,10 @@ export function PeriodProgressList({ period, isActive, notFinishedCount }: Perio
 		return grouped
 	}, [filteredParticipants])
 
-	const hasActiveFilters = searchQuery.trim() || filterJuz !== null || filterStatus !== null
+	const hasActiveFilters = searchQuery.trim() || filterStatus !== null
 
 	const resetFilters = () => {
 		setSearchQuery('')
-		setFilterJuz(null)
 		setFilterStatus(null)
 		setExpandedGroups({})
 	}
@@ -111,8 +104,6 @@ export function PeriodProgressList({ period, isActive, notFinishedCount }: Perio
 	}
 
 	const isGroupExpanded = (groupIndex: number, group: { label: string; juzNumbers: number[] }) => {
-		// Auto-expand if actively filtered by Juz in this group
-		if (filterJuz !== null && group.juzNumbers.includes(filterJuz)) return true
 		// Auto-expand if searching and this group has matching participants
 		if (searchQuery.trim()) {
 			const participantsInGroup = group.juzNumbers.flatMap((juz) => byJuz[juz] || [])
@@ -150,38 +141,8 @@ export function PeriodProgressList({ period, isActive, notFinishedCount }: Perio
 					/>
 				</div>
 
-				{/* Filter Row */}
-				<div className='flex flex-wrap items-center gap-3'>
-					<div className='flex items-center gap-2 text-base text-muted-foreground'>
-						<Filter className='h-4 w-4' />
-						<span>Filter:</span>
-					</div>
-
-					{/* Juz Filter */}
-					<select
-						value={filterJuz ?? ''}
-						onChange={(e) => setFilterJuz(e.target.value ? Number(e.target.value) : null)}
-						className='px-3 py-1.5 rounded-lg border border-border bg-background text-base focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent transition'>
-						<option value=''>Semua Juz</option>
-						{Array.from({ length: 30 }, (_, i) => i + 1).map((juz) => (
-							<option key={juz} value={juz}>
-								Juz {juz}
-							</option>
-						))}
-					</select>
-
-					{/* Status Filter */}
-					<select
-						value={filterStatus ?? ''}
-						onChange={(e) => setFilterStatus(e.target.value ? (e.target.value as ProgressStatus) : null)}
-						className='px-3 py-1.5 rounded-lg border border-border bg-background text-base focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent transition'>
-						<option value=''>Semua Status</option>
-						<option value='finished'>👑 Selesai</option>
-						<option value='not_finished'>⏳ Dalam Proses</option>
-						<option value='missed'>💔 Terlewat</option>
-					</select>
-
-					{/* Reset Button */}
+				{/* Filter Actions Row */}
+				<div className='flex items-center justify-between gap-3'>
 					{hasActiveFilters && (
 						<button
 							onClick={resetFilters}
@@ -192,9 +153,80 @@ export function PeriodProgressList({ period, isActive, notFinishedCount }: Perio
 					)}
 
 					{/* Results Count */}
-					<span className='text-base text-muted-foreground ml-auto'>
+					<span className='text-base text-muted-foreground'>
 						{filteredParticipants.length} dari {period.participantPeriods.length} peserta
 					</span>
+				</div>
+
+				{/* Status Filter Button Group */}
+				<div className='space-y-2'>
+					<label className='text-base font-medium text-foreground'>Filter Status:</label>
+					<div className='flex flex-wrap gap-3 sm:flex-nowrap sm:grid sm:grid-cols-2 lg:flex lg:flex-nowrap'>
+						{/* All Status Button */}
+						<button
+							onClick={() => setFilterStatus(null)}
+							className={`flex-1 px-4 py-3 rounded-lg font-medium text-base transition-colors ${
+								filterStatus === null
+									? 'bg-primary text-white shadow-sm'
+									: 'border-2 bg-background text-foreground hover:bg-muted'
+							}`}
+							style={filterStatus === null ? {} : { borderColor: 'hsl(var(--border))' }}>
+							Semua Status
+						</button>
+
+						{/* Finished Button */}
+						<button
+							onClick={() => setFilterStatus('finished')}
+							className={`flex-1 px-4 py-3 rounded-lg font-medium text-base transition-colors ${
+								filterStatus === 'finished' ? 'text-white shadow-sm' : 'border-2 bg-background text-foreground'
+							}`}
+							style={
+								filterStatus === 'finished'
+									? { backgroundColor: 'hsl(var(--success))' }
+									: {
+											borderColor: 'hsl(var(--success))',
+											backgroundColor: 'hsl(var(--success-bg))',
+										}
+							}>
+							<span className='mr-2'>👑</span>Selesai
+						</button>
+
+						{/* In Progress Button */}
+						<button
+							onClick={() => setFilterStatus('not_finished')}
+							className={`flex-1 px-4 py-3 rounded-lg font-medium text-base transition-colors ${
+								filterStatus === 'not_finished'
+									? 'text-white shadow-sm'
+									: 'border-2 bg-background text-foreground'
+							}`}
+							style={
+								filterStatus === 'not_finished'
+									? { backgroundColor: 'hsl(var(--warning))' }
+									: {
+											borderColor: 'hsl(var(--warning))',
+											backgroundColor: 'hsl(var(--warning-bg))',
+										}
+							}>
+							<span className='mr-2'>⏳</span>Dalam Proses
+						</button>
+
+						{/* Missed Button */}
+						<button
+							onClick={() => setFilterStatus('missed')}
+							className={`flex-1 px-4 py-3 rounded-lg font-medium text-base transition-colors ${
+								filterStatus === 'missed' ? 'text-white shadow-sm' : 'border-2 bg-background text-foreground'
+							}`}
+							style={
+								filterStatus === 'missed'
+									? { backgroundColor: 'hsl(var(--destructive))' }
+									: {
+											borderColor: 'hsl(var(--destructive))',
+											backgroundColor: 'hsl(var(--error-bg))',
+										}
+							}>
+							<span className='mr-2'>💔</span>Terlewat
+						</button>
+					</div>
 				</div>
 			</div>
 
