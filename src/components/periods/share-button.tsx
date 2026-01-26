@@ -82,6 +82,10 @@ export function ShareButton({ period, groupName, publicToken, coordinators }: Sh
 			}
 		}
 
+		text += `\nBagi yang sudah selesai, segera berkabar ya! 🙏🏼\n`
+		text += `*Yang mendapat Juz 30 membaca doa khotmil Quran secara mandiri*\n`
+		text += `Semoga barokah di kehidupan dunia dan akhirat. Aamiin ya Rabbal 'Alamin.\n`
+
 		if (customMessage.trim()) {
 			text += `---\n${customMessage.trim()}`
 		}
@@ -94,9 +98,21 @@ export function ShareButton({ period, groupName, publicToken, coordinators }: Sh
 	const handleCopy = async () => {
 		const text = generateShareText()
 		try {
-			await navigator.clipboard.writeText(text)
-			setCopied(true)
-			setTimeout(() => setCopied(false), 2000)
+			if (navigator.clipboard && navigator.clipboard.writeText) {
+				await navigator.clipboard.writeText(text)
+				setCopied(true)
+				setTimeout(() => setCopied(false), 2000)
+			} else {
+				// Fallback for older browsers or non-HTTPS
+				const textArea = document.createElement('textarea')
+				textArea.value = text
+				document.body.appendChild(textArea)
+				textArea.select()
+				document.execCommand('copy')
+				document.body.removeChild(textArea)
+				setCopied(true)
+				setTimeout(() => setCopied(false), 2000)
+			}
 		} catch (err) {
 			console.error('Failed to copy:', err)
 		}
@@ -106,7 +122,8 @@ export function ShareButton({ period, groupName, publicToken, coordinators }: Sh
 		<>
 			<button
 				onClick={() => setIsOpen(true)}
-				className='inline-flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-base font-medium hover:bg-muted transition'>
+				aria-label='Bagikan progress periode ke WhatsApp'
+				className='inline-flex items-center gap-2 rounded-lg border border-gray-400 px-3 py-2 text-base font-medium hover:bg-muted transition'>
 				<Share2 className='h-4 w-4' />
 				Bagikan
 			</button>

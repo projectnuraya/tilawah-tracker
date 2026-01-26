@@ -35,8 +35,8 @@ export function LockPeriodButton({ periodId, notFinishedCount }: LockPeriodButto
 
 	if (isConfirming) {
 		return (
-			<div className='rounded-xl border border-amber-200 bg-amber-50 p-4'>
-				<p className='text-base text-amber-800 mb-3'>
+			<div className='rounded-xl border border-red-200 bg-red-50 p-4'>
+				<p className='text-base text-red-800 mb-3'>
 					{notFinishedCount > 0 ? (
 						<>
 							<strong>{notFinishedCount} peserta</strong> akan ditandai sebagai <strong>Terlewat (💔)</strong>.
@@ -50,7 +50,7 @@ export function LockPeriodButton({ periodId, notFinishedCount }: LockPeriodButto
 					<button
 						onClick={handleLock}
 						disabled={isLocking}
-						className='rounded-lg bg-amber-600 px-4 py-2 text-base text-white font-medium hover:bg-amber-700 disabled:opacity-50'>
+						className='rounded-lg bg-red-600 px-4 py-2 text-base text-white font-medium hover:bg-red-700 disabled:opacity-50'>
 						{isLocking ? (
 							<span className='inline-flex items-center gap-2'>
 								<Loader2 className='h-4 w-4 animate-spin' />
@@ -74,7 +74,8 @@ export function LockPeriodButton({ periodId, notFinishedCount }: LockPeriodButto
 	return (
 		<button
 			onClick={() => setIsConfirming(true)}
-			className='inline-flex items-center gap-2 rounded-lg border border-amber-500/50 px-4 py-2.5 text-base font-medium text-amber-600 hover:bg-amber-50 transition'>
+			aria-label='Kunci periode untuk menandai peserta yang belum selesai sebagai terlewat'
+			className='inline-flex items-center gap-2 rounded-lg border border-red-500/50 px-4 py-2.5 text-base font-medium text-red-600 hover:bg-red-50 transition'>
 			<Lock className='h-4 w-4' />
 			Kunci Periode
 		</button>

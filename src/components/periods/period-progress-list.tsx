@@ -122,13 +122,13 @@ export function PeriodProgressList({ period, isActive, notFinishedCount }: Perio
 		<div>
 			{/* Lock Period and Share Buttons */}
 			<div className='mb-6 flex items-center justify-between gap-4'>
-				<div>{isActive && <LockPeriodButton periodId={period.id} notFinishedCount={notFinishedCount} />}</div>
 				<ShareButton
 					period={period}
 					groupName={period.group.name}
 					publicToken={period.group.publicToken}
 					coordinators={period.group.coordinatorGroups.map((cg) => cg.coordinator)}
 				/>
+				<div>{isActive && <LockPeriodButton periodId={period.id} notFinishedCount={notFinishedCount} />}</div>
 			</div>
 
 			{/* Search and Filters */}
@@ -148,7 +148,7 @@ export function PeriodProgressList({ period, isActive, notFinishedCount }: Perio
 								setExpandedGroups({})
 							}
 						}}
-						className='w-full pl-10 pr-4 py-2.5 rounded-lg border border-border bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent transition'
+						className='w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-400 bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent transition'
 					/>
 				</div>
 
