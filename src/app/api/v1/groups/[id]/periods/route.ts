@@ -188,14 +188,11 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 					let newMissedStreak = 0
 
 					if (previous !== undefined) {
-						// Existing participant: check previous status
+						// Existing participant: always rotate to next juz, but track missed streak
+						newJuz = previous.juzNumber === 30 ? 1 : previous.juzNumber + 1
 						if (previous.status === 'missed') {
-							// Keep same juz to retry and track missed streak
-							newJuz = previous.juzNumber
 							newMissedStreak = previous.missedStreak + 1
 						} else {
-							// Rotate to next juz: 1→2, 2→3, ..., 30→1
-							newJuz = previous.juzNumber === 30 ? 1 : previous.juzNumber + 1
 							newMissedStreak = 0
 						}
 					} else {
