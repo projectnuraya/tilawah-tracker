@@ -21,9 +21,10 @@ interface ParticipantPeriod {
 
 interface PublicProgressListProps {
 	participantPeriods: ParticipantPeriod[]
+	isActive: boolean
 }
 
-export function PublicProgressList({ participantPeriods }: PublicProgressListProps) {
+export function PublicProgressList({ participantPeriods, isActive }: PublicProgressListProps) {
 	const [searchQuery, setSearchQuery] = useState('')
 	const [filterStatus, setFilterStatus] = useState<ProgressStatus | null>(null)
 
@@ -92,19 +93,20 @@ export function PublicProgressList({ participantPeriods }: PublicProgressListPro
 
 				{/* Filter Actions Row */}
 				<div className='flex items-center justify-between gap-3'>
-					{hasActiveFilters && (
-						<button
-							onClick={resetFilters}
-							className='inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-background text-base hover:bg-muted transition'>
-							<X className='h-3.5 w-3.5' />
-							Reset
-						</button>
-					)}
-
 					{/* Results Count */}
 					<span className='text-base text-muted-foreground'>
 						{filteredParticipants.length} dari {participantPeriods.length} peserta
 					</span>
+
+					<button
+						onClick={resetFilters}
+						disabled={!hasActiveFilters}
+						className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-background text-base transition ${
+							hasActiveFilters ? 'hover:bg-muted cursor-pointer' : 'opacity-0 cursor-default'
+						}`}>
+						<X className='h-3.5 w-3.5' />
+						Reset
+					</button>
 				</div>
 
 				{/* Status Filter Button Group */}
@@ -160,21 +162,23 @@ export function PublicProgressList({ participantPeriods }: PublicProgressListPro
 						</button>
 
 						{/* Missed Button */}
-						<button
-							onClick={() => setFilterStatus('missed')}
-							className={`flex-1 px-4 py-3 rounded-lg font-medium text-base transition-colors ${
-								filterStatus === 'missed' ? 'text-white shadow-sm' : 'border-2 bg-background text-foreground'
-							}`}
-							style={
-								filterStatus === 'missed'
-									? { backgroundColor: 'hsl(var(--destructive))' }
-									: {
-											borderColor: 'hsl(var(--destructive))',
-											backgroundColor: 'hsl(var(--error-bg))',
-										}
-							}>
-							<span className='mr-2'>💔</span>Terlewat
-						</button>
+						{!isActive && (
+							<button
+								onClick={() => setFilterStatus('missed')}
+								className={`flex-1 px-4 py-3 rounded-lg font-medium text-base transition-colors ${
+									filterStatus === 'missed' ? 'text-white shadow-sm' : 'border-2 bg-background text-foreground'
+								}`}
+								style={
+									filterStatus === 'missed'
+										? { backgroundColor: 'hsl(var(--destructive))' }
+										: {
+												borderColor: 'hsl(var(--destructive))',
+												backgroundColor: 'hsl(var(--error-bg))',
+											}
+								}>
+								<span className='mr-2'>💔</span>Terlewat
+							</button>
+						)}
 					</div>
 				</div>
 			</div>
@@ -194,7 +198,7 @@ export function PublicProgressList({ participantPeriods }: PublicProgressListPro
 							<button
 								onClick={resetFilters}
 								className='inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-base font-medium hover:bg-muted transition'>
-								<X className='h-4 w-4' />
+								<X className='h-3.5 w-3.5' />
 								Reset Filter
 							</button>
 						)}

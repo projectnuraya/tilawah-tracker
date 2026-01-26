@@ -76,7 +76,7 @@ export default async function PublicPeriodDetailPage({ params }: PageProps) {
 				</div>
 
 				{/* Stats Cards */}
-				<div className='grid grid-cols-3 gap-3 mb-8'>
+				<div className={`grid gap-3 mb-8 ${!isActive ? 'grid-cols-3' : 'grid-cols-2'}`}>
 					<div className='rounded-lg border border-border bg-card p-4 text-center'>
 						<p className='text-3xl font-semibold text-primary mb-1'>{stats.finished}</p>
 						<p className='text-sm text-muted-foreground'>👑 Selesai</p>
@@ -85,10 +85,12 @@ export default async function PublicPeriodDetailPage({ params }: PageProps) {
 						<p className='text-3xl font-semibold text-muted-foreground mb-1'>{stats.not_finished}</p>
 						<p className='text-sm text-muted-foreground'>⏳ Dalam Proses</p>
 					</div>
-					<div className='rounded-lg border border-border bg-card p-4 text-center'>
-						<p className='text-3xl font-semibold text-destructive mb-1'>{stats.missed}</p>
-						<p className='text-sm text-muted-foreground'>💔 Terlewat</p>
-					</div>
+					{!isActive && (
+						<div className='rounded-lg border border-border bg-card p-4 text-center'>
+							<p className='text-3xl font-semibold text-destructive mb-1'>{stats.missed}</p>
+							<p className='text-sm text-muted-foreground'>💔 Terlewat</p>
+						</div>
+					)}
 				</div>
 
 				{/* Progress Summary */}
@@ -121,7 +123,7 @@ export default async function PublicPeriodDetailPage({ params }: PageProps) {
 
 				{/* Progress List */}
 				{period.participantPeriods.length > 0 ? (
-					<PublicProgressList participantPeriods={period.participantPeriods} />
+					<PublicProgressList participantPeriods={period.participantPeriods} isActive={isActive} />
 				) : (
 					<div className='rounded-xl border border-border bg-card p-8 text-center'>
 						<div className='mx-auto w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4'>

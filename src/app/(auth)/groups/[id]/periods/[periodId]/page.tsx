@@ -120,7 +120,7 @@ export default async function PeriodDetailPage({ params }: PageProps) {
 			</div>
 
 			{/* Stats Cards */}
-			<div className='grid grid-cols-3 gap-3 mb-6'>
+			<div className={`grid gap-3 mb-6 ${!isActive ? 'grid-cols-3' : 'grid-cols-2'}`}>
 				<div className='rounded-lg border border-border bg-card p-3 text-center'>
 					<p className='text-2xl font-semibold text-primary'>{stats.finished}</p>
 					<p className='text-base text-muted-foreground'>👑 Selesai</p>
@@ -129,10 +129,12 @@ export default async function PeriodDetailPage({ params }: PageProps) {
 					<p className='text-2xl font-semibold text-muted-foreground'>{stats.not_finished}</p>
 					<p className='text-base text-muted-foreground'>⏳ Dalam Proses</p>
 				</div>
-				<div className='rounded-lg border border-border bg-card p-3 text-center'>
-					<p className='text-2xl font-semibold text-destructive'>{stats.missed}</p>
-					<p className='text-base text-muted-foreground'>💔 Terlewat</p>
-				</div>
+				{!isActive && (
+					<div className='rounded-lg border border-border bg-card p-3 text-center'>
+						<p className='text-2xl font-semibold text-destructive'>{stats.missed}</p>
+						<p className='text-base text-muted-foreground'>💔 Terlewat</p>
+					</div>
+				)}
 			</div>
 
 			{/* Period Progress List with Search and Filters */}
