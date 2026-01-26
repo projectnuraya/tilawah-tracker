@@ -340,7 +340,7 @@ paths:
       tags:
         - Periods
       summary: Create period
-      description: Create a new period starting on Sunday
+      description: Create a new period starting on Monday
       security:
         - bearerAuth: []
       requestBody:

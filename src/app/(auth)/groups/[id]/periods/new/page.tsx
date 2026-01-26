@@ -10,24 +10,24 @@ interface PageProps {
 	params: Promise<{ id: string }>
 }
 
-function getNextSunday(): string {
+function getNextMonday(): string {
 	const today = new Date()
 	const dayOfWeek = today.getDay()
-	const daysUntilSunday = dayOfWeek === 0 ? 0 : 7 - dayOfWeek
-	const nextSunday = new Date(today)
-	nextSunday.setDate(today.getDate() + daysUntilSunday)
-	return nextSunday.toISOString().split('T')[0]
+	const daysUntilMonday = dayOfWeek === 1 ? 0 : (8 - dayOfWeek) % 7
+	const nextMonday = new Date(today)
+	nextMonday.setDate(today.getDate() + daysUntilMonday)
+	return nextMonday.toISOString().split('T')[0]
 }
 
-function isSunday(dateString: string): boolean {
+function isMonday(dateString: string): boolean {
 	const date = new Date(dateString)
-	return date.getDay() === 0
+	return date.getDay() === 1
 }
 
 export default function NewPeriodPage({ params }: PageProps) {
 	const router = useRouter()
 	const [groupId, setGroupId] = useState<string | null>(null)
-	const [startDate, setStartDate] = useState(getNextSunday())
+	const [startDate, setStartDate] = useState(getNextMonday())
 	const [isLoading, setIsLoading] = useState(false)
 	const [error, setError] = useState('')
 	const [dateError, setDateError] = useState('')
@@ -38,8 +38,8 @@ export default function NewPeriodPage({ params }: PageProps) {
 
 	const handleDateChange = (value: string) => {
 		setStartDate(value)
-		if (value && !isSunday(value)) {
-			setDateError('Periode harus dimulai pada hari Ahad')
+		if (value && !isMonday(value)) {
+			setDateError('Periode harus dimulai pada hari Senin')
 		} else {
 			setDateError('')
 		}
@@ -54,8 +54,8 @@ export default function NewPeriodPage({ params }: PageProps) {
 			return
 		}
 
-		if (!isSunday(startDate)) {
-			setError('Periode harus dimulai pada hari Ahad')
+		if (!isMonday(startDate)) {
+			setError('Periode harus dimulai pada hari Senin')
 			return
 		}
 
@@ -128,8 +128,8 @@ export default function NewPeriodPage({ params }: PageProps) {
 						<div className='text-base text-blue-800'>
 							<p className='font-medium mb-1'>Aturan Periode</p>
 							<ul className='list-disc list-inside space-y-1 text-blue-700'>
-								<li>Harus dimulai pada hari Ahad</li>
-								<li>Berlangsung tepat 7 hari (Ahad sampai Sabtu)</li>
+								<li>Harus dimulai pada hari Senin</li>
+								<li>Berlangsung tepat 7 hari (Senin sampai Minggu)</li>
 								<li>Pembagian juz otomatis bergilir dari periode sebelumnya</li>
 							</ul>
 						</div>
@@ -139,7 +139,7 @@ export default function NewPeriodPage({ params }: PageProps) {
 				<form onSubmit={handleSubmit} className='space-y-4'>
 					<div>
 						<label htmlFor='startDate' className='block text-base font-medium mb-2'>
-							Tanggal Mulai (Ahad)
+							Tanggal Mulai (Senin)
 						</label>
 						<div className='relative'>
 							<input

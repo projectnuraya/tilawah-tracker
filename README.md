@@ -11,7 +11,7 @@ This application is designed to replace manual WhatsApp tracking with a structur
 - **Group Management**: Create and manage groups with a permanent public link.
 - **Participant Tracking**: Add participants and automatically assign juz.
 - **Period Management**:
-  - Weekly cycles (always Sunday to Saturday).
+  - Weekly cycles (always Monday to Sunday).
   - **Auto-Rotation**: Juz assignments automatically rotate each week (Juz 1 → Juz 2).
   - **Locking**: Lock periods to preserve history (auto-marks unfinished as "Missed").
 - **WhatsApp Integration**:

@@ -73,9 +73,9 @@ export const createPeriodSchema = z.object({
 		.refine(
 			(date) => {
 				const d = new Date(date)
-				return d.getDay() === 0 // Sunday
+				return d.getDay() === 1 // Monday
 			},
-			{ message: 'Periode harus dimulai pada hari Minggu' },
+			{ message: 'Periode harus dimulai pada hari Senin' },
 		),
 })
 

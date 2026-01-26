@@ -382,7 +382,7 @@ Get public period details.
 - Group names: 1-255 characters
 - Participant names: 1-255 characters
 - WhatsApp numbers: Basic validation, cleaned format
-- Periods: Must start on Sunday
+- Periods: Must start on Monday
 - Juz numbers: 1-30
 
 ## Error Codes
