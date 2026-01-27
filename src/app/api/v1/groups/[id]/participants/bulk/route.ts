@@ -1,5 +1,7 @@
 import { apiError, apiSuccess, requireAuth, requireGroupAccess, ValidationError } from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
+import { getIdentifier, rateLimit } from '@/components/lib/rate-limit'
+import { createRateLimitResponse } from '@/components/lib/rate-limit-middleware'
 import { createParticipantBulkSchema, validateInput } from '@/components/lib/validators'
 import { NextRequest } from 'next/server'
 
@@ -15,6 +17,14 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 	try {
 		const session = await requireAuth()
 		const { id: groupId } = await params
+
+		// Rate limit: 5 requests per 5 minutes (500 participants max)
+		const identifier = getIdentifier(request, session.user.id)
+		const rateLimitResult = await rateLimit.bulkParticipant(identifier)
+
+		if (!rateLimitResult.success) {
+			return createRateLimitResponse(rateLimitResult)
+		}
 
 		await requireGroupAccess(session.user.id, groupId)
 

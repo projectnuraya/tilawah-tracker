@@ -7,6 +7,8 @@ import {
 	ValidationError,
 } from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
+import { getIdentifier, rateLimit } from '@/components/lib/rate-limit'
+import { createRateLimitResponse } from '@/components/lib/rate-limit-middleware'
 import { createParticipantSchema, listParticipantsSchema, validateInput } from '@/components/lib/validators'
 import { NextRequest } from 'next/server'
 
@@ -22,6 +24,14 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 	try {
 		const session = await requireAuth()
 		const { id: groupId } = await params
+
+		// Rate limit: 100 requests per minute
+		const identifier = getIdentifier(request, session.user.id)
+		const rateLimitResult = await rateLimit.read(identifier)
+
+		if (!rateLimitResult.success) {
+			return createRateLimitResponse(rateLimitResult)
+		}
 
 		await requireGroupAccess(session.user.id, groupId)
 
@@ -58,6 +68,14 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 	try {
 		const session = await requireAuth()
 		const { id: groupId } = await params
+
+		// Rate limit: 60 requests per minute
+		const identifier = getIdentifier(request, session.user.id)
+		const rateLimitResult = await rateLimit.singleParticipant(identifier)
+
+		if (!rateLimitResult.success) {
+			return createRateLimitResponse(rateLimitResult)
+		}
 
 		await requireGroupAccess(session.user.id, groupId)
 

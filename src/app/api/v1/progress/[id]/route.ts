@@ -7,6 +7,8 @@ import {
 	ValidationError,
 } from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
+import { getIdentifier, rateLimit } from '@/components/lib/rate-limit'
+import { createRateLimitResponse } from '@/components/lib/rate-limit-middleware'
 import { updateProgressSchema, validateInput } from '@/components/lib/validators'
 import { NextRequest } from 'next/server'
 
@@ -19,6 +21,14 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 	try {
 		const session = await requireAuth()
 		const { id } = await params
+
+		// Rate limit: 100 requests per minute (active tracking sessions)
+		const identifier = getIdentifier(request, session.user.id)
+		const rateLimitResult = await rateLimit.progress(identifier)
+
+		if (!rateLimitResult.success) {
+			return createRateLimitResponse(rateLimitResult)
+		}
 
 		const body = await request.json()
 		const validation = validateInput(updateProgressSchema, body)

@@ -1,5 +1,7 @@
 import { apiError, apiSuccess } from '@/components/lib/auth-utils'
 import { getPublicPeriodDetails } from '@/components/lib/public-utils'
+import { getIdentifier, rateLimit } from '@/components/lib/rate-limit'
+import { createRateLimitResponse } from '@/components/lib/rate-limit-middleware'
 import { NextRequest } from 'next/server'
 
 interface RouteParams {
@@ -15,6 +17,14 @@ interface RouteParams {
 export async function GET(request: NextRequest, { params }: RouteParams) {
 	try {
 		const { token, periodId } = await params
+
+		// Rate limit: 60 requests per minute (IP-based for public endpoints)
+		const identifier = getIdentifier(request)
+		const rateLimitResult = await rateLimit.public(identifier)
+
+		if (!rateLimitResult.success) {
+			return createRateLimitResponse(rateLimitResult)
+		}
 
 		const period = await getPublicPeriodDetails(token, periodId)
 

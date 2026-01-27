@@ -1,5 +1,7 @@
 import { apiError, apiSuccess, requireAuth, ValidationError } from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
+import { getIdentifier, rateLimit } from '@/components/lib/rate-limit'
+import { createRateLimitResponse } from '@/components/lib/rate-limit-middleware'
 import { generatePublicToken } from '@/components/lib/tokens'
 import { createGroupSchema, validateInput } from '@/components/lib/validators'
 import { NextRequest } from 'next/server'
@@ -8,9 +10,17 @@ import { NextRequest } from 'next/server'
  * GET /api/v1/groups
  * List all groups for the authenticated coordinator
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
 	try {
 		const session = await requireAuth()
+
+		// Rate limit: 100 requests per minute
+		const identifier = getIdentifier(request, session.user.id)
+		const rateLimitResult = await rateLimit.read(identifier)
+
+		if (!rateLimitResult.success) {
+			return createRateLimitResponse(rateLimitResult)
+		}
 
 		const coordinatorGroups = await prisma.coordinatorGroup.findMany({
 			where: {
@@ -63,6 +73,14 @@ export async function GET() {
 export async function POST(request: NextRequest) {
 	try {
 		const session = await requireAuth()
+
+		// Rate limit: 30 requests per minute
+		const identifier = getIdentifier(request, session.user.id)
+		const rateLimitResult = await rateLimit.write(identifier)
+
+		if (!rateLimitResult.success) {
+			return createRateLimitResponse(rateLimitResult)
+		}
 
 		const body = await request.json()
 		const validation = validateInput(createGroupSchema, body)
