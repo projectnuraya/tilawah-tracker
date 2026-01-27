@@ -47,6 +47,21 @@ export function generatePublicToken(): string {
 		'qiyam',
 		'taubat',
 		'jannah',
+		'syukur',
+		'ikhlas',
+		'ridho',
+		'tawakal',
+		'ukhuwah',
+		'ikhwan',
+		'akhwat',
+		'sedekah',
+		'shaum',
+		'tahajud',
+		'tilawah',
+		'murottal',
+		'sholawat',
+		'ramadhan',
+		'fajar',
 	]
 
 	const chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
