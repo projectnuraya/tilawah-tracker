@@ -25,7 +25,10 @@ export const authOptions: NextAuthOptions = {
 							password: { label: 'Password', type: 'password' },
 						},
 						async authorize(credentials) {
-							if (credentials?.username === 'demo' && credentials?.password === 'demopass123') {
+							if (
+								credentials?.username === process.env.DEMO_USERNAME &&
+								credentials?.password === process.env.DEMO_PASSWORD
+							) {
 								// Return a demo user object
 								return {
 									id: 'demo-user-id',

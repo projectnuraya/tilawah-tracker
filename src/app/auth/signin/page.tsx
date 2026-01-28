@@ -94,7 +94,6 @@ function SignInContent() {
 								className='w-full rounded-lg bg-primary px-4 py-3 text-primary-foreground font-medium shadow-sm transition hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'>
 								{isLoading ? 'Sedang masuk...' : 'Masuk ke Demo'}
 							</button>
-							<p className='mt-4 text-sm text-center text-muted-foreground'>Demo credentials: demo / demopass123</p>
 						</form>
 					) : (
 						<>
