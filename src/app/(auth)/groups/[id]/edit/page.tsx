@@ -29,7 +29,15 @@ export default function EditGroupPage({ params }: PageProps) {
 	const fetchGroup = async (id: string) => {
 		try {
 			const response = await fetch(`/api/v1/groups/${id}`)
-			const data = await response.json()
+			let data
+			try {
+				data = await response.json()
+			} catch (err) {
+				console.error('Failed to parse JSON response:', err)
+				setError('Invalid response from server')
+				setIsLoading(false)
+				return
+			}
 
 			if (data.success) {
 				setName(data.data.name)
@@ -69,7 +77,14 @@ export default function EditGroupPage({ params }: PageProps) {
 				body: JSON.stringify({ name: name.trim() }),
 			})
 
-			const data = await response.json()
+			let data
+			try {
+				data = await response.json()
+			} catch (err) {
+				console.error('Failed to parse JSON response:', err)
+				setError('Invalid response from server')
+				return
+			}
 
 			if (!data.success) {
 				setError(data.error?.message || 'Gagal memperbarui grup')

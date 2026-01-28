@@ -7,6 +7,7 @@ import {
 	ValidationError,
 } from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
+import { logger } from '@/components/lib/logger'
 import { createPeriodSchema, listPeriodsSchema, validateInput } from '@/components/lib/validators'
 import { NextRequest } from 'next/server'
 
@@ -95,7 +96,13 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
 		await requireGroupAccess(session.user.id, groupId)
 
-		const body = await request.json()
+		let body
+		try {
+			body = await request.json()
+		} catch (err) {
+			logger.error({ err }, 'Failed to parse JSON in request body')
+			throw new ValidationError('Invalid JSON in request body')
+		}
 		const validation = validateInput(createPeriodSchema, body)
 
 		if (!validation.success) {

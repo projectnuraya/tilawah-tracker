@@ -82,7 +82,14 @@ export default function NewParticipantPage({ params }: PageProps) {
 				}),
 			})
 
-			const data = await response.json()
+			let data
+			try {
+				data = await response.json()
+			} catch (err) {
+				console.error('Failed to parse JSON response:', err)
+				setError('Invalid response from server')
+				return
+			}
 
 			if (!data.success) {
 				setError(data.error?.message || 'Failed to add participants')

@@ -35,7 +35,15 @@ export function JuzDropdown({ participantPeriodId, currentJuz, participantName }
 				body: JSON.stringify({ juzNumber: newJuz }),
 			})
 
-			const data = await response.json()
+			let data
+			try {
+				data = await response.json()
+			} catch (err) {
+				setSelectedJuz(currentJuz)
+				console.error('Failed to parse JSON response:', err)
+				setError('Invalid response from server')
+				return
+			}
 
 			if (!data.success) {
 				// Rollback on error

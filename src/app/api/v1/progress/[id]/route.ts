@@ -7,6 +7,7 @@ import {
 	ValidationError,
 } from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
+import { logger } from '@/components/lib/logger'
 import { getIdentifier, rateLimit } from '@/components/lib/rate-limit'
 import { createRateLimitResponse } from '@/components/lib/rate-limit-middleware'
 import { updateProgressSchema, validateInput } from '@/components/lib/validators'
@@ -30,7 +31,13 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 			return createRateLimitResponse(rateLimitResult)
 		}
 
-		const body = await request.json()
+		let body
+		try {
+			body = await request.json()
+		} catch (err) {
+			logger.error({ err }, 'Failed to parse JSON in update progress request body')
+			throw new ValidationError('Invalid JSON in update progress request body')
+		}
 		const validation = validateInput(updateProgressSchema, body)
 
 		if (!validation.success) {

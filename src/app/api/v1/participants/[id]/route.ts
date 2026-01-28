@@ -1,5 +1,6 @@
 import { apiError, apiSuccess, ForbiddenError, NotFoundError, requireAuth, ValidationError } from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
+import { logger } from '@/components/lib/logger'
 import { updateParticipantSchema, validateInput } from '@/components/lib/validators'
 import { NextRequest } from 'next/server'
 
@@ -73,7 +74,13 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 
 		await getParticipantWithAccess(session.user.id, id)
 
-		const body = await request.json()
+		let body
+		try {
+			body = await request.json()
+		} catch (err) {
+			logger.error({ err }, 'Failed to parse JSON in request body')
+			throw new ValidationError('Invalid JSON in request body')
+		}
 		const validation = validateInput(updateParticipantSchema, body)
 
 		if (!validation.success) {

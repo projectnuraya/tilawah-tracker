@@ -7,6 +7,7 @@ import {
 	ValidationError,
 } from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
+import { logger } from '@/components/lib/logger'
 import { getIdentifier, rateLimit } from '@/components/lib/rate-limit'
 import { createRateLimitResponse } from '@/components/lib/rate-limit-middleware'
 import { createParticipantSchema, listParticipantsSchema, validateInput } from '@/components/lib/validators'
@@ -79,7 +80,13 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
 		await requireGroupAccess(session.user.id, groupId)
 
-		const body = await request.json()
+		let body
+		try {
+			body = await request.json()
+		} catch (err) {
+			logger.error({ err }, 'Failed to parse JSON in request body')
+			throw new ValidationError('Invalid JSON in request body')
+		}
 		const validation = validateInput(createParticipantSchema, body)
 
 		if (!validation.success) {
