@@ -70,7 +70,9 @@ export function generatePublicToken(): string {
 	let word1: string, word2: string, base: string, randomLength: number
 	do {
 		word1 = quranWords[Math.floor(Math.random() * quranWords.length)]
-		word2 = quranWords[Math.floor(Math.random() * quranWords.length)]
+		do {
+			word2 = quranWords[Math.floor(Math.random() * quranWords.length)]
+		} while (word2 === word1)
 		base = `${word1}-${word2}-`
 		randomLength = 32 - base.length
 	} while (randomLength <= 0)

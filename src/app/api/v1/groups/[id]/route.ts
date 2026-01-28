@@ -94,7 +94,6 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 		}
 
 		const { name } = validation.data
-
 		const group = await prisma.group.update({
 			where: { id },
 			data: { name: name?.trim() },

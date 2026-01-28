@@ -12,7 +12,7 @@ export const createGroupSchema = z.object({
 })
 
 export const updateGroupSchema = z.object({
-	name: z.string().min(3, 'Nama grup minimal 3 karakter').max(255, 'Nama grup maksimal 255 karakter').optional(),
+	name: z.string().min(3, 'Nama grup minimal 3 karakter').max(255, 'Nama grup maksimal 255 karakter'),
 })
 
 export type CreateGroupInput = z.infer<typeof createGroupSchema>
@@ -72,7 +72,7 @@ export const createPeriodSchema = z.object({
 		)
 		.refine(
 			(date) => {
-				const d = new Date(date)
+				const d = new Date(date + 'T00:00:00Z') // Treat as UTC to avoid timezone issues
 				return d.getDay() === 1 // Monday
 			},
 			{ message: 'Periode harus dimulai pada hari Senin' },
