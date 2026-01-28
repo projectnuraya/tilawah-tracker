@@ -16,6 +16,19 @@ interface ParticipantInput {
 	whatsappNumber: string
 }
 
+const sanitizeWhatsAppNumber = (input: string): string => {
+	const cleaned = input.replace(/\D/g, '')
+	if (cleaned.startsWith('62')) {
+		return '+' + cleaned
+	} else if (cleaned.startsWith('0')) {
+		return '+62' + cleaned.slice(1)
+	} else if (cleaned.startsWith('628')) {
+		return '+62' + cleaned.slice(2)
+	} else {
+		return '+' + cleaned
+	}
+}
+
 export default function NewParticipantPage({ params }: PageProps) {
 	const router = useRouter()
 	const [groupId, setGroupId] = useState<string | null>(null)
@@ -37,7 +50,8 @@ export default function NewParticipantPage({ params }: PageProps) {
 	}
 
 	const updateParticipant = (id: string, field: 'name' | 'whatsappNumber', value: string) => {
-		setParticipants(participants.map((p) => (p.id === id ? { ...p, [field]: value } : p)))
+		const sanitizedValue = field === 'whatsappNumber' ? sanitizeWhatsAppNumber(value) : value
+		setParticipants(participants.map((p) => (p.id === id ? { ...p, [field]: sanitizedValue } : p)))
 	}
 
 	const handleSubmit = async (e: React.FormEvent) => {
