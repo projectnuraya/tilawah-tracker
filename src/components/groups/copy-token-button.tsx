@@ -1,5 +1,6 @@
 'use client'
 
+import { logger } from '@/components/lib/logger'
 import { Check, Copy } from 'lucide-react'
 import { useState } from 'react'
 
@@ -18,7 +19,7 @@ export function CopyTokenButton({ url }: CopyTokenButtonProps) {
 			setCopied(true)
 			setTimeout(() => setCopied(false), 2000)
 		} catch (err) {
-			console.error('Failed to copy:', err)
+			logger.error({ err }, 'Failed to copy URL to clipboard')
 		}
 	}
 

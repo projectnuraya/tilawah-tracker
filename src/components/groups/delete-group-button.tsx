@@ -1,5 +1,6 @@
 'use client'
 
+import { logger } from '@/components/lib/logger'
 import { Loader2, Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
@@ -27,7 +28,7 @@ export function DeleteGroupButton({ groupId, groupName }: DeleteGroupButtonProps
 				router.refresh()
 			}
 		} catch (err) {
-			console.error('Failed to delete:', err)
+			logger.error({ err, groupId }, 'Failed to delete group')
 			setIsDeleting(false)
 			setIsConfirming(false)
 		}

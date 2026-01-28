@@ -1,5 +1,6 @@
 'use client'
 
+import { logger } from '@/components/lib/logger'
 import { Loader2, UserMinus } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
@@ -27,7 +28,7 @@ export function DeactivateButton({ participantId, groupId }: DeactivateButtonPro
 				router.refresh()
 			}
 		} catch (err) {
-			console.error('Failed to deactivate:', err)
+			logger.error({ err, participantId }, 'Failed to deactivate participant')
 			setIsLoading(false)
 			setIsConfirming(false)
 		}

@@ -1,5 +1,6 @@
 'use client'
 
+import { logger } from '@/components/lib/logger'
 import { Loader2, Lock } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
@@ -26,7 +27,7 @@ export function LockPeriodButton({ periodId, notFinishedCount }: LockPeriodButto
 				router.refresh()
 			}
 		} catch (err) {
-			console.error('Failed to lock period:', err)
+			logger.error({ err, periodId }, 'Failed to lock period')
 		} finally {
 			setIsLocking(false)
 			setIsConfirming(false)

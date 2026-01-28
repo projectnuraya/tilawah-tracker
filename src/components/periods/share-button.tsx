@@ -1,5 +1,6 @@
 'use client'
 
+import { logger } from '@/components/lib/logger'
 import { Check, Copy, Share2, X } from 'lucide-react'
 import { useState } from 'react'
 
@@ -114,7 +115,7 @@ export function ShareButton({ period, groupName, publicToken, coordinators }: Sh
 				setTimeout(() => setCopied(false), 2000)
 			}
 		} catch (err) {
-			console.error('Failed to copy:', err)
+			logger.error({ err }, 'Failed to copy share text to clipboard')
 		}
 	}
 

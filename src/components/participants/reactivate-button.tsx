@@ -1,5 +1,6 @@
 'use client'
 
+import { logger } from '@/components/lib/logger'
 import { Loader2, UserPlus } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
@@ -30,7 +31,7 @@ export function ReactivateButton({ participantId, groupId }: ReactivateButtonPro
 				router.refresh()
 			}
 		} catch (err) {
-			console.error('Failed to reactivate:', err)
+			logger.error({ err, participantId }, 'Failed to reactivate participant')
 		} finally {
 			setIsLoading(false)
 		}
