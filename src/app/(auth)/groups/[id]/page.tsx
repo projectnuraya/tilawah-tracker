@@ -198,7 +198,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
 			<div className='rounded-xl border border-border bg-card p-4 mb-6'>
 				<div className='flex items-center justify-between mb-4'>
 					<h2 className='font-medium'>Peserta</h2>
-					<Link href={`/groups/${group.id}/participants`} className='text-xl text-primary hover:underline'>
+					<Link href={`/groups/${group.id}/participants`} className='text-xl text-secondary hover:underline'>
 						Kelola
 					</Link>
 				</div>
@@ -210,7 +210,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
 				<div className='rounded-xl border border-border bg-card p-4 mb-6'>
 					<div className='flex items-center justify-between mb-4'>
 						<h2 className='font-medium'>Periode Terbaru</h2>
-						<Link href={`/groups/${group.id}/periods`} className='text-xl text-primary hover:underline'>
+						<Link href={`/groups/${group.id}/periods`} className='text-xl text-secondary hover:underline'>
 							Lihat Semua
 						</Link>
 					</div>

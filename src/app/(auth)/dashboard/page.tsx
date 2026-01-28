@@ -22,8 +22,7 @@ async function getGroups(userId: string) {
 						},
 					},
 					periods: {
-						where: { status: 'active' },
-						take: 1,
+						orderBy: { periodNumber: 'desc' },
 					},
 				},
 			},
@@ -39,8 +38,8 @@ async function getGroups(userId: string) {
 		publicToken: cg.group.publicToken,
 		participantCount: cg.group._count.participants,
 		periodCount: cg.group._count.periods,
-		hasActivePeriod: cg.group.periods.length > 0,
-		activePeriod: cg.group.periods[0] || null,
+		hasActivePeriod: cg.group.periods.some((p) => p.status === 'active'),
+		latestPeriod: cg.group.periods[0] || null,
 	}))
 }
 
@@ -114,7 +113,7 @@ export default async function DashboardPage() {
 										<div className='flex flex-col gap-0'>
 											<span className='text-sm font-bold text-muted-foreground tracking-wide'>ANGGOTA</span>
 											<span className='text-base font-bold text-foreground'>
-												{group.participantCount} Orang
+												{group.participantCount} Partisipan
 											</span>
 										</div>
 									</div>
@@ -124,7 +123,9 @@ export default async function DashboardPage() {
 										</div>
 										<div className='flex flex-col gap-0'>
 											<span className='text-sm font-bold text-muted-foreground tracking-wide'>PERIODE</span>
-											<span className='text-base font-bold text-foreground'>Ke-{group.periodCount}</span>
+											<span className='text-base font-bold text-foreground'>
+												Ke-{group.latestPeriod ? group.latestPeriod.periodNumber : 0}
+											</span>
 										</div>
 									</div>
 								</div>
@@ -134,7 +135,7 @@ export default async function DashboardPage() {
 							<div>
 								<Link
 									href={`/groups/${group.id}`}
-									className='flex items-center justify-center gap-2 w-full rounded-md border-2 border-primary text-primary px-4 py-2.5 font-semibold transition hover:bg-primary/10'>
+									className='flex items-center justify-center gap-2 w-full rounded-md border-2 border-secondary text-secondary-background bg-secondary px-4 py-2.5 font-semibold transition hover:bg-secondary/10'>
 									<span>Buka Grup</span>
 									<ChevronRight className='h-5 w-5' />
 								</Link>
