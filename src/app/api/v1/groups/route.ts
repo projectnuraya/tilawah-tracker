@@ -104,6 +104,9 @@ export async function POST(request: NextRequest) {
 			publicToken = generatePublicToken()
 			attempts++
 		}
+		if (attempts >= 5) {
+			throw new Error('Failed to generate unique public token after multiple attempts')
+		}
 
 		// Create group and coordinator-group relationship atomically
 		// This ensures both records are created together or neither
