@@ -113,7 +113,7 @@ export default async function DashboardPage() {
 										<div className='flex flex-col gap-0'>
 											<span className='text-sm font-bold text-muted-foreground tracking-wide'>ANGGOTA</span>
 											<span className='text-base font-bold text-foreground'>
-												{group.participantCount} Partisipan
+												{group.participantCount} Peserta
 											</span>
 										</div>
 									</div>
