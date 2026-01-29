@@ -42,7 +42,7 @@ export default async function PublicGroupPage({ params }: PageProps) {
 
 	return (
 		<div className='min-h-screen bg-background'>
-			<div className='max-w-4xl mx-auto px-4'>
+			<div className='max-w-4xl mx-auto'>
 				{/* Header */}
 				<div className='mb-8 text-center'>
 					<div className='inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4'>

@@ -15,7 +15,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
 			/>
 
 			{/* Main Content */}
-			<main className='container mx-auto max-w-3xl px-4 py-6'>{children}</main>
+			<main className='container mx-auto max-w-3xl px-6 py-6'>{children}</main>
 		</div>
 	)
 }
