@@ -1,5 +1,6 @@
 'use client'
 
+import { sanitizeWhatsAppNumber } from '@/components/lib/utils'
 import { Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
@@ -95,7 +96,7 @@ export function EditParticipantForm({ participant }: EditParticipantFormProps) {
 					type='tel'
 					id='whatsapp'
 					value={whatsappNumber}
-					onChange={(e) => setWhatsappNumber(e.target.value)}
+					onChange={(e) => setWhatsappNumber(sanitizeWhatsAppNumber(e.target.value))}
 					placeholder='+6281234567890'
 					className='w-full rounded-lg border border-border bg-background px-4 py-2.5 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
 					disabled={isSaving}

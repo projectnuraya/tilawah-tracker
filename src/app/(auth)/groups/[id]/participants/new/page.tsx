@@ -1,5 +1,6 @@
 'use client'
 
+import { sanitizeWhatsAppNumber } from '@/components/lib/utils'
 import { ArrowLeft, Loader2, Plus, X } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -14,19 +15,6 @@ interface ParticipantInput {
 	id: string
 	name: string
 	whatsappNumber: string
-}
-
-const sanitizeWhatsAppNumber = (input: string): string => {
-	const cleaned = input.replace(/\D/g, '')
-	if (cleaned.startsWith('62')) {
-		return '+' + cleaned
-	} else if (cleaned.startsWith('0')) {
-		return '+62' + cleaned.slice(1)
-	} else if (cleaned.startsWith('628')) {
-		return '+62' + cleaned.slice(2)
-	} else {
-		return '+' + cleaned
-	}
 }
 
 export default function NewParticipantPage({ params }: PageProps) {

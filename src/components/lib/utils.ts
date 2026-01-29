@@ -11,3 +11,16 @@ import { twMerge } from 'tailwind-merge'
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs))
 }
+
+export const sanitizeWhatsAppNumber = (input: string): string => {
+	const cleaned = input.replace(/\D/g, '')
+	if (cleaned.startsWith('62')) {
+		return '+' + cleaned
+	} else if (cleaned.startsWith('0')) {
+		return '+62' + cleaned.slice(1)
+	} else if (cleaned.startsWith('628')) {
+		return '+62' + cleaned.slice(2)
+	} else {
+		return '+' + cleaned
+	}
+}
