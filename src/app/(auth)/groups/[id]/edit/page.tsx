@@ -62,7 +62,7 @@ export default function EditGroupPage({ params }: PageProps) {
 		}
 
 		if (name.trim() === originalName) {
-			router.push(`/groups/${groupId}`)
+			router.replace(`/groups/${groupId}`)
 			return
 		}
 
@@ -91,7 +91,7 @@ export default function EditGroupPage({ params }: PageProps) {
 				return
 			}
 
-			router.push(`/groups/${groupId}`)
+			router.replace(`/groups/${groupId}`)
 			router.refresh()
 		} catch {
 			setError('Terjadi kesalahan yang tidak terduga')

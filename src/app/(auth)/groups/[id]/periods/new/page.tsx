@@ -84,7 +84,7 @@ export default function NewPeriodPage({ params }: PageProps) {
 				return
 			}
 
-			router.push(`/groups/${groupId}/periods/${data.data.id}`)
+			router.replace(`/groups/${groupId}/periods/${data.data.id}`)
 			router.refresh()
 		} catch {
 			setError('Terjadi kesalahan yang tidak terduga')

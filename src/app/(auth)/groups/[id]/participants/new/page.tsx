@@ -96,7 +96,7 @@ export default function NewParticipantPage({ params }: PageProps) {
 				return
 			}
 
-			router.push(`/groups/${groupId}/participants`)
+			router.replace(`/groups/${groupId}/participants`)
 			router.refresh()
 		} catch {
 			setError('An unexpected error occurred')

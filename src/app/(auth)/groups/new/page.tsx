@@ -45,7 +45,7 @@ export default function NewGroupPage() {
 				return
 			}
 
-			router.push(`/groups/${data.data.id}`)
+			router.replace(`/groups/${data.data.id}`)
 		} catch {
 			setError('An unexpected error occurred')
 		} finally {

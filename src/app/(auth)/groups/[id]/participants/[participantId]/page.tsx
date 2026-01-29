@@ -133,7 +133,7 @@ export default async function ParticipantDetailPage({ params }: PageProps) {
 								<div key={pp.id} className='flex items-center justify-between'>
 									<div>
 										<p className='text-xl font-medium'>Periode #{pp.period.periodNumber}</p>
-										`` <p className='text-xl text-muted-foreground'>Juz {pp.juzNumber}</p>
+										<p className='text-xl text-muted-foreground'>Juz {pp.juzNumber}</p>
 									</div>
 									<span
 										className={`inline-flex items-center gap-1 text-xl ${
