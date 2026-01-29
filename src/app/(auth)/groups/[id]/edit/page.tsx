@@ -91,7 +91,7 @@ export default function EditGroupPage({ params }: PageProps) {
 				return
 			}
 
-			router.replace(`/groups/${groupId}`)
+			router.push(`/groups/${groupId}`)
 			router.refresh()
 		} catch {
 			setError('Terjadi kesalahan yang tidak terduga')
