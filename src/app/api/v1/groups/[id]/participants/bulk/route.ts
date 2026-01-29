@@ -44,6 +44,30 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
 		const { participants } = validation.data
 
+		// Check for duplicate names in the group
+		const newNames = participants.map((p: { name: string }) => p.name.trim())
+		const existingParticipants = await prisma.participant.findMany({
+			where: {
+				groupId,
+				name: {
+					in: newNames,
+					mode: 'insensitive',
+				},
+			},
+			select: { name: true },
+		})
+
+		if (existingParticipants.length > 0) {
+			const duplicateNames = existingParticipants.map((p) => p.name).join(', ')
+			throw new ValidationError(`Peserta berikut sudah ada di grup ini: ${duplicateNames}`)
+		}
+
+		// Also check for duplicates within the request itself
+		const uniqueNamesInRequest = new Set(newNames.map((n: string) => n.toLowerCase()))
+		if (uniqueNamesInRequest.size !== newNames.length) {
+			throw new ValidationError('Terdapat nama duplikat di dalam daftar yang Anda masukkan')
+		}
+
 		// Get active period if exists - participants will be auto-assigned to juz
 		const activePeriod = await prisma.period.findFirst({
 			where: {

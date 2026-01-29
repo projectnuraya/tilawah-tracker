@@ -97,7 +97,32 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 
 		// Update name if provided
 		if (name !== undefined) {
-			updateData.name = name.trim()
+			const trimmedName = name.trim()
+			// Check if another participant in the same group has the same name
+			const currentParticipant = await prisma.participant.findUnique({
+				where: { id },
+				select: { groupId: true },
+			})
+
+			if (currentParticipant) {
+				const existing = await prisma.participant.findFirst({
+					where: {
+						groupId: currentParticipant.groupId,
+						name: {
+							equals: trimmedName,
+							mode: 'insensitive',
+						},
+						id: { not: id }, // Exclude current participant
+					},
+					select: { id: true },
+				})
+
+				if (existing) {
+					throw new ValidationError(`Peserta dengan nama "${trimmedName}" sudah ada di grup ini`)
+				}
+			}
+
+			updateData.name = trimmedName
 		}
 
 		// Normalize and update WhatsApp number if provided

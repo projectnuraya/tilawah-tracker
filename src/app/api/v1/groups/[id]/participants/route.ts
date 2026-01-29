@@ -112,11 +112,24 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 					where: { status: 'active' },
 					take: 1,
 				},
+				participants: {
+					where: {
+						name: {
+							equals: name.trim(),
+							mode: 'insensitive',
+						},
+					},
+					take: 1,
+				},
 			},
 		})
 
 		if (!group) {
 			throw new NotFoundError('Group not found')
+		}
+
+		if (group.participants.length > 0) {
+			throw new ValidationError(`Peserta dengan nama "${name}" sudah ada di grup ini`)
 		}
 
 		// Create participant record
