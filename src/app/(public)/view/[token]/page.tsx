@@ -38,7 +38,7 @@ export default async function PublicGroupPage({ params }: PageProps) {
 		notFound()
 	}
 
-	const lockedPeriods = periods.filter((p) => p.status === 'locked')
+	const lockedPeriods = periods
 
 	return (
 		<div className='min-h-screen bg-background'>

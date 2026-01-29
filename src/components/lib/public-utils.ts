@@ -68,19 +68,23 @@ export async function getPublicGroupWithActivePeriod(token: string) {
 
 /**
  * Get all past periods for a public group with progress stats
- * Shows historical data of completed weeks
+ * Shows historical data of completed weeks (limited to last 52 weeks)
  */
 export async function getPublicGroupPeriods(token: string) {
 	const group = await validatePublicToken(token)
 
 	const periods = await prisma.period.findMany({
-		where: { groupId: group.id },
+		where: {
+			groupId: group.id,
+			status: 'locked',
+		},
 		include: {
 			_count: {
 				select: { participantPeriods: true },
 			},
 		},
 		orderBy: { periodNumber: 'desc' },
+		take: 52,
 	})
 
 	// Attach stats to each period
