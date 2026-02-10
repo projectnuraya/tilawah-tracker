@@ -7,7 +7,6 @@ import Navbar from '@/components/landing/Navbar'
 import ProblemSolution from '@/components/landing/ProblemSolution'
 import ProgramExplanation from '@/components/landing/ProgramExplanation'
 import ScreenshotGallery from '@/components/landing/ScreenshotGallery'
-import TrustBadges from '@/components/landing/TrustBadges'
 
 export default function HomePage() {
 	return (
@@ -20,7 +19,6 @@ export default function HomePage() {
 				<HowItWorks />
 				<FeaturesGrid />
 				<ScreenshotGallery />
-				<TrustBadges />
 				<FinalCTA />
 			</main>
 			<Footer />

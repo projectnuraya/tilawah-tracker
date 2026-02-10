@@ -1,6 +1,6 @@
 'use client'
 
-import { ChevronDown, Mail, Monitor } from 'lucide-react'
+import { ChevronDown, Database, Heart, Mail, Monitor, Shield } from 'lucide-react'
 import { landingCopy } from './copy'
 
 const { hero } = landingCopy
@@ -42,6 +42,22 @@ export default function HeroSection() {
 								<ChevronDown className='w-5 h-5' aria-hidden='true' />
 								<span>{hero.secondaryCta}</span>
 							</button>
+						</div>
+
+						{/* Trust Badges */}
+						<div className='mt-8 flex flex-wrap gap-4 items-center'>
+							{landingCopy.trust.badges.map((badge, i) => {
+								const icons = [Shield, Database, Heart]
+								const Icon = icons[i]
+								return (
+									<div
+										key={badge.label}
+										className='inline-flex items-center gap-2 px-3 py-1 bg-primary/5 border border-primary/20 rounded-full text-sm text-primary/80'>
+										<Icon className='w-4 h-4' />
+										<span>{badge.label}</span>
+									</div>
+								)
+							})}
 						</div>
 					</div>
 
