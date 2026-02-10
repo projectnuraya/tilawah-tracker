@@ -1,30 +1,29 @@
-import Image from 'next/image'
-import Link from 'next/link'
+import FeaturesGrid from '@/components/landing/FeatureGrid'
+import FinalCTA from '@/components/landing/FinalCTA'
+import Footer from '@/components/landing/Footer'
+import HeroSection from '@/components/landing/HeroSection'
+import HowItWorks from '@/components/landing/HowItWorks'
+import Navbar from '@/components/landing/Navbar'
+import ProblemSolution from '@/components/landing/ProblemSolution'
+import ProgramExplanation from '@/components/landing/ProgramExplanation'
+import ScreenshotGallery from '@/components/landing/ScreenshotGallery'
+import TrustBadges from '@/components/landing/TrustBadges'
 
 export default function HomePage() {
 	return (
-		<div className='min-h-screen flex flex-col items-center justify-center bg-background px-4'>
-			<div className='w-full max-w-md text-center space-y-6'>
-				<h1 className='text-4xl font-semibold text-foreground flex items-center justify-center gap-2'>
-					<Image src='/favicon.png' alt='Tilawah Tracker Logo' width={40} height={40} />
-					Tilawah Tracker
-				</h1>
-				<p className='text-xl text-muted-foreground'>
-					Lacak kemajuan membaca Al-Qur&apos;an kelompok untuk program &quot;Satu Minggu Satu Juz&quot;.
-				</p>
-
-				<div className='flex flex-col sm:flex-row gap-4 justify-center mt-8'>
-					<Link
-						href='/auth/signin'
-						className='inline-flex items-center justify-center rounded-lg bg-primary px-6 py-3 text-white font-medium shadow-sm transition hover:bg-primary/90'>
-						Masuk Koordinator
-					</Link>
-				</div>
-
-				<p className='text-base text-muted-foreground mt-8'>
-					Punya tautan publik? Tempelkan langsung di browser Anda untuk melihat kemajuan kelompok.
-				</p>
-			</div>
+		<div className='min-h-screen bg-background font-sans text-foreground'>
+			<Navbar />
+			<main className='flex flex-col'>
+				<HeroSection />
+				<ProgramExplanation />
+				<ProblemSolution />
+				<HowItWorks />
+				<FeaturesGrid />
+				<ScreenshotGallery />
+				<TrustBadges />
+				<FinalCTA />
+			</main>
+			<Footer />
 		</div>
 	)
 }

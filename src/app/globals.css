@@ -57,6 +57,10 @@
 }
 
 @layer base {
+	html {
+		scroll-behavior: smooth;
+	}
+
 	:root {
 		/* Islamic Serenity Theme - Primary Colors */
 		--primary: 160 79% 39%; /* Emerald Green #10b981 */
