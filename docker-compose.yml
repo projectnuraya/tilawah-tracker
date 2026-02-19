@@ -7,22 +7,14 @@ services:
     restart: always
     ports:
       - "3002:3000"
+    # Load all variables from .env directly
+    env_file:
+      - .env
+    # Override specific variables that need dynamic construction or Docker-specific values
     environment:
-      # Database
+      # Construct DB URL to point to the 'db' service (internal docker network)
+      # This overrides any DATABASE_URL present in the .env file (which might point to localhost)
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
-      
-      # NextAuth
-      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
-      NEXTAUTH_URL: ${NEXTAUTH_URL}
-      
-      # Google OAuth
-      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
-      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
-      
-      # App Config
-      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL}
-      LOG_LEVEL: ${LOG_LEVEL:-info}
-      NEXT_PUBLIC_GA_ID: ${NEXT_PUBLIC_GA_ID}
     depends_on:
       - db
 
@@ -30,10 +22,9 @@ services:
     image: postgres:16-alpine
     container_name: tilawah-tracker-db
     restart: always
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+    # Load user/password/db name from .env to initialize the database
+    env_file:
+      - .env
     ports:
       - "5432:5432"
     volumes:
