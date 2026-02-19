@@ -7,28 +7,38 @@ services:
     restart: always
     ports:
       - "3002:3000"
-    # Load all variables from .env directly
     env_file:
       - .env
-    # Override specific variables that need dynamic construction or Docker-specific values
     environment:
-      # Construct DB URL to point to the 'db' service (internal docker network)
-      # This overrides any DATABASE_URL present in the .env file (which might point to localhost)
-      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
-    depends_on:
-      - db
+      # If using internal db service, use: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      # If using external/existing Postgres, set DATABASE_URL directly in .env
+      DATABASE_URL: ${DATABASE_URL}
+    # Uncomment 'depends_on' if using the internal db service
+    # depends_on:
+    #   - db
+    
+    # Enable this if connecting to other containers in a shared network (e.g., 'proxy_net')
+    # networks:
+    #   - proxy_net
 
-  db:
-    image: postgres:16-alpine
-    container_name: tilawah-tracker-db
-    restart: always
-    # Load user/password/db name from .env to initialize the database
-    env_file:
-      - .env
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+  # Optional: Internal DB for standalone deployment (dev/staging)
+  # Comment this out if using an existing external Postgres instance
+  # db:
+  #   image: postgres:16-alpine
+  #   container_name: tilawah-tracker-db
+  #   restart: always
+  #   env_file:
+  #     - .env
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   networks:
+  #     - proxy_net
 
-volumes:
-  postgres_data:
+# networks:
+#   proxy_net:
+#     external: true
+
+# volumes:
+#   postgres_data:
