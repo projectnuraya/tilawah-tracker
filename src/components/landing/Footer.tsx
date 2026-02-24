@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { landingCopy } from './copy'
 
 const { footer } = landingCopy
@@ -28,11 +29,10 @@ export default function Footer() {
 						<h4 className='font-semibold mb-6 text-lg'>{footer.linksHeading}</h4>
 						<ul className='space-y-4 text-sm text-muted-foreground'>
 							{footer.links.map((link) => (
-								<li key={link.label} className='flex items-center gap-2'>
-									<span>{link.label}</span>
-									<span className='px-2 py-0.5 rounded-full bg-white/10 text-[10px] uppercase font-medium tracking-wider text-muted-foreground/80'>
-										{link.note}
-									</span>
+								<li key={link.label}>
+									<Link href={link.href} className='hover:text-primary transition-colors'>
+										{link.label}
+									</Link>
 								</li>
 							))}
 						</ul>
