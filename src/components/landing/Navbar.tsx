@@ -21,7 +21,11 @@ function AuthButton({
 	isLoggedIn: boolean
 }) {
 	if (isLoading) {
-		return <span className={`${className} animate-pulse bg-primary/20 rounded-lg`} aria-hidden='true' />
+		return (
+			<span className={`${className} animate-pulse bg-primary/20 rounded-lg`} role='status' aria-live='polite'>
+				<span className='sr-only'>Checking authentication status…</span>
+			</span>
+		)
 	}
 	if (isLoggedIn) {
 		return (
