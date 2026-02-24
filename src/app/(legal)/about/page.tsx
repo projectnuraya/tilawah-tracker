@@ -126,9 +126,15 @@ export default function AboutPage() {
 
 				{/* Tim */}
 				<Section title='Siapa di Balik Ini?'>
-					<div className='flex items-start gap-5'>
-						<div className='w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center shrink-0'>
-							<Image src='/nuraya-logo.png' alt='Project Nuraya Logo' width={80} height={80} />
+					<div className='flex flex-col sm:flex-row items-start sm:items-center gap-6'>
+						<div className='bg-primary/5 border border-primary/10 rounded-xl p-4 flex items-center justify-center shrink-0'>
+							<Image
+								src='/nuraya-logo.png'
+								alt='Project Nuraya Logo'
+								width={160}
+								height={44}
+								className='object-contain h-8 w-auto'
+							/>
 						</div>
 						<div>
 							<p className='font-semibold text-foreground text-lg'>{COMPANY}</p>
