@@ -211,9 +211,9 @@ export const landingCopy = {
 		contactEmail: 'hello@projectnuraya.id',
 		linksHeading: 'Informasi',
 		links: [
-			{ label: 'Tentang', note: 'Coming Soon' },
-			{ label: 'Privasi', note: 'Coming Soon' },
-			{ label: 'Syarat & Ketentuan', note: 'Coming Soon' },
+			{ label: 'Tentang', href: '/about' },
+			{ label: 'Privasi', href: '/privacy-policy' },
+			{ label: 'Syarat & Ketentuan', href: '/terms-of-service' },
 		],
 		copyright: `© ${new Date().getFullYear()} PT Nuraya Digital Nusantara (Project Nuraya). Dibuat dengan ❤️ untuk komunitas Muslim.`,
 	},
@@ -228,5 +228,15 @@ export const landingCopy = {
 		ogTitle: 'Tilawah Tracker — Kelola Tilawah Kelompok',
 		ogDescription: 'Platform digital untuk program satu minggu satu juz. Mudah, cepat, dan transparan.',
 		url: 'https://tilawah.projectnuraya.id',
+	},
+	// ===========================
+	// LEGAL (shared across legal pages)
+	// ===========================
+	legal: {
+		appName: 'Tilawah Tracker',
+		appUrl: 'https://tilawah.projectnuraya.id',
+		company: 'PT Nuraya Digital Nusantara (Project Nuraya)',
+		contactEmail: 'hello@projectnuraya.id',
+		lastUpdated: '24 Februari 2026',
 	},
 } as const
