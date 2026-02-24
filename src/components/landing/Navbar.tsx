@@ -1,6 +1,7 @@
 'use client'
 
-import { Menu, X } from 'lucide-react'
+import { LayoutDashboard, Menu, X } from 'lucide-react'
+import { useSession } from 'next-auth/react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
@@ -8,7 +9,40 @@ import { landingCopy } from './copy'
 
 const { nav } = landingCopy
 
+function AuthButton({
+	onClick,
+	className,
+	isLoading,
+	isLoggedIn,
+}: {
+	onClick?: () => void
+	className: string
+	isLoading: boolean
+	isLoggedIn: boolean
+}) {
+	if (isLoading) {
+		return <span className={`${className} animate-pulse bg-primary/20 rounded-lg`} aria-hidden='true' />
+	}
+	if (isLoggedIn) {
+		return (
+			<Link href='/dashboard' onClick={onClick} className={className}>
+				<LayoutDashboard className='w-4 h-4' aria-hidden='true' />
+				<span>Dashboard</span>
+			</Link>
+		)
+	}
+	return (
+		<Link href={nav.loginHref} onClick={onClick} className={className}>
+			{nav.loginButton}
+		</Link>
+	)
+}
+
 export default function Navbar() {
+	const { status } = useSession()
+	const isLoggedIn = status === 'authenticated'
+	const isLoading = status === 'loading'
+
 	const [scrolled, setScrolled] = useState(false)
 	const [mobileOpen, setMobileOpen] = useState(false)
 
@@ -54,11 +88,11 @@ export default function Navbar() {
 								{link.label}
 							</a>
 						))}
-						<Link
-							href={nav.loginHref}
-							className='ml-3 btn-primary px-5 py-2 rounded-lg text-sm font-semibold inline-flex items-center'>
-							{nav.loginButton}
-						</Link>
+						<AuthButton
+							isLoading={isLoading}
+							isLoggedIn={isLoggedIn}
+							className='ml-3 btn-primary px-5 py-2 rounded-lg text-sm font-semibold inline-flex items-center gap-2'
+						/>
 					</nav>
 
 					{/* Mobile Hamburger */}
@@ -90,12 +124,12 @@ export default function Navbar() {
 							</a>
 						))}
 						<div className='border-t border-border mt-4 pt-4'>
-							<Link
-								href={nav.loginHref}
+							<AuthButton
+								isLoading={isLoading}
+								isLoggedIn={isLoggedIn}
 								onClick={handleNavClick}
-								className='btn-primary px-5 py-3 rounded-lg text-base font-semibold inline-flex items-center justify-center w-full'>
-								{nav.loginButton}
-							</Link>
+								className='btn-primary px-5 py-3 rounded-lg text-base font-semibold inline-flex items-center justify-center gap-2 w-full'
+							/>
 						</div>
 					</nav>
 				</div>
