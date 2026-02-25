@@ -49,7 +49,7 @@ export default function ErrorPage({ error, reset }: ErrorProps) {
 				</p>
 
 				{/* Action Buttons */}
-				<div className='flex flex-col sm:flex-row gap-3 pt-4'>
+				<div className='flex flex-col sm:flex-row justify-center gap-3 pt-4'>
 					<button
 						onClick={reset}
 						className='inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 text-base font-medium text-primary-foreground shadow-sm transition hover:bg-primary/90'>

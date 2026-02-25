@@ -10,9 +10,9 @@ import ScreenshotGallery from '@/components/landing/ScreenshotGallery'
 
 export default function HomePage() {
 	return (
-		<div className='min-h-screen bg-background font-sans text-foreground'>
+		<div className='min-h-screen bg-background font-sans text-foreground antialiased overflow-x-hidden selection:bg-primary selection:text-primary-foreground'>
 			<Navbar />
-			<main className='flex flex-col'>
+			<main className='flex flex-col pt-16'>
 				<HeroSection />
 				<ProgramExplanation />
 				<ProblemSolution />

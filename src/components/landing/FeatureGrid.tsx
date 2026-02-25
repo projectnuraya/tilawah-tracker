@@ -4,30 +4,32 @@ import { landingCopy } from './copy'
 const { features } = landingCopy
 
 const featureIcons = [
-	<RefreshCw key='refresh' className='w-full h-full' aria-hidden='true' />,
-	<MessageCircle key='message' className='w-full h-full' aria-hidden='true' />,
-	<Eye key='eye' className='w-full h-full' aria-hidden='true' />,
-	<Activity key='activity' className='w-full h-full' aria-hidden='true' />,
-	<Lock key='lock' className='w-full h-full' aria-hidden='true' />,
-	<Flame key='flame' className='w-full h-full' aria-hidden='true' />,
+	<RefreshCw key='refresh' className='w-6 h-6' aria-hidden='true' />,
+	<MessageCircle key='message' className='w-6 h-6' aria-hidden='true' />,
+	<Eye key='eye' className='w-6 h-6' aria-hidden='true' />,
+	<Activity key='activity' className='w-6 h-6' aria-hidden='true' />,
+	<Lock key='lock' className='w-6 h-6' aria-hidden='true' />,
+	<Flame key='flame' className='w-6 h-6' aria-hidden='true' />,
 ]
 
 export default function FeaturesGrid() {
 	return (
-		<section id={features.sectionId} className='bg-muted py-16 md:py-24 px-4 md:px-8'>
-			<div className='max-w-7xl mx-auto'>
-				<h2 className='text-3xl md:text-4xl font-bold text-center text-foreground mb-12'>{features.heading}</h2>
+		<section id={features.sectionId} className='py-20 bg-muted'>
+			<div className='mx-auto max-w-7xl px-6 sm:px-8 lg:px-8'>
+				<div className='text-center mb-16'>
+					<h2 className='text-3xl font-bold text-foreground sm:text-4xl'>{features.heading}</h2>
+				</div>
 
-				<div className='grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto'>
+				<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'>
 					{features.items.map((item, i) => (
 						<div
 							key={item.title}
-							className='bg-card rounded-xl border border-border p-6 hover:shadow-lg transition-shadow duration-300'>
-							<div className='w-12 h-12 mb-4 p-3 bg-primary-background rounded-lg text-primary'>
+							className='bg-card p-8 rounded-2xl shadow-sm border border-border hover:shadow-md transition-shadow duration-300'>
+							<div className='w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-6'>
 								{featureIcons[i]}
 							</div>
-							<h3 className='text-lg font-semibold text-foreground mb-2'>{item.title}</h3>
-							<p className='text-sm text-muted-foreground leading-relaxed'>{item.description}</p>
+							<h3 className='text-xl font-bold text-foreground mb-3'>{item.title}</h3>
+							<p className='text-muted-foreground'>{item.description}</p>
 						</div>
 					))}
 				</div>
