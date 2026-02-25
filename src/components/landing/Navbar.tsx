@@ -6,14 +6,9 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
 import { landingCopy } from './copy'
+import { buildMailtoLink } from './utils'
 
-const { nav, hero } = landingCopy
-
-function buildMailtoLink() {
-	const { email, subject, body } = hero.mailto
-	const params = new URLSearchParams({ subject, body })
-	return `mailto:${email}?${params.toString()}`
-}
+const { nav } = landingCopy
 
 export default function Navbar() {
 	const { status } = useSession()

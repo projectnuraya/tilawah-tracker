@@ -52,8 +52,8 @@ function MobileMockup({ label, image }: { label: string; image?: { src: string; 
 				<Smartphone className='w-5 h-5 text-muted-foreground' aria-hidden='true' />
 				<span className='text-sm font-semibold text-muted-foreground'>{label}</span>
 			</div>
-			{/* Samsung S24 Ultra frame — titanium flat frame, 9:19.5 aspect ratio */}
-			<div className='relative w-full aspect-[9/19.5] rounded-[1.2rem] bg-zinc-900 shadow-xl p-1.25 border border-zinc-700'>
+			{/* Samsung S24 Ultra frame — titanium flat frame, 9:19.5 (18:39) aspect ratio */}
+			<div className='relative w-full aspect-[18/39] rounded-[1.2rem] bg-zinc-900 shadow-xl p-1.5 border border-zinc-700'>
 				{/* Screen */}
 				<div className='relative w-full h-full rounded-[1.1rem] bg-card overflow-hidden'>
 					{image ? (
@@ -101,7 +101,7 @@ export default function ScreenshotGallery() {
 					{/* Mobile mockups side by side on right */}
 					<div className='grid grid-cols-2 gap-4'>
 						{gallery.items.slice(1).map((item) => (
-							<MobileMockup key={item.label} label={item.label} image={'image' in item ? item.image : undefined} />
+							<MobileMockup key={item.label} label={item.label} image={item.image} />
 						))}
 					</div>
 				</div>

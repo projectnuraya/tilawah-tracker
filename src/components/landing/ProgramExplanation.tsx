@@ -7,7 +7,7 @@ export default function ProgramExplanation() {
 	return (
 		<section className='py-16 bg-primary text-primary-foreground relative overflow-hidden'>
 			{/* Islamic pattern overlay */}
-			<div className='absolute inset-0 bg-islamic-pattern opacity-100' aria-hidden='true' />
+			<div className='absolute inset-0 bg-islamic-pattern' aria-hidden='true' />
 
 			<div className='relative mx-auto max-w-7xl px-6 sm:px-8 lg:px-8 text-center'>
 				<h2 className='text-3xl font-bold tracking-tight sm:text-4xl mb-6'>{program.heading}</h2>
