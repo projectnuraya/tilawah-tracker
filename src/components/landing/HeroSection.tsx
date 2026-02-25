@@ -53,15 +53,15 @@ export default function HeroSection() {
 						<p className='text-lg text-muted-foreground leading-relaxed max-w-lg'>{hero.subheadline}</p>
 
 						{/* CTAs */}
-						<div className='flex flex-wrap items-center gap-4 w-full'>
+						<div className='flex flex-col sm:flex-row items-center gap-4 w-full'>
 							<a
 								href={buildMailtoLink()}
-								className='inline-flex h-12 items-center justify-center rounded-xl bg-primary px-8 text-base font-semibold text-primary-foreground shadow-lg shadow-primary/20 hover:bg-primary-hover transition-all'>
+								className='w-full sm:w-auto inline-flex h-12 items-center justify-center rounded-xl bg-primary px-8 text-base font-semibold text-primary-foreground shadow-lg shadow-primary/20 hover:bg-primary-hover transition-all'>
 								{hero.primaryCta}
 							</a>
 							<Link
 								href={nav.loginHref}
-								className='inline-flex h-12 items-center justify-center rounded-xl border border-border bg-card px-6 text-base font-semibold text-foreground hover:bg-muted hover:border-muted-foreground/20 transition-all gap-2'>
+								className='w-full sm:w-auto inline-flex h-12 items-center justify-center rounded-xl border border-border bg-card px-8 text-base font-semibold text-foreground hover:bg-muted hover:border-muted-foreground/20 transition-all gap-2'>
 								<GoogleIcon />
 								{hero.secondaryCta}
 							</Link>
