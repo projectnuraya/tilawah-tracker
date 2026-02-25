@@ -19,74 +19,103 @@ export const landingCopy = {
 		],
 		loginButton: 'Masuk',
 		loginHref: '/auth/signin',
+		requestAccess: 'Minta Akses',
 	},
 
 	// ===========================
 	// HERO SECTION
 	// ===========================
 	hero: {
-		headline: 'Kelola Tilawah Kelompok, Tanpa Ribet',
+		badge: 'Solusi Modern Komunitas Mengaji',
+		headline: 'Kelola Tilawah Kelompok,',
+		headlineAccent: 'Tanpa Ribet',
 		subheadline:
-			'Platform digital untuk program satu minggu satu juz. Pantau progress anggota, bagikan ke WhatsApp, dan jaga komitmen kelompok — semua dalam satu tempat.',
-		primaryCta: 'Minta Akses Koordinator',
-		secondaryCta: 'Pelajari Lebih Lanjut',
+			'Pantau progres tilawah satu minggu satu juz. Atur jadwal rotasi otomatis dan fokus ibadah tanpa pusing administrasi manual.',
+		primaryCta: 'Minta Akses Sekarang',
+		secondaryCta: 'Masuk dengan Google',
 		mailto: {
 			email: 'hello@projectnuraya.id',
 			subject: 'Permintaan Akses Koordinator',
 			body: "Assalamu'alaikum,\n\nSaya ingin mendaftar sebagai koordinator di Tilawah Tracker.\n\nNama: \nEmail: \nNama Kelompok: \nJumlah Anggota: \n\nTerima kasih.",
 		},
+		trustItems: [{ label: 'Data Aman & Terenkripsi' }, { label: 'Setup Cepat' }],
+		mockup: {
+			browserUrl: 'tilawah.projectnuraya.id/dashboard',
+			image: {
+				src: '/dashboard-screen.png',
+				alt: 'Tilawah Tracker dashboard showing group management interface',
+				width: 1440,
+				height: 900,
+			},
+		},
+	},
+
+	// ===========================
+	// PAIN POINTS
+	// ===========================
+	painPoints: {
+		sectionId: 'tentang',
+		heading: 'Masih Pakai Cara Lama?',
+		subheading: 'Jangan biarkan masalah administrasi menghambat kekhusyukan ibadah kelompok Anda.',
+		items: [
+			{
+				title: 'Laporan di WA',
+				description: 'Chat grup tenggelam, koordinator harus scroll jauh ke atas untuk merekap satu per satu.',
+			},
+			{
+				title: 'Data Tercecer',
+				description:
+					'Tidak ada riwayat tilawah yang tersimpan rapi. Siapa yang rajin, siapa yang bolong, tidak terlacak.',
+			},
+			{
+				title: 'Lupa Giliran Juz',
+				description: 'Peserta sering bertanya "Minggu ini saya Juz berapa?" karena tidak ada dashboard terpusat.',
+			},
+			{
+				title: 'Koordinator Pusing',
+				description: 'Menghabiskan waktu berjam-jam tiap pekan hanya untuk mencatat setoran manual.',
+			},
+		],
+	},
+
+	// ===========================
+	// SOLUTIONS
+	// ===========================
+	solutions: {
+		heading: 'Ada Cara yang Lebih Baik',
+		label: 'Solusi Cerdas',
+		items: [
+			{
+				title: 'Data Tersimpan Aman',
+				description: 'Semua data tersimpan rapi di cloud dan bisa diakses kapan saja oleh koordinator.',
+			},
+			{
+				title: 'Pembagian Jelas',
+				description: 'Setiap anggota tahu persis juz-nya melalui dashboard. Pembagian otomatis bergilir setiap periode.',
+			},
+			{
+				title: 'Update Satu Klik',
+				description: 'Update progress semudah memilih status. Langsung tersimpan dan terupdate real-time.',
+			},
+			{
+				title: 'Rotasi Otomatis',
+				description: 'Sistem mengurutkan pembagian juz periode berikutnya secara otomatis. Juz 30 kembali ke Juz 1.',
+			},
+		],
 	},
 
 	// ===========================
 	// PROGRAM EXPLANATION
 	// ===========================
 	program: {
-		sectionId: 'tentang',
-		heading: 'Apa itu Satu Minggu Satu Juz?',
+		heading: 'Program Satu Minggu Satu Juz',
 		description:
-			"Satu Minggu Satu Juz adalah program tilawah berkelompok di mana setiap anggota membaca satu juz Al-Qur'an dalam waktu satu minggu. Dengan 30 juz yang digilir secara berurutan, setiap anggota memiliki tanggung jawab yang jelas. Sistem kelompok menciptakan semangat kebersamaan dan komitmen — ketika satu orang terlewat, yang lain bisa saling mengingatkan.",
+			"Metode efektif untuk menjaga konsistensi tilawah secara berjamaah. Setiap anggota membaca satu juz Al-Qur'an dalam satu minggu, dengan 30 juz yang digilir secara berurutan.",
 		stats: [
-			{
-				value: '30',
-				label: "Juz dalam Al-Qur'an",
-				description: 'Digilir secara berurutan antar anggota setiap minggunya',
-			},
-			{
-				value: '7',
-				label: 'Hari per Periode',
-				description: 'Senin sampai Ahad, satu siklus penuh setiap minggu',
-			},
-			{
-				value: '∞',
-				label: 'Rotasi Otomatis',
-				description: 'Pembagian juz bergulir otomatis setiap periode baru',
-			},
+			{ value: '30', label: "Juz Al-Qur'an" },
+			{ value: '7', label: 'Hari dalam Seminggu' },
+			{ value: '∞', label: 'Rotasi Otomatis' },
 		],
-	},
-
-	// ===========================
-	// PROBLEM vs SOLUTION
-	// ===========================
-	problemSolution: {
-		heading: 'Dari Kerepotan ke Kemudahan',
-		problem: {
-			title: 'Cara Lama',
-			items: [
-				'Catatan progress hilang tenggelam di chat WhatsApp',
-				'Lupa siapa dapat juz berapa minggu ini',
-				'Update status satu per satu secara manual tiap minggu',
-				'Tidak ada riwayat — siapa yang rajin, siapa yang sering terlewat?',
-			],
-		},
-		solution: {
-			title: 'Dengan Tilawah Tracker',
-			items: [
-				'Semua data tersimpan rapi dan bisa diakses kapan saja',
-				'Pembagian juz jelas, otomatis bergilir setiap periode',
-				'Update progress cukup sekali klik, langsung tersimpan',
-				'Riwayat lengkap per periode — lihat perkembangan setiap anggota',
-			],
-		},
 	},
 
 	// ===========================
@@ -94,20 +123,20 @@ export const landingCopy = {
 	// ===========================
 	howItWorks: {
 		sectionId: 'cara-kerja',
-		heading: 'Cara Kerja',
+		heading: 'Cara Kerja Sederhana',
+		subheading: 'Mulai dalam hitungan menit, bukan jam.',
 		steps: [
 			{
-				title: 'Masuk dengan Google',
-				description: 'Login cukup dengan akun Google. Tidak perlu buat akun baru atau hafal password tambahan.',
+				title: '1. Masuk & Daftar',
+				description: 'Login menggunakan akun Google Anda. Cepat dan aman tanpa perlu ingat password baru.',
 			},
 			{
-				title: 'Buat Grup & Tambah Anggota',
-				description: 'Buat grup tilawah, tambahkan anggota, dan sistem akan otomatis membagi juz secara merata.',
+				title: '2. Buat Kelompok',
+				description: 'Buat grup baru, tambahkan anggota, dan sistem akan otomatis membagi juz secara merata.',
 			},
 			{
-				title: 'Mulai Periode & Pantau',
-				description:
-					'Buat periode mingguan, pantau progress anggota, dan bagikan hasilnya ke WhatsApp dengan sekali klik.',
+				title: '3. Mulai Tilawah',
+				description: 'Sistem membagikan juz secara otomatis. Pantau progress dan bagikan hasilnya ke WhatsApp.',
 			},
 		],
 	},
@@ -117,27 +146,27 @@ export const landingCopy = {
 	// ===========================
 	features: {
 		sectionId: 'fitur',
-		heading: 'Fitur Unggulan',
+		heading: 'Fitur Lengkap',
 		items: [
 			{
-				title: 'Rotasi Juz Otomatis',
+				title: 'Rotasi Juz Pintar',
 				description:
-					'Juz bergilir otomatis setiap periode baru. Juz 1 ke Juz 2, Juz 30 kembali ke Juz 1. Tidak perlu atur manual lagi.',
+					'Juz bergilir otomatis setiap periode baru. Juz 1 ke Juz 2, Juz 30 kembali ke Juz 1. Tidak perlu atur manual.',
 			},
 			{
 				title: 'Integrasi WhatsApp',
 				description:
-					'Salin rangkuman progress dalam format rapi, lengkap dengan emoji 👑 dan 💔, langsung tempel ke grup WhatsApp.',
+					'Salin rekap laporan dengan satu klik — format teks rapi dengan emoji 👑 dan 💔, siap paste ke grup WhatsApp.',
 			},
 			{
 				title: 'Tampilan Publik',
 				description:
-					'Bagikan link khusus agar anggota bisa melihat progress kelompok sendiri tanpa perlu login. Cukup buka di browser.',
+					'Bagikan link "Lihat Saja" agar anggota bisa memantau progress kelompok tanpa perlu login. Cukup buka di browser.',
 			},
 			{
 				title: 'Pelacakan Progress',
 				description:
-					'Lihat siapa yang sudah selesai 👑, siapa yang terlewat 💔, dan siapa yang masih belum selesai — semua real-time.',
+					'Lihat siapa yang sudah selesai 👑, siapa yang terlewat 💔, dan siapa yang belum selesai — semua real-time.',
 			},
 			{
 				title: 'Penguncian Periode',
@@ -146,8 +175,7 @@ export const landingCopy = {
 			},
 			{
 				title: 'Streak Counter',
-				description:
-					'Lacak berapa kali berturut-turut seseorang melewatkan juz. Ditampilkan sebagai 💔×2, 💔×3, dan seterusnya.',
+				description: 'Lacak berapa kali berturut-turut seseorang melewatkan juz. Ditampilkan sebagai 💔×2, 💔×3, dst.',
 			},
 		],
 	},
@@ -157,37 +185,41 @@ export const landingCopy = {
 	// ===========================
 	gallery: {
 		sectionId: 'galeri',
-		heading: 'Lihat Aplikasinya',
-		subheading: 'Antarmuka sederhana yang mudah digunakan siapa saja',
+		heading: 'Tampilan Aplikasi',
+		subheading: 'Simpel, bersih, dan fokus pada ibadah.',
 		items: [
 			{
-				label: 'Dashboard Koordinator',
-				caption: 'Kelola semua grup tilawah dari satu dashboard',
+				label: 'Dashboard Admin',
 				type: 'desktop' as const,
+				browserUrl: 'tilawah.projectnuraya.id/dashboard',
+				image: {
+					src: '/dashboard-screen.png',
+					alt: 'Tilawah Tracker admin dashboard',
+					width: 2048,
+					height: 795,
+				},
 			},
 			{
-				label: 'Tracking Periode',
-				caption: 'Pantau progress mingguan dengan status real-time',
+				label: 'Group View',
 				type: 'mobile' as const,
+				image: {
+					src: '/mobile-group.png',
+					alt: 'Tilawah Tracker mobile group progress view',
+					width: 400,
+					height: 844,
+				},
 			},
 			{
-				label: 'Bagikan ke WhatsApp',
-				caption: 'Format berbagi ke WhatsApp dengan emoji 👑 dan 💔',
+				label: 'Public View',
 				type: 'mobile' as const,
-			},
-			{
-				label: 'Tampilan Publik',
-				caption: 'Tampilan publik untuk anggota kelompok tanpa login',
-				type: 'tablet' as const,
+				image: {
+					src: '/mobile-public.png',
+					alt: 'Tilawah Tracker public view showing group progress',
+					width: 400,
+					height: 844,
+				},
 			},
 		],
-	},
-
-	// ===========================
-	// TRUST BADGES
-	// ===========================
-	trust: {
-		badges: [{ label: 'Aman dengan Google OAuth' }, { label: 'Data Tersimpan Aman' }, { label: 'Dibuat untuk Komunitas' }],
 	},
 
 	// ===========================
@@ -197,7 +229,8 @@ export const landingCopy = {
 		heading: 'Siap Mulai Kelola Tilawah Kelompok?',
 		description:
 			'Saat ini Tilawah Tracker dalam tahap public beta — siapa pun bisa mencoba dengan menghubungi kami. Kirim permintaan akses dan mulai kelola tilawah kelompok Anda secara digital.',
-		buttonText: 'Kirim Permintaan Akses',
+		primaryButton: 'Minta Akses Sekarang',
+		secondaryButton: 'Masuk dengan Google',
 		note: 'Pendaftaran mandiri segera hadir ✨',
 	},
 
@@ -205,11 +238,12 @@ export const landingCopy = {
 	// FOOTER
 	// ===========================
 	footer: {
-		brand: 'Project Nuraya',
-		tagline: 'Platform Tilawah Kelompok Digital',
-		contactHeading: 'Kontak',
+		brand: 'Tilawah Tracker',
+		tagline:
+			"Platform manajemen tilawah digital untuk memudahkan komunitas Muslim menjaga istiqomah dalam berinteraksi dengan Al-Qur'an.",
+		contactHeading: 'Hubungi Kami',
 		contactEmail: 'hello@projectnuraya.id',
-		linksHeading: 'Informasi',
+		linksHeading: 'Menu',
 		links: [
 			{ label: 'Tentang', href: '/about' },
 			{ label: 'Privasi', href: '/privacy-policy' },
@@ -229,6 +263,7 @@ export const landingCopy = {
 		ogDescription: 'Platform digital untuk program satu minggu satu juz. Mudah, cepat, dan transparan.',
 		url: 'https://tilawah.projectnuraya.id',
 	},
+
 	// ===========================
 	// LEGAL (shared across legal pages)
 	// ===========================

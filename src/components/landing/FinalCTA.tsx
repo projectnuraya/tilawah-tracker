@@ -1,36 +1,40 @@
-import { Mail } from 'lucide-react'
+'use client'
+
+import Link from 'next/link'
+import { GoogleIcon } from '@/components/ui/icons'
 import { landingCopy } from './copy'
+import { buildMailtoLink } from './utils'
 
-const { finalCta, hero } = landingCopy // reusing mailto from hero
-
-function buildMailtoLink() {
-	const { email, subject, body } = hero.mailto
-	const params = new URLSearchParams({ subject, body })
-	return `mailto:${email}?${params.toString()}`
-}
+const { finalCta, nav } = landingCopy
 
 export default function FinalCTA() {
 	return (
-		<section id='cta' className='bg-primary text-primary-foreground py-16 md:py-24 px-4 text-center'>
-			<div className='max-w-4xl mx-auto'>
-				<h2 className='text-3xl md:text-4xl font-bold mb-6'>{finalCta.heading}</h2>
+		<section id='cta' className='py-24 bg-primary relative overflow-hidden'>
+			{/* Islamic pattern overlay */}
+			<div className='absolute inset-0 bg-islamic-pattern' aria-hidden='true' />
 
-				<p className='text-primary-foreground/90 text-lg md:text-xl mb-10 max-w-2xl mx-auto leading-relaxed'>
-					{finalCta.description}
-				</p>
+			<div className='relative mx-auto max-w-4xl px-6 sm:px-8 text-center'>
+				<h2 className='text-4xl font-extrabold tracking-tight text-primary-foreground sm:text-5xl mb-6'>
+					{finalCta.heading}
+				</h2>
 
-				<div className='flex flex-col items-center gap-4'>
+				<p className='text-xl text-primary-foreground/80 mb-10 max-w-2xl mx-auto'>{finalCta.description}</p>
+
+				<div className='flex flex-col sm:flex-row items-center justify-center gap-4'>
 					<a
 						href={buildMailtoLink()}
-						className='bg-white text-primary hover:bg-white/90 px-10 py-5 rounded-lg font-bold text-lg inline-flex items-center gap-3 shadow-xl transition-all hover:scale-105 active:scale-95'>
-						<Mail className='w-5 h-5' aria-hidden='true' />
-						<span>{finalCta.buttonText}</span>
+						className='w-full sm:w-auto inline-flex h-14 items-center justify-center rounded-xl bg-card px-8 text-lg font-bold text-primary shadow-xl hover:bg-muted transition-all'>
+						{finalCta.primaryButton}
 					</a>
-
-					<p className='text-primary-foreground/80 text-sm font-medium backdrop-blur-sm px-4 py-1 rounded-full bg-black/10 border border-white/10'>
-						{finalCta.note}
-					</p>
+					<Link
+						href={nav.loginHref}
+						className='w-full sm:w-auto inline-flex h-14 items-center justify-center rounded-xl border-2 border-white bg-white/15 px-8 text-lg font-bold text-primary-foreground hover:bg-white/25 transition-all gap-2'>
+						<GoogleIcon />
+						{finalCta.secondaryButton}
+					</Link>
 				</div>
+
+				<p className='text-primary-foreground/70 text-sm mt-6 font-medium'>{finalCta.note}</p>
 			</div>
 		</section>
 	)
