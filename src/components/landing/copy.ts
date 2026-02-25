@@ -39,6 +39,15 @@ export const landingCopy = {
 			body: "Assalamu'alaikum,\n\nSaya ingin mendaftar sebagai koordinator di Tilawah Tracker.\n\nNama: \nEmail: \nNama Kelompok: \nJumlah Anggota: \n\nTerima kasih.",
 		},
 		trustItems: [{ label: 'Data Aman & Terenkripsi' }, { label: 'Setup Cepat' }],
+		mockup: {
+			browserUrl: 'tilawah.projectnuraya.id/dashboard',
+			image: {
+				src: '/dashboard-screen.png',
+				alt: 'Tilawah Tracker dashboard showing group management interface',
+				width: 1440,
+				height: 900,
+			},
+		},
 	},
 
 	// ===========================
@@ -182,14 +191,33 @@ export const landingCopy = {
 			{
 				label: 'Dashboard Admin',
 				type: 'desktop' as const,
+				browserUrl: 'tilawah.projectnuraya.id/dashboard',
+				image: {
+					src: '/dashboard-screen.png',
+					alt: 'Tilawah Tracker admin dashboard',
+					width: 2048,
+					height: 795,
+				},
 			},
 			{
-				label: 'Mobile View',
+				label: 'Group View',
 				type: 'mobile' as const,
+				image: {
+					src: '/mobile-group.png',
+					alt: 'Tilawah Tracker mobile group progress view',
+					width: 400,
+					height: 844,
+				},
 			},
 			{
-				label: 'Progress Grup',
+				label: 'Public View',
 				type: 'mobile' as const,
+				image: {
+					src: '/mobile-public.png',
+					alt: 'Tilawah Tracker public view showing group progress',
+					width: 400,
+					height: 844,
+				},
 			},
 		],
 	},

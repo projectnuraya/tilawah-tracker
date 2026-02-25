@@ -37,6 +37,7 @@ function GoogleIcon() {
 }
 
 function DashboardMockup() {
+	const { image, browserUrl } = hero.mockup
 	return (
 		<div className='relative rounded-2xl bg-card shadow-2xl border border-border overflow-hidden'>
 			{/* Browser Chrome Header */}
@@ -47,18 +48,11 @@ function DashboardMockup() {
 					<div className='h-3 w-3 rounded-full bg-success/30' />
 				</div>
 				<div className='mx-auto h-6 w-64 rounded-md bg-card text-center text-[10px] leading-6 text-muted-foreground shadow-sm'>
-					tilawah.projectnuraya.id/dashboard
+					{browserUrl}
 				</div>
 			</div>
 			{/* Actual Screenshot */}
-			<Image
-				src='/dashboard-screen.png'
-				alt='Tilawah Tracker dashboard showing group management interface'
-				width={1440}
-				height={900}
-				className='w-full h-auto'
-				priority
-			/>
+			<Image src={image.src} alt={image.alt} width={image.width} height={image.height} className='w-full h-auto' priority />
 		</div>
 	)
 }
