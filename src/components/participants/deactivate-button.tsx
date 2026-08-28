@@ -4,6 +4,7 @@ import { logger } from '@/components/lib/logger'
 import { Loader2, UserMinus } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { toast } from 'sonner'
 
 interface DeactivateButtonProps {
 	participantId: string
@@ -24,11 +25,17 @@ export function DeactivateButton({ participantId, groupId }: DeactivateButtonPro
 			})
 
 			if (response.ok) {
+				// Navigating away, so state is intentionally left as-is to avoid a flash of the idle button
 				router.push(`/groups/${groupId}/participants`)
 				router.refresh()
+			} else {
+				toast.error('Gagal menonaktifkan peserta', { description: 'Silakan coba lagi.' })
+				setIsLoading(false)
+				setIsConfirming(false)
 			}
 		} catch (err) {
 			logger.error({ err, participantId }, 'Failed to deactivate participant')
+			toast.error('Gagal menonaktifkan peserta', { description: 'Periksa koneksi internet Anda.' })
 			setIsLoading(false)
 			setIsConfirming(false)
 		}

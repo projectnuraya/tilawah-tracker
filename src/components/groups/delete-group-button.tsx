@@ -4,6 +4,7 @@ import { logger } from '@/components/lib/logger'
 import { Loader2, Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { toast } from 'sonner'
 
 interface DeleteGroupButtonProps {
 	groupId: string
@@ -24,11 +25,17 @@ export function DeleteGroupButton({ groupId, groupName }: DeleteGroupButtonProps
 			})
 
 			if (response.ok) {
+				// Navigating away, so state is intentionally left as-is to avoid a flash of the idle button
 				router.push('/dashboard')
 				router.refresh()
+			} else {
+				toast.error('Gagal menghapus grup', { description: 'Silakan coba lagi.' })
+				setIsDeleting(false)
+				setIsConfirming(false)
 			}
 		} catch (err) {
 			logger.error({ err, groupId }, 'Failed to delete group')
+			toast.error('Gagal menghapus grup', { description: 'Periksa koneksi internet Anda.' })
 			setIsDeleting(false)
 			setIsConfirming(false)
 		}

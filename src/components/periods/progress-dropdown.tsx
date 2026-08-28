@@ -1,8 +1,9 @@
 'use client'
 
-import { Check, ChevronDown, MessageCircle } from 'lucide-react'
+import { ChevronDown, MessageCircle } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useRef, useState } from 'react'
+import { useState } from 'react'
+import { toast } from 'sonner'
 
 interface ProgressStatusDropdownProps {
 	participantPeriodId: string
@@ -25,59 +26,13 @@ export function ProgressStatusDropdown({
 }: ProgressStatusDropdownProps) {
 	const router = useRouter()
 	const [status, setStatus] = useState(currentStatus)
-	const [isOpen, setIsOpen] = useState(false)
 	const [isSaving, setIsSaving] = useState(false)
-	const [dropdownPos, setDropdownPos] = useState<{ top: number; left?: number; right?: number }>({ top: 0, left: 0 })
-	const buttonRef = useRef<HTMLButtonElement>(null)
-
-	const currentOption = STATUS_OPTIONS.find((o) => o.value === status) || STATUS_OPTIONS[0]
-
-	const handleOpenDropdown = () => {
-		if (buttonRef.current) {
-			const rect = buttonRef.current.getBoundingClientRect()
-			const dropdownWidth = 160 // w-40 = 10rem = 160px
-			const dropdownHeight = 144 // Estimated height for 3 options
-			const viewportWidth = window.innerWidth
-			const viewportHeight = window.innerHeight
-			const spaceOnRight = viewportWidth - rect.right
-			const spaceBelow = viewportHeight - rect.bottom
-			const spaceAbove = rect.top
-
-			let top: number
-			let left: number | undefined
-			let right: number | undefined
-
-			// Vertical positioning: prefer below, but use above if not enough space
-			if (spaceBelow >= dropdownHeight + 8) {
-				top = rect.bottom + 8
-			} else if (spaceAbove >= dropdownHeight + 8) {
-				top = rect.top - dropdownHeight - 8
-			} else {
-				// If neither has enough space, default to below
-				top = rect.bottom + 8
-			}
-
-			// Horizontal positioning
-			if (spaceOnRight < dropdownWidth) {
-				right = viewportWidth - rect.right
-			} else {
-				left = rect.left
-			}
-
-			setDropdownPos({ top, left, right })
-		}
-		setIsOpen(!isOpen)
-	}
 
 	const handleStatusChange = async (newStatus: string) => {
-		if (newStatus === status) {
-			setIsOpen(false)
-			return
-		}
+		if (newStatus === status) return
 
 		setIsSaving(true)
 		setStatus(newStatus)
-		setIsOpen(false)
 
 		try {
 			const response = await fetch(`/api/v1/progress/${participantPeriodId}`, {
@@ -91,11 +46,14 @@ export function ProgressStatusDropdown({
 			if (!response.ok) {
 				// Revert on error
 				setStatus(currentStatus)
+				toast.error('Gagal menyimpan status', { description: `Status ${participantName} dikembalikan seperti semula.` })
 			} else {
+				toast.success('Status tersimpan')
 				router.refresh()
 			}
 		} catch {
 			setStatus(currentStatus)
+			toast.error('Gagal menyimpan status', { description: 'Periksa koneksi internet Anda.' })
 		} finally {
 			setIsSaving(false)
 		}
@@ -107,6 +65,13 @@ export function ProgressStatusDropdown({
 			)}`
 		: null
 
+	const statusStyles =
+		status === 'finished'
+			? 'border-primary/30 bg-primary/10 text-primary'
+			: status === 'missed'
+				? 'border-destructive/30 bg-destructive/10 text-destructive'
+				: 'border-border bg-background text-foreground'
+
 	return (
 		<div className='flex items-center gap-2'>
 			{/* WhatsApp Reminder */}
@@ -115,55 +80,30 @@ export function ProgressStatusDropdown({
 					href={whatsappLink}
 					target='_blank'
 					rel='noopener noreferrer'
-					className='rounded-lg p-2 text-green-600 hover:bg-green-50 transition'
-					title='Ingatkan via WhatsApp'>
-					<MessageCircle className='h-4 w-4' />
+					className='inline-flex min-h-12 min-w-12 items-center justify-center rounded-lg text-primary hover:bg-primary/10 transition'
+					aria-label={`Ingatkan ${participantName} via WhatsApp`}>
+					<MessageCircle className='h-5 w-5' aria-hidden='true' />
 				</a>
 			)}
 
-			{/* Status Dropdown */}
+			{/* Status Select — native so it gets the OS picker and full keyboard support for free */}
 			<div className='relative'>
-				<button
-					ref={buttonRef}
-					onClick={handleOpenDropdown}
+				<select
+					value={status}
+					onChange={(e) => handleStatusChange(e.target.value)}
 					disabled={isSaving}
-					className={`inline-flex items-center gap-2 rounded-lg border px-3 py-1.5 text-base font-medium transition ${
-						status === 'finished'
-							? 'border-primary/30 bg-primary/10 text-primary'
-							: status === 'missed'
-								? 'border-destructive/30 bg-destructive/10 text-destructive'
-								: 'border-border bg-background text-foreground'
-					} ${isSaving ? 'opacity-50' : 'hover:shadow-sm'}`}>
-					<span>{currentOption.icon}</span>
-					<span className='hidden sm:inline'>{currentOption.label}</span>
-					<ChevronDown className='h-3 w-3' />
-				</button>
-
-				{isOpen && (
-					<>
-						<div className='fixed inset-0 z-10' onClick={() => setIsOpen(false)} />
-						<div
-							className='fixed z-50 w-40 rounded-lg border border-border bg-card shadow-lg overflow-hidden'
-							style={{
-								top: `${dropdownPos.top}px`,
-								left: dropdownPos.left !== undefined ? `${dropdownPos.left}px` : 'auto',
-								right: dropdownPos.right !== undefined ? `${dropdownPos.right}px` : 'auto',
-							}}>
-							{STATUS_OPTIONS.map((option) => (
-								<button
-									key={option.value}
-									onClick={() => handleStatusChange(option.value)}
-									className='flex items-center justify-between w-full px-3 py-2 text-base hover:bg-muted transition'>
-									<span className='flex items-center gap-2'>
-										<span>{option.icon}</span>
-										<span>{option.label}</span>
-									</span>
-									{status === option.value && <Check className='h-4 w-4 text-primary' />}
-								</button>
-							))}
-						</div>
-					</>
-				)}
+					aria-label={`Ubah status tilawah untuk ${participantName}`}
+					className={`min-h-12 appearance-none rounded-lg border pl-3 pr-9 text-base font-medium transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed ${statusStyles}`}>
+					{STATUS_OPTIONS.map((option) => (
+						<option key={option.value} value={option.value}>
+							{option.icon} {option.label}
+						</option>
+					))}
+				</select>
+				<ChevronDown
+					className='pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 opacity-70'
+					aria-hidden='true'
+				/>
 			</div>
 		</div>
 	)

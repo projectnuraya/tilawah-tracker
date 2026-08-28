@@ -163,7 +163,7 @@ export function PeriodProgressList({ period, isActive, notFinishedCount }: Perio
 						onClick={resetFilters}
 						disabled={!hasActiveFilters}
 						className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-background text-base transition ${
-							hasActiveFilters ? 'hover:bg-muted cursor-pointer' : 'opacity-0 cursor-default'
+							hasActiveFilters ? 'hover:bg-muted cursor-pointer' : 'opacity-50 cursor-not-allowed'
 						}`}>
 						<X className='h-3.5 w-3.5' />
 						Reset

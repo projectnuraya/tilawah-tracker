@@ -4,6 +4,7 @@ import { logger } from '@/components/lib/logger'
 import { Loader2, Lock } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { toast } from 'sonner'
 
 interface LockPeriodButtonProps {
 	periodId: string
@@ -24,10 +25,14 @@ export function LockPeriodButton({ periodId, notFinishedCount }: LockPeriodButto
 			})
 
 			if (response.ok) {
+				toast.success('Periode berhasil dikunci')
 				router.refresh()
+			} else {
+				toast.error('Gagal mengunci periode', { description: 'Silakan coba lagi.' })
 			}
 		} catch (err) {
 			logger.error({ err, periodId }, 'Failed to lock period')
+			toast.error('Gagal mengunci periode', { description: 'Periksa koneksi internet Anda.' })
 		} finally {
 			setIsLocking(false)
 			setIsConfirming(false)

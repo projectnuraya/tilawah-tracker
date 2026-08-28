@@ -10,18 +10,30 @@ interface PageProps {
 	params: Promise<{ id: string }>
 }
 
+/** Formats a Date using its local calendar fields. Never use toISOString() here: it converts to UTC
+ *  first, which shifts the date back a day for east-of-UTC users during early-morning hours. */
+function toDateInputValue(date: Date): string {
+	const year = date.getFullYear()
+	const month = String(date.getMonth() + 1).padStart(2, '0')
+	const day = String(date.getDate()).padStart(2, '0')
+	return `${year}-${month}-${day}`
+}
+
+/** The Monday to start on: today when today is already Monday (coordinators lock the old period and
+ *  start the new one in the same Monday sitting), otherwise the upcoming Monday. */
 function getNextMonday(): string {
 	const today = new Date()
 	const dayOfWeek = today.getDay()
 	const daysUntilMonday = dayOfWeek === 1 ? 0 : (8 - dayOfWeek) % 7
 	const nextMonday = new Date(today)
 	nextMonday.setDate(today.getDate() + daysUntilMonday)
-	return nextMonday.toISOString().split('T')[0]
+	return toDateInputValue(nextMonday)
 }
 
 function isMonday(dateString: string): boolean {
-	const date = new Date(dateString)
-	return date.getDay() === 1
+	// Date-only strings parse as UTC midnight, so compare in UTC to stay timezone-independent.
+	const date = new Date(`${dateString}T00:00:00Z`)
+	return date.getUTCDay() === 1
 }
 
 export default function NewPeriodPage({ params }: PageProps) {
@@ -93,11 +105,11 @@ export default function NewPeriodPage({ params }: PageProps) {
 		}
 	}
 
-	// Calculate end date
+	// Calculate end date (start + 6 days), in UTC to match how isMonday() reads the date-only value
 	const endDate = startDate
 		? (() => {
-				const end = new Date(startDate)
-				end.setDate(end.getDate() + 6)
+				const end = new Date(`${startDate}T00:00:00Z`)
+				end.setUTCDate(end.getUTCDate() + 6)
 				return end.toISOString().split('T')[0]
 			})()
 		: ''
@@ -167,18 +179,20 @@ export default function NewPeriodPage({ params }: PageProps) {
 						<div className='rounded-lg border border-border bg-muted/50 p-4'>
 							<p className='text-base font-medium mb-2'>Durasi Periode</p>
 							<p className='text-base text-muted-foreground'>
-								{new Date(startDate).toLocaleDateString('id-ID', {
+								{new Date(`${startDate}T00:00:00Z`).toLocaleDateString('id-ID', {
 									weekday: 'long',
 									year: 'numeric',
 									month: 'long',
 									day: 'numeric',
+									timeZone: 'UTC',
 								})}
 								{' → '}
-								{new Date(endDate).toLocaleDateString('id-ID', {
+								{new Date(`${endDate}T00:00:00Z`).toLocaleDateString('id-ID', {
 									weekday: 'long',
 									year: 'numeric',
 									month: 'long',
 									day: 'numeric',
+									timeZone: 'UTC',
 								})}
 							</p>
 						</div>

@@ -69,7 +69,7 @@ export function JuzDropdown({ participantPeriodId, currentJuz, participantName }
 				value={selectedJuz}
 				onChange={handleChange}
 				disabled={isUpdating}
-				className='appearance-none bg-transparent border border-border rounded-lg px-3 py-1.5 pr-8 text-base font-medium text-foreground hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer'
+				className='min-h-12 appearance-none bg-transparent border border-border rounded-lg px-3 pr-9 text-base font-medium text-foreground hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer'
 				aria-label={`Ubah juz untuk ${participantName}`}>
 				{Array.from({ length: 30 }, (_, i) => i + 1).map((juz) => (
 					<option key={juz} value={juz}>

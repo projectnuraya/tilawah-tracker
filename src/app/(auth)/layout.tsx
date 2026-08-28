@@ -57,7 +57,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 				<main className='container mx-auto max-w-3xl px-4 py-6'>{children}</main>
 
 				{/* Mobile Bottom Navigation (placeholder for future) */}
-				{/* <nav className="fixed bottom-0 left-0 right-0 h-16 border-t border-border bg-surface sm:hidden">
+				{/* <nav className="fixed bottom-0 left-0 right-0 h-16 border-t border-border bg-card sm:hidden">
         Mobile nav items here
       </nav> */}
 			</div>

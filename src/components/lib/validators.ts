@@ -73,7 +73,7 @@ export const createPeriodSchema = z.object({
 		.refine(
 			(date) => {
 				const d = new Date(date + 'T00:00:00Z') // Treat as UTC to avoid timezone issues
-				return d.getDay() === 1 // Monday
+				return d.getUTCDay() === 1 // Monday — must read in UTC too, or the server's own timezone shifts it
 			},
 			{ message: 'Periode harus dimulai pada hari Senin' },
 		),

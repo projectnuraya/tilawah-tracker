@@ -135,7 +135,7 @@ export default async function DashboardPage() {
 							<div>
 								<Link
 									href={`/groups/${group.id}`}
-									className='flex items-center justify-center gap-2 w-full rounded-md border-2 border-secondary text-secondary-background bg-secondary px-4 py-2.5 font-semibold transition hover:bg-secondary/10'>
+									className='flex items-center justify-center gap-2 w-full rounded-md bg-secondary text-secondary-foreground px-4 py-2.5 font-semibold transition hover:bg-secondary/90'>
 									<span>Buka Grup</span>
 									<ChevronRight className='h-5 w-5' />
 								</Link>

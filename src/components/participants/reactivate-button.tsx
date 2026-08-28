@@ -4,6 +4,7 @@ import { logger } from '@/components/lib/logger'
 import { Loader2, UserPlus } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { toast } from 'sonner'
 
 interface ReactivateButtonProps {
 	participantId: string
@@ -29,9 +30,12 @@ export function ReactivateButton({ participantId, groupId }: ReactivateButtonPro
 			if (response.ok) {
 				router.push(`/groups/${groupId}/participants`)
 				router.refresh()
+			} else {
+				toast.error('Gagal mengaktifkan peserta', { description: 'Silakan coba lagi.' })
 			}
 		} catch (err) {
 			logger.error({ err, participantId }, 'Failed to reactivate participant')
+			toast.error('Gagal mengaktifkan peserta', { description: 'Periksa koneksi internet Anda.' })
 		} finally {
 			setIsLoading(false)
 		}
