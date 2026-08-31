@@ -1,4 +1,6 @@
+import { getPeriodPhase } from '@/components/lib/period-status'
 import { ParticipantsPreview } from '@/components/groups/participants-preview'
+import { LockPrompt } from '@/components/periods/lock-prompt'
 import { ShareFab } from '@/components/groups/share-fab'
 import { authOptions } from '@/components/lib/auth'
 import { prisma } from '@/components/lib/db'
@@ -79,6 +81,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
 	}
 
 	const activePeriod = group.periods.find((p) => p.status === 'active')
+	const activePhase = activePeriod ? getPeriodPhase(activePeriod) : null
 	const publicUrl = `${process.env.NEXT_PUBLIC_APP_URL || ''}/view/${group.publicToken}`
 
 	return (
@@ -105,6 +108,14 @@ export default async function GroupDetailPage({ params }: PageProps) {
 					</ButtonLink>
 				}
 			/>
+
+			{activePeriod && activePhase === 'awaiting_lock' && (
+				<LockPrompt
+					periodNumber={activePeriod.periodNumber}
+					endDate={activePeriod.endDate}
+					href={`/groups/${group.id}/periods/${activePeriod.id}`}
+				/>
+			)}
 
 			{/* Stats Cards */}
 			<div className='grid grid-cols-2 gap-4 mb-6'>

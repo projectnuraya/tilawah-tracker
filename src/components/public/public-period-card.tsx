@@ -1,3 +1,5 @@
+import { getPeriodPhase } from '@/components/lib/period-status'
+import { PeriodBadge } from '@/components/ui/status-badge'
 import { Calendar, Users } from 'lucide-react'
 import Link from 'next/link'
 
@@ -23,7 +25,7 @@ interface PublicPeriodCardProps {
 }
 
 export function PublicPeriodCard({ period, token }: PublicPeriodCardProps) {
-	const isActive = period.status === 'active'
+	const phase = getPeriodPhase(period)
 	const total = period._count.participantPeriods
 
 	return (
@@ -34,11 +36,7 @@ export function PublicPeriodCard({ period, token }: PublicPeriodCardProps) {
 				<div>
 					<div className='flex items-center gap-2 mb-1'>
 						<span className='font-medium'>Periode #{period.periodNumber}</span>
-						{isActive && (
-							<span className='inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-sm font-medium text-primary'>
-								Aktif
-							</span>
-						)}
+						{phase !== 'locked' && <PeriodBadge phase={phase} />}
 					</div>
 					<div className='flex items-center gap-2 text-base text-muted-foreground'>
 						<Calendar className='h-3.5 w-3.5' />

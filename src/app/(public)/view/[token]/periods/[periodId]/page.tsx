@@ -1,4 +1,7 @@
+import { getPeriodPhase } from '@/components/lib/period-status'
 import { getPublicPeriodDetails } from '@/components/lib/public-utils'
+import { PeriodStats } from '@/components/periods/period-stats'
+import { ProgressSummary } from '@/components/periods/progress-summary'
 import { PublicProgressList } from '@/components/public/public-progress-list'
 import { BackButton } from '@/components/ui/back-button'
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
@@ -47,6 +50,7 @@ export default async function PublicPeriodDetailPage({ params }: PageProps) {
 	}
 
 	const isActive = period.status === 'active'
+	const phase = getPeriodPhase(period)
 
 	return (
 		<div className='min-h-screen bg-background'>
@@ -62,7 +66,7 @@ export default async function PublicPeriodDetailPage({ params }: PageProps) {
 
 				<PageHeader
 					title={`Periode #${period.periodNumber}`}
-					badge={<PeriodBadge status={period.status} />}
+					badge={<PeriodBadge phase={phase} />}
 					description={
 						<>
 							<p className='mb-1'>{period.group.name}</p>
@@ -75,51 +79,14 @@ export default async function PublicPeriodDetailPage({ params }: PageProps) {
 					}
 				/>
 
-				{/* Stats Cards */}
-				<div className={`grid gap-3 mb-8 ${!isActive ? 'grid-cols-3' : 'grid-cols-2'}`}>
-					<div className='rounded-lg border border-border bg-card p-4 text-center'>
-						<p className='text-3xl font-semibold text-primary mb-1'>{stats.finished}</p>
-						<p className='text-sm text-muted-foreground'>👑 Selesai</p>
-					</div>
-					<div className='rounded-lg border border-border bg-card p-4 text-center'>
-						<p className='text-3xl font-semibold text-muted-foreground mb-1'>{stats.not_finished}</p>
-						<p className='text-sm text-muted-foreground'>⏳ Dalam Proses</p>
-					</div>
-					{!isActive && (
-						<div className='rounded-lg border border-border bg-card p-4 text-center'>
-							<p className='text-3xl font-semibold text-destructive mb-1'>{stats.missed}</p>
-							<p className='text-sm text-muted-foreground'>💔 Terlewat</p>
-						</div>
-					)}
-				</div>
+				<PeriodStats
+					finished={stats.finished}
+					notFinished={stats.not_finished}
+					missed={stats.missed}
+					showMissed={!isActive}
+				/>
 
-				{/* Progress Summary */}
-				<div className='rounded-lg border border-border bg-card p-4 mb-8'>
-					<div className='flex items-center justify-between'>
-						<div>
-							<p className='text-base text-muted-foreground mb-1'>Progress Keseluruhan</p>
-							<p className='text-2xl font-semibold'>
-								{stats.finished}/{stats.total}
-							</p>
-						</div>
-						<div className='text-right'>
-							<p className='text-base text-muted-foreground mb-1'>Persentase</p>
-							<p className='text-2xl font-semibold text-primary'>
-								{stats.total > 0 ? Math.round((stats.finished / stats.total) * 100) : 0}%
-							</p>
-						</div>
-					</div>
-					{stats.total > 0 && (
-						<div className='mt-4'>
-							<div className='w-full bg-muted rounded-full h-2.5'>
-								<div
-									className='bg-primary h-2.5 rounded-full transition-all'
-									style={{ width: `${(stats.finished / stats.total) * 100}%` }}
-								/>
-							</div>
-						</div>
-					)}
-				</div>
+				<ProgressSummary finished={stats.finished} total={stats.total} />
 
 				{/* Progress List */}
 				{period.participantPeriods.length > 0 ? (
@@ -134,11 +101,6 @@ export default async function PublicPeriodDetailPage({ params }: PageProps) {
 					</div>
 				)}
 
-				{/* Footer */}
-				<div className='mt-12 pt-6 border-t border-border text-center text-base text-muted-foreground'>
-					<p>Tilawah Tracker - Sistem tracking tilawah grup</p>
-					<p className='mt-1'>PT Nuraya Digital Nusantara</p>
-				</div>
 			</div>
 		</div>
 	)

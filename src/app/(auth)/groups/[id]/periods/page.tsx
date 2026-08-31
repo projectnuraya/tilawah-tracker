@@ -1,8 +1,11 @@
 import { authOptions } from '@/components/lib/auth'
 import { prisma } from '@/components/lib/db'
+import { getPeriodPhase } from '@/components/lib/period-status'
 import { CreatePeriodButton } from '@/components/periods/create-period-button'
+import { LockPrompt } from '@/components/periods/lock-prompt'
 import { BackButton } from '@/components/ui/back-button'
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
+import { PeriodBadge } from '@/components/ui/status-badge'
 import { PageHeader } from '@/components/ui/page-header'
 import { Calendar, Users } from 'lucide-react'
 import { getServerSession } from 'next-auth'
@@ -77,6 +80,7 @@ export default async function PeriodsListPage({ params }: PageProps) {
 	)
 
 	const activePeriod = periodsWithStats.find((p) => p.status === 'active')
+	const activePhase = activePeriod ? getPeriodPhase(activePeriod) : null
 	const lockedPeriods = periodsWithStats.filter((p) => p.status === 'locked')
 
 	return (
@@ -96,6 +100,14 @@ export default async function PeriodsListPage({ params }: PageProps) {
 			{/* Header */}
 			<PageHeader title='Periode' description={`${group.periods.length} total periode`} />
 
+			{activePeriod && activePhase === 'awaiting_lock' && (
+				<LockPrompt
+					periodNumber={activePeriod.periodNumber}
+					endDate={activePeriod.endDate}
+					href={`/groups/${group.id}/periods/${activePeriod.id}`}
+				/>
+			)}
+
 			{/* Add Period Button */}
 			<CreatePeriodButton groupId={group.id} hasActivePeriod={!!activePeriod} />
 
@@ -110,9 +122,7 @@ export default async function PeriodsListPage({ params }: PageProps) {
 							<div>
 								<div className='flex items-center gap-2 mb-2'>
 									<span className='font-semibold text-xl'>Periode #{activePeriod.periodNumber}</span>
-									<span className='inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-sm font-medium text-primary'>
-										Aktif
-									</span>
+									<PeriodBadge phase={activePhase ?? 'running'} />
 								</div>
 								<div className='flex items-center gap-4 text-base text-muted-foreground'>
 									<span className='inline-flex items-center gap-1'>

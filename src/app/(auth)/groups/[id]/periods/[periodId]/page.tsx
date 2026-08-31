@@ -1,5 +1,9 @@
 import { authOptions } from '@/components/lib/auth'
 import { prisma } from '@/components/lib/db'
+import { getPeriodPhase } from '@/components/lib/period-status'
+import { LockPrompt } from '@/components/periods/lock-prompt'
+import { PeriodStats } from '@/components/periods/period-stats'
+import { ProgressSummary } from '@/components/periods/progress-summary'
 import { PeriodProgressList } from '@/components/periods/period-progress-list'
 import { BackButton } from '@/components/ui/back-button'
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
@@ -85,6 +89,7 @@ export default async function PeriodDetailPage({ params }: PageProps) {
 	}
 
 	const isActive = period.status === 'active'
+	const phase = getPeriodPhase(period)
 
 	return (
 		<div>
@@ -104,7 +109,7 @@ export default async function PeriodDetailPage({ params }: PageProps) {
 			{/* Header */}
 			<PageHeader
 				title={`Periode #${period.periodNumber}`}
-				badge={<PeriodBadge status={period.status} />}
+				badge={<PeriodBadge phase={phase} />}
 				description={
 					<span className='flex items-center gap-2'>
 						<Calendar className='h-4 w-4' aria-hidden='true' />
@@ -114,23 +119,16 @@ export default async function PeriodDetailPage({ params }: PageProps) {
 				}
 			/>
 
-			{/* Stats Cards */}
-			<div className={`grid gap-3 mb-6 ${!isActive ? 'grid-cols-3' : 'grid-cols-2'}`}>
-				<div className='rounded-lg border border-border bg-card p-3 text-center'>
-					<p className='text-2xl font-semibold text-primary'>{stats.finished}</p>
-					<p className='text-base text-muted-foreground'>👑 Selesai</p>
-				</div>
-				<div className='rounded-lg border border-border bg-card p-3 text-center'>
-					<p className='text-2xl font-semibold text-muted-foreground'>{stats.not_finished}</p>
-					<p className='text-base text-muted-foreground'>⏳ Dalam Proses</p>
-				</div>
-				{!isActive && (
-					<div className='rounded-lg border border-border bg-card p-3 text-center'>
-						<p className='text-2xl font-semibold text-destructive'>{stats.missed}</p>
-						<p className='text-base text-muted-foreground'>💔 Terlewat</p>
-					</div>
-				)}
-			</div>
+			{phase === 'awaiting_lock' && <LockPrompt periodNumber={period.periodNumber} endDate={period.endDate} />}
+
+			<PeriodStats
+				finished={stats.finished}
+				notFinished={stats.not_finished}
+				missed={stats.missed}
+				showMissed={!isActive}
+			/>
+
+			<ProgressSummary finished={stats.finished} total={stats.total} />
 
 			{/* Period Progress List with Search and Filters */}
 			<PeriodProgressList
