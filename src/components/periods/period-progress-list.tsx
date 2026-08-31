@@ -3,6 +3,8 @@
 import { LockPeriodButton } from '@/components/periods/lock-period-button'
 import { ProgressStatusDropdown } from '@/components/periods/progress-dropdown'
 import { ShareButton } from '@/components/periods/share-button'
+import { cn } from '@/components/lib/utils'
+import { fieldClasses } from '@/components/ui/input'
 import { ChevronDown, Search, X } from 'lucide-react'
 import { useMemo, useState } from 'react'
 
@@ -148,7 +150,7 @@ export function PeriodProgressList({ period, isActive, notFinishedCount }: Perio
 								setExpandedGroups({})
 							}
 						}}
-						className='w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-400 bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent transition'
+						className={cn(fieldClasses, 'pl-10')}
 					/>
 				</div>
 
@@ -177,66 +179,45 @@ export function PeriodProgressList({ period, isActive, notFinishedCount }: Perio
 						{/* All Status Button */}
 						<button
 							onClick={() => setFilterStatus(null)}
-							className={`flex-1 px-4 py-3 rounded-lg font-medium text-base transition-colors ${
+							className={`flex-1 min-h-12 px-4 py-3 rounded-lg font-medium text-base transition-colors ${
 								filterStatus === null
-									? 'bg-primary text-white shadow-sm'
-									: 'border-2 bg-background text-foreground hover:bg-muted'
-							}`}
-							style={filterStatus === null ? {} : { borderColor: 'hsl(var(--border))' }}>
+									? 'bg-primary text-primary-foreground shadow-sm'
+									: 'border-2 border-border bg-background text-foreground hover:bg-muted'
+							}`}>
 							Semua Status
 						</button>
 
 						{/* Finished Button */}
 						<button
 							onClick={() => setFilterStatus('finished')}
-							className={`flex-1 px-4 py-3 rounded-lg font-medium text-base transition-colors ${
-								filterStatus === 'finished' ? 'text-white shadow-sm' : 'border-2 bg-background text-foreground'
-							}`}
-							style={
+							className={`flex-1 min-h-12 px-4 py-3 rounded-lg font-medium text-base transition-colors ${
 								filterStatus === 'finished'
-									? { backgroundColor: 'hsl(var(--success))' }
-									: {
-											borderColor: 'hsl(var(--success))',
-											backgroundColor: 'hsl(var(--success-bg))',
-										}
-							}>
+					? 'bg-success text-success-foreground shadow-sm'
+					: 'border-2 border-success bg-success-bg text-success-bg-foreground'
+							}`}>
 							<span className='mr-2'>👑</span>Selesai
 						</button>
 
 						{/* In Progress Button */}
 						<button
 							onClick={() => setFilterStatus('not_finished')}
-							className={`flex-1 px-4 py-3 rounded-lg font-medium text-base transition-colors ${
+							className={`flex-1 min-h-12 px-4 py-3 rounded-lg font-medium text-base transition-colors ${
 								filterStatus === 'not_finished'
-									? 'text-white shadow-sm'
-									: 'border-2 bg-background text-foreground'
-							}`}
-							style={
-								filterStatus === 'not_finished'
-									? { backgroundColor: 'hsl(var(--warning))' }
-									: {
-											borderColor: 'hsl(var(--warning))',
-											backgroundColor: 'hsl(var(--warning-bg))',
-										}
-							}>
-							<span className='mr-2'>⏳</span>Dalam Proses
+									? 'bg-warning text-warning-foreground shadow-sm'
+									: 'border-2 border-warning bg-warning-bg text-warning-bg-foreground'
+							}`}>
+							<span className='mr-2'>⏳</span>Belum selesai
 						</button>
 
 						{/* Missed Button */}
 						{!isActive && (
 							<button
 								onClick={() => setFilterStatus('missed')}
-								className={`flex-1 px-4 py-3 rounded-lg font-medium text-base transition-colors ${
-									filterStatus === 'missed' ? 'text-white shadow-sm' : 'border-2 bg-background text-foreground'
-								}`}
-								style={
+								className={`flex-1 min-h-12 px-4 py-3 rounded-lg font-medium text-base transition-colors ${
 									filterStatus === 'missed'
-										? { backgroundColor: 'hsl(var(--destructive))' }
-										: {
-												borderColor: 'hsl(var(--destructive))',
-												backgroundColor: 'hsl(var(--error-bg))',
-											}
-								}>
+					? 'bg-destructive text-destructive-foreground shadow-sm'
+					: 'border-2 border-destructive bg-error-bg text-error-bg-foreground'
+								}`}>
 								<span className='mr-2'>💔</span>Terlewat
 							</button>
 						)}
@@ -260,7 +241,7 @@ export function PeriodProgressList({ period, isActive, notFinishedCount }: Perio
 						{hasActiveFilters && (
 							<button
 								onClick={resetFilters}
-								className='inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-white text-base font-medium hover:bg-primary/90 transition'>
+								className='inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-base font-medium hover:bg-primary-hover transition'>
 								<X className='h-4 w-4' />
 								Reset Filter
 							</button>

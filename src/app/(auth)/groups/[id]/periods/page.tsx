@@ -189,7 +189,7 @@ export default async function PeriodsListPage({ params }: PageProps) {
 					</p>
 					<Link
 						href={`/groups/${group.id}/periods/new`}
-						className='inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-white font-medium shadow-sm transition hover:bg-primary/90'>
+						className='inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-primary-foreground font-medium shadow-sm transition hover:bg-primary-hover'>
 						Mulai Periode Pertama
 					</Link>
 				</div>

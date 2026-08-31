@@ -124,7 +124,7 @@ export function ShareButton({ period, groupName, publicToken, coordinators }: Sh
 			<button
 				onClick={() => setIsOpen(true)}
 				aria-label='Bagikan progress periode ke WhatsApp'
-				className='inline-flex items-center gap-2 rounded-lg border border-gray-400 px-3 py-2 text-base font-medium hover:bg-muted transition'>
+				className='inline-flex items-center gap-2 min-h-11 rounded-lg border border-border px-3 py-2 text-base font-medium hover:bg-muted transition'>
 				<Share2 className='h-4 w-4' />
 				Bagikan
 			</button>
@@ -155,7 +155,7 @@ export function ShareButton({ period, groupName, publicToken, coordinators }: Sh
 									onChange={(e) => setCustomMessage(e.target.value)}
 									placeholder='e.g., Semangat semua! Mari kita lanjutkan tilawah minggu ini...'
 									rows={3}
-									className='w-full rounded-lg border border-border bg-background px-3 py-2 text-base placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none'
+									className='w-full rounded-lg border border-border bg-background px-3 py-2 text-base placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent resize-none'
 								/>
 							</div>
 
@@ -170,7 +170,7 @@ export function ShareButton({ period, groupName, publicToken, coordinators }: Sh
 							{/* Copy Button */}
 							<button
 								onClick={handleCopy}
-								className='w-full inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 text-white font-medium shadow-sm transition hover:bg-primary/90'>
+								className='w-full inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 text-primary-foreground font-medium shadow-sm transition hover:bg-primary-hover'>
 								{copied ? (
 									<>
 										<Check className='h-4 w-4' />

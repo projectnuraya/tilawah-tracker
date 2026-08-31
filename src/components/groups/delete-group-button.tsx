@@ -48,13 +48,13 @@ export function DeleteGroupButton({ groupId, groupName }: DeleteGroupButtonProps
 				<button
 					onClick={handleDelete}
 					disabled={isDeleting}
-					className='rounded-lg bg-destructive px-3 py-1.5 text-base text-white font-medium hover:bg-destructive/90 disabled:opacity-50'>
+					className='min-h-11 rounded-lg bg-destructive px-3 py-1.5 text-base text-destructive-foreground font-medium hover:bg-destructive/90 disabled:opacity-50'>
 					{isDeleting ? <Loader2 className='h-4 w-4 animate-spin' /> : 'Ya, Hapus'}
 				</button>
 				<button
 					onClick={() => setIsConfirming(false)}
 					disabled={isDeleting}
-					className='rounded-lg border border-border px-3 py-1.5 text-base font-medium hover:bg-muted disabled:opacity-50'>
+					className='min-h-11 rounded-lg border border-border px-3 py-1.5 text-base font-medium hover:bg-muted disabled:opacity-50'>
 					Batal
 				</button>
 			</div>

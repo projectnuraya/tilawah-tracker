@@ -23,7 +23,7 @@ export function CreatePeriodButton({ groupId, hasActivePeriod }: CreatePeriodBut
 		<Link
 			href={`/groups/${groupId}/periods/new`}
 			onClick={handleClick}
-			className='flex items-center justify-center gap-2 w-full rounded-xl bg-primary px-4 py-3.5 text-white font-semibold shadow-sm transition hover:bg-primary/90 mb-6'>
+			className='flex items-center justify-center gap-2 w-full rounded-xl bg-primary px-4 py-3.5 text-primary-foreground font-semibold shadow-sm transition hover:bg-primary-hover mb-6'>
 			<Plus className='h-5 w-5' />
 			<span>Tambah Periode Baru</span>
 		</Link>

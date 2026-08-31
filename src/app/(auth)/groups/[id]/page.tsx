@@ -127,8 +127,8 @@ export default async function GroupDetailPage({ params }: PageProps) {
 					href={`/groups/${group.id}/periods`}
 					className='block rounded-xl border border-border bg-card p-4 hover:bg-muted transition'>
 					<div className='flex items-center gap-3'>
-						<div className='rounded-full bg-amber-500/10 p-2'>
-							<Calendar className='h-5 w-5 text-amber-500' />
+						<div className='rounded-full bg-accent/10 p-2'>
+							<Calendar className='h-5 w-5 text-accent' />
 						</div>
 						<div>
 							<p className='text-2xl font-semibold'>{group.periods.length}</p>

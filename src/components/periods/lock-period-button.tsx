@@ -41,8 +41,8 @@ export function LockPeriodButton({ periodId, notFinishedCount }: LockPeriodButto
 
 	if (isConfirming) {
 		return (
-			<div className='rounded-xl border border-red-200 bg-red-50 p-4'>
-				<p className='text-base text-red-800 mb-3'>
+			<div className='rounded-xl border border-destructive/20 bg-error-bg p-4'>
+				<p className='text-base text-error-bg-foreground mb-3'>
 					{notFinishedCount > 0 ? (
 						<>
 							<strong>{notFinishedCount} peserta</strong> akan ditandai sebagai <strong>Terlewat (💔)</strong>.
@@ -56,7 +56,7 @@ export function LockPeriodButton({ periodId, notFinishedCount }: LockPeriodButto
 					<button
 						onClick={handleLock}
 						disabled={isLocking}
-						className='rounded-lg bg-red-600 px-4 py-2 text-base text-white font-medium hover:bg-red-700 disabled:opacity-50'>
+						className='min-h-11 rounded-lg bg-destructive px-4 py-2 text-base text-destructive-foreground font-medium hover:bg-destructive/90 disabled:opacity-50'>
 						{isLocking ? (
 							<span className='inline-flex items-center gap-2'>
 								<Loader2 className='h-4 w-4 animate-spin' />
@@ -69,7 +69,7 @@ export function LockPeriodButton({ periodId, notFinishedCount }: LockPeriodButto
 					<button
 						onClick={() => setIsConfirming(false)}
 						disabled={isLocking}
-						className='rounded-lg border border-border px-4 py-2 text-base font-medium hover:bg-muted disabled:opacity-50'>
+						className='min-h-11 rounded-lg border border-border px-4 py-2 text-base font-medium hover:bg-muted disabled:opacity-50'>
 						Batal
 					</button>
 				</div>
@@ -81,7 +81,7 @@ export function LockPeriodButton({ periodId, notFinishedCount }: LockPeriodButto
 		<button
 			onClick={() => setIsConfirming(true)}
 			aria-label='Kunci periode untuk menandai peserta yang belum selesai sebagai terlewat'
-			className='inline-flex items-center gap-2 rounded-lg border border-red-500/50 px-4 py-2.5 text-base font-medium text-red-600 hover:bg-red-50 transition'>
+			className='inline-flex min-h-11 items-center gap-2 rounded-lg border border-destructive/50 px-4 py-2.5 text-base font-medium text-destructive hover:bg-error-bg transition'>
 			<Lock className='h-4 w-4' />
 			Kunci Periode
 		</button>

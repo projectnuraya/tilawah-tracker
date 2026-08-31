@@ -15,7 +15,7 @@ export function ShareFab({ publicUrl, publicToken }: ShareFabProps) {
 		<Dialog>
 			<DialogTrigger asChild>
 				<button
-					className='fixed bottom-4 right-4 rounded-full bg-primary p-4 text-primary-foreground shadow-lg hover:bg-primary/90 transition'
+					className='fixed bottom-4 right-4 rounded-full bg-primary p-4 text-primary-foreground shadow-lg hover:bg-primary-hover transition'
 					title='Share public link'>
 					<Share2 className='h-8 w-8' />
 				</button>

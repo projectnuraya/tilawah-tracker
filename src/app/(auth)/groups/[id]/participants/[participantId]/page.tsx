@@ -117,7 +117,7 @@ export default async function ParticipantDetailPage({ params }: PageProps) {
 							href={whatsappLink}
 							target='_blank'
 							rel='noopener noreferrer'
-							className='inline-flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2.5 text-white font-medium shadow-sm transition hover:bg-green-700'>
+							className='inline-flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2.5 text-primary-foreground font-medium shadow-sm transition hover:bg-green-700'>
 							<MessageCircle className='h-4 w-4' />
 							Ingatkan via WhatsApp
 						</a>

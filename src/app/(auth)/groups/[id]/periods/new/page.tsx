@@ -141,12 +141,12 @@ export default function NewPeriodPage({ params }: PageProps) {
 				<p className='text-muted-foreground text-base mb-6'>Buat periode tilawah mingguan baru untuk grup Anda.</p>
 
 				{/* Info Card */}
-				<div className='rounded-lg border border-blue-200 bg-blue-50 p-4 mb-6'>
+				<div className='rounded-lg border border-info/30 bg-info-bg p-4 mb-6'>
 					<div className='flex gap-3'>
-						<AlertCircle className='h-5 w-5 text-blue-600 shrink-0 mt-0.5' />
-						<div className='text-base text-blue-800'>
+						<AlertCircle className='h-5 w-5 text-info-bg-foreground shrink-0 mt-0.5' aria-hidden='true' />
+						<div className='text-base text-info-bg-foreground'>
 							<p className='font-medium mb-1'>Aturan Periode</p>
-							<ul className='list-disc list-inside space-y-1 text-blue-700'>
+							<ul className='list-disc list-inside space-y-1'>
 								<li>Harus dimulai pada hari Senin</li>
 								<li>Berlangsung tepat 7 hari (Senin sampai Minggu)</li>
 								<li>Pembagian juz otomatis bergilir dari periode sebelumnya</li>
@@ -168,7 +168,7 @@ export default function NewPeriodPage({ params }: PageProps) {
 								onChange={(e) => handleDateChange(e.target.value)}
 								className={`w-full rounded-lg border ${
 									dateError ? 'border-destructive' : 'border-border'
-								} bg-background px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent`}
+								} bg-background px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent`}
 								disabled={isLoading}
 							/>
 						</div>
@@ -208,7 +208,7 @@ export default function NewPeriodPage({ params }: PageProps) {
 						<button
 							type='submit'
 							disabled={isLoading || !!dateError}
-							className='w-full rounded-lg bg-primary px-4 py-3 text-white font-medium shadow-sm transition hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'>
+							className='w-full rounded-lg bg-primary px-4 py-3 text-primary-foreground font-medium shadow-sm transition hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'>
 							{isLoading ? (
 								<span className='inline-flex items-center gap-2'>
 									<Loader2 className='h-4 w-4 animate-spin' />

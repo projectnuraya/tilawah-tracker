@@ -133,7 +133,7 @@ export default function EditGroupPage({ params }: PageProps) {
 							value={name}
 							onChange={(e) => setName(e.target.value)}
 							placeholder='e.g., Keluarga Besar Bani Adam'
-							className='w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
+							className='w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent'
 							disabled={isSaving}
 							autoFocus
 						/>
@@ -144,7 +144,7 @@ export default function EditGroupPage({ params }: PageProps) {
 						<button
 							type='submit'
 							disabled={isSaving}
-							className='flex-1 rounded-lg bg-primary px-4 py-3 text-white font-medium shadow-sm transition hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'>
+							className='flex-1 rounded-lg bg-primary px-4 py-3 text-primary-foreground font-medium shadow-sm transition hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'>
 							{isSaving ? (
 								<span className='inline-flex items-center justify-center gap-2'>
 									<Loader2 className='h-4 w-4 animate-spin' />

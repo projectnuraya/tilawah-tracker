@@ -1,5 +1,7 @@
 'use client'
 
+import { cn } from '@/components/lib/utils'
+import { fieldClasses } from '@/components/ui/input'
 import { Search, X } from 'lucide-react'
 import { useMemo, useState } from 'react'
 
@@ -87,7 +89,7 @@ export function PublicProgressList({ participantPeriods, isActive }: PublicProgr
 						placeholder='Cari peserta...'
 						value={searchQuery}
 						onChange={(e) => setSearchQuery(e.target.value)}
-						className='w-full rounded-lg border border-border bg-background pl-10 pr-4 py-2.5 text-base focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
+						className={cn(fieldClasses, 'pl-10')}
 					/>
 				</div>
 
@@ -116,48 +118,33 @@ export function PublicProgressList({ participantPeriods, isActive }: PublicProgr
 						{/* All Status Button */}
 						<button
 							onClick={() => setFilterStatus(null)}
-							className={`flex-1 px-4 py-3 rounded-lg font-medium text-base transition-colors ${
+							className={`flex-1 min-h-12 px-4 py-3 rounded-lg font-medium text-base transition-colors ${
 								filterStatus === null
-									? 'bg-primary text-white shadow-sm'
-									: 'border-2 bg-background text-foreground hover:bg-muted'
-							}`}
-							style={filterStatus === null ? {} : { borderColor: 'hsl(var(--border))' }}>
+									? 'bg-primary text-primary-foreground shadow-sm'
+									: 'border-2 border-border bg-background text-foreground hover:bg-muted'
+							}`}>
 							Semua Status
 						</button>
 
 						{/* Finished Button */}
 						<button
 							onClick={() => setFilterStatus('finished')}
-							className={`flex-1 px-4 py-3 rounded-lg font-medium text-base transition-colors ${
-								filterStatus === 'finished' ? 'text-white shadow-sm' : 'border-2 bg-background text-foreground'
-							}`}
-							style={
+							className={`flex-1 min-h-12 px-4 py-3 rounded-lg font-medium text-base transition-colors ${
 								filterStatus === 'finished'
-									? { backgroundColor: 'hsl(var(--success))' }
-									: {
-											borderColor: 'hsl(var(--success))',
-											backgroundColor: 'hsl(var(--success-bg))',
-										}
-							}>
+					? 'bg-success text-success-foreground shadow-sm'
+					: 'border-2 border-success bg-success-bg text-success-bg-foreground'
+							}`}>
 							<span className='mr-2'>👑</span>Selesai
 						</button>
 
 						{/* In Progress Button */}
 						<button
 							onClick={() => setFilterStatus('not_finished')}
-							className={`flex-1 px-4 py-3 rounded-lg font-medium text-base transition-colors ${
+							className={`flex-1 min-h-12 px-4 py-3 rounded-lg font-medium text-base transition-colors ${
 								filterStatus === 'not_finished'
-									? 'text-white shadow-sm'
-									: 'border-2 bg-background text-foreground'
-							}`}
-							style={
-								filterStatus === 'not_finished'
-									? { backgroundColor: 'hsl(var(--warning))' }
-									: {
-											borderColor: 'hsl(var(--warning))',
-											backgroundColor: 'hsl(var(--warning-bg))',
-										}
-							}>
+									? 'bg-warning text-warning-foreground shadow-sm'
+									: 'border-2 border-warning bg-warning-bg text-warning-bg-foreground'
+							}`}>
 							<span className='mr-2'>⏳</span>Belum selesai
 						</button>
 
@@ -165,17 +152,11 @@ export function PublicProgressList({ participantPeriods, isActive }: PublicProgr
 						{!isActive && (
 							<button
 								onClick={() => setFilterStatus('missed')}
-								className={`flex-1 px-4 py-3 rounded-lg font-medium text-base transition-colors ${
-									filterStatus === 'missed' ? 'text-white shadow-sm' : 'border-2 bg-background text-foreground'
-								}`}
-								style={
+								className={`flex-1 min-h-12 px-4 py-3 rounded-lg font-medium text-base transition-colors ${
 									filterStatus === 'missed'
-										? { backgroundColor: 'hsl(var(--destructive))' }
-										: {
-												borderColor: 'hsl(var(--destructive))',
-												backgroundColor: 'hsl(var(--error-bg))',
-											}
-								}>
+					? 'bg-destructive text-destructive-foreground shadow-sm'
+					: 'border-2 border-destructive bg-error-bg text-error-bg-foreground'
+								}`}>
 								<span className='mr-2'>💔</span>Terlewat
 							</button>
 						)}

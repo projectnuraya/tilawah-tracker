@@ -17,10 +17,10 @@ export function BackButton({ href, label, className }: BackButtonProps) {
 			className={cn(
 				'inline-flex items-center gap-2 px-4 py-2.5 rounded-lg',
 				'text-base font-medium',
-				'text-foreground bg-white border-2 border-border',
+				'text-foreground bg-card border-2 border-border',
 				'hover:bg-muted hover:border-foreground/20',
 				'transition-all duration-150 ease-in-out',
-				'focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2',
+				'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
 				'active:bg-muted/70',
 				'min-h-11',
 				'shadow-sm',

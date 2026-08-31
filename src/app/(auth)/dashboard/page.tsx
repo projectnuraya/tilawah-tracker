@@ -57,7 +57,7 @@ export default async function DashboardPage() {
 				<h1 className='text-4xl font-bold mb-4'>Grup Saya</h1>
 				<Link
 					href='/groups/new'
-					className='flex items-center justify-center gap-2 w-full rounded-xl bg-primary px-4 py-3.5 text-white font-semibold shadow-sm transition hover:bg-primary/90'>
+					className='flex min-h-12 items-center justify-center gap-2 w-full rounded-xl bg-primary px-4 py-3.5 text-primary-foreground font-semibold shadow-sm transition hover:bg-primary-hover'>
 					<Plus className='h-5 w-5' />
 					<span>Tambah Grup Baru</span>
 				</Link>
@@ -75,7 +75,7 @@ export default async function DashboardPage() {
 					</p>
 					<Link
 						href='/groups/new'
-						className='inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-white font-medium shadow-sm transition hover:bg-primary/90'>
+						className='inline-flex min-h-12 items-center gap-2 rounded-lg bg-primary px-6 py-3 text-primary-foreground font-medium shadow-sm transition hover:bg-primary-hover'>
 						<Plus className='h-4 w-4' />
 						Buat Grup Baru
 					</Link>
@@ -90,7 +90,7 @@ export default async function DashboardPage() {
 							{/* Status Badge */}
 							<div>
 								{group.hasActivePeriod ? (
-									<span className='inline-flex items-center rounded-full bg-green-500/20 px-3 py-1 text-sm font-bold text-green-600'>
+									<span className='inline-flex items-center rounded-full bg-success-bg px-3 py-1 text-sm font-bold text-success-bg-foreground'>
 										● SEDANG BERLANGSUNG
 									</span>
 								) : (

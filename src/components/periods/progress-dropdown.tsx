@@ -93,7 +93,7 @@ export function ProgressStatusDropdown({
 					onChange={(e) => handleStatusChange(e.target.value)}
 					disabled={isSaving}
 					aria-label={`Ubah status tilawah untuk ${participantName}`}
-					className={`min-h-12 appearance-none rounded-lg border pl-3 pr-9 text-base font-medium transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed ${statusStyles}`}>
+					className={`min-h-12 appearance-none rounded-lg border pl-3 pr-9 text-base font-medium transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed ${statusStyles}`}>
 					{STATUS_OPTIONS.map((option) => (
 						<option key={option.value} value={option.value}>
 							{option.icon} {option.label}

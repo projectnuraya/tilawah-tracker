@@ -1,6 +1,8 @@
 'use client'
 
 import { JuzDropdown } from '@/components/participants/juz-dropdown'
+import { cn } from '@/components/lib/utils'
+import { fieldClasses } from '@/components/ui/input'
 import { Edit, Phone, Search, UserX } from 'lucide-react'
 import Link from 'next/link'
 import { useMemo, useState } from 'react'
@@ -69,7 +71,7 @@ export function ParticipantsList({
 							placeholder='Cari nama atau nomor WA...'
 							value={searchQuery}
 							onChange={(e) => setSearchQuery(e.target.value)}
-							className='w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-300 bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent transition'
+							className={cn(fieldClasses, 'pl-10')}
 						/>
 					</div>
 				</div>
@@ -87,7 +89,7 @@ export function ParticipantsList({
 					</p>
 					<Link
 						href={`/groups/${groupId}/participants/new`}
-						className='inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-white font-medium shadow-sm transition hover:bg-primary/90'>
+						className='inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-primary-foreground font-medium shadow-sm transition hover:bg-primary-hover'>
 						<span>Tambah Peserta Pertama</span>
 					</Link>
 				</div>
