@@ -1,7 +1,9 @@
 'use client'
 
-import { ArrowLeft, Loader2 } from 'lucide-react'
-import Link from 'next/link'
+import { BackButton } from '@/components/ui/back-button'
+import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
+import { PageHeader } from '@/components/ui/page-header'
+import { Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
@@ -55,17 +57,17 @@ export default function NewGroupPage() {
 
 	return (
 		<div>
-			{/* Back Button */}
-			<Link
-				href='/dashboard'
-				className='inline-flex items-center gap-1 text-base text-muted-foreground hover:text-foreground mb-6'>
-				<ArrowLeft className='h-4 w-4' />
-				Kembali ke Dashboard
-			</Link>
+			<BreadcrumbNav
+				items={[
+					{ label: 'Dashboard', href: '/dashboard' },
+					{ label: 'Grup Baru', href: '#', current: true },
+				]}
+			/>
+
+			<BackButton href='/dashboard' label='Kembali ke Dashboard' className='mb-6' />
 
 			<div className='max-w-md'>
-				<h1 className='text-2xl font-semibold mb-2'>Buat Grup Baru</h1>
-				<p className='text-muted-foreground text-base mb-6'>Mulai grup tilawah baru untuk komunitas Anda.</p>
+				<PageHeader title='Buat Grup Baru' description='Mulai grup tilawah baru untuk komunitas Anda.' />
 
 				<form onSubmit={handleSubmit} className='space-y-4'>
 					<div>

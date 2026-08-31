@@ -1,6 +1,8 @@
 'use client'
 
 import { sanitizeWhatsAppNumber } from '@/components/lib/utils'
+import { Button } from '@/components/ui/button'
+import { Input, Label } from '@/components/ui/input'
 import { Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
@@ -75,30 +77,18 @@ export function EditParticipantForm({ participant }: EditParticipantFormProps) {
 	return (
 		<form onSubmit={handleSubmit} className='space-y-4'>
 			<div>
-				<label htmlFor='name' className='block text-base font-medium mb-2'>
-					Nama
-				</label>
-				<input
-					type='text'
-					id='name'
-					value={name}
-					onChange={(e) => setName(e.target.value)}
-					className='w-full rounded-lg border border-border bg-background px-4 py-2.5 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent'
-					disabled={isSaving}
-				/>
+				<Label htmlFor='name'>Nama</Label>
+				<Input type='text' id='name' value={name} onChange={(e) => setName(e.target.value)} disabled={isSaving} />
 			</div>
 
 			<div>
-				<label htmlFor='whatsapp' className='block text-base font-medium mb-2'>
-					Nomor WhatsApp
-				</label>
-				<input
+				<Label htmlFor='whatsapp'>Nomor WhatsApp</Label>
+				<Input
 					type='tel'
 					id='whatsapp'
 					value={whatsappNumber}
 					onChange={(e) => setWhatsappNumber(sanitizeWhatsAppNumber(e.target.value))}
 					placeholder='+6281234567890'
-					className='w-full rounded-lg border border-border bg-background px-4 py-2.5 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent'
 					disabled={isSaving}
 				/>
 			</div>
@@ -106,19 +96,16 @@ export function EditParticipantForm({ participant }: EditParticipantFormProps) {
 			{error && <p className='text-base text-destructive'>{error}</p>}
 			{success && <p className='text-base text-primary'>Berhasil disimpan!</p>}
 
-			<button
-				type='submit'
-				disabled={isSaving}
-				className='w-full rounded-lg bg-primary px-4 py-2.5 text-primary-foreground font-medium shadow-sm transition hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed'>
+			<Button type='submit' disabled={isSaving} fullWidth>
 				{isSaving ? (
-					<span className='inline-flex items-center gap-2'>
-						<Loader2 className='h-4 w-4 animate-spin' />
+					<>
+						<Loader2 className='h-4 w-4 animate-spin' aria-hidden='true' />
 						Menyimpan...
-					</span>
+					</>
 				) : (
 					'Simpan Perubahan'
 				)}
-			</button>
+			</Button>
 		</form>
 	)
 }

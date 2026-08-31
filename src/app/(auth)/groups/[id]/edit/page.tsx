@@ -1,7 +1,10 @@
 'use client'
 
 import { DeleteGroupButton } from '@/components/groups/delete-group-button'
-import { ArrowLeft, Loader2 } from 'lucide-react'
+import { BackButton } from '@/components/ui/back-button'
+import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
+import { PageHeader } from '@/components/ui/page-header'
+import { Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -110,17 +113,22 @@ export default function EditGroupPage({ params }: PageProps) {
 
 	return (
 		<div className='flex flex-col min-h-screen'>
-			{/* Back Button */}
-			<Link
+			<BreadcrumbNav
+				items={[
+					{ label: 'Dashboard', href: '/dashboard' },
+					{ label: originalName || 'Grup', href: `/groups/${groupId}` },
+					{ label: 'Edit', href: '#', current: true },
+				]}
+			/>
+
+			<BackButton
 				href={`/groups/${groupId}`}
-				className='inline-flex items-center gap-1 text-base text-muted-foreground hover:text-foreground mb-6'>
-				<ArrowLeft className='h-4 w-4' />
-				Kembali ke Grup
-			</Link>
+				label={originalName ? `Kembali ke ${originalName}` : 'Kembali ke Grup'}
+				className='mb-6'
+			/>
 
 			<div className='max-w-md'>
-				<h1 className='text-2xl font-semibold mb-2'>Edit Grup</h1>
-				<p className='text-muted-foreground text-base mb-6'>Perbarui pengaturan grup Anda.</p>
+				<PageHeader title='Edit Grup' description='Perbarui pengaturan grup Anda.' />
 
 				<form onSubmit={handleSubmit} className='space-y-4'>
 					<div>

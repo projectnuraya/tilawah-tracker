@@ -3,8 +3,10 @@ import { ShareFab } from '@/components/groups/share-fab'
 import { authOptions } from '@/components/lib/auth'
 import { prisma } from '@/components/lib/db'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { ButtonLink } from '@/components/ui/button'
 import { BackButton } from '@/components/ui/back-button'
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
+import { PageHeader } from '@/components/ui/page-header'
 import { Calendar, Plus, Settings, Users } from 'lucide-react'
 import { getServerSession } from 'next-auth'
 import Link from 'next/link'
@@ -93,20 +95,16 @@ export default async function GroupDetailPage({ params }: PageProps) {
 			<BackButton href='/dashboard' label='Kembali ke Dashboard' className='mb-6' />
 
 			{/* Group Header */}
-			<div className='flex items-start justify-between gap-4 mb-6'>
-				<div>
-					<h1 className='text-2xl font-semibold'>{group.name}</h1>
-					<p className='text-muted-foreground text-base mt-1'>
-						Dibuat {new Date(group.createdAt).toLocaleDateString('id-ID', { dateStyle: 'medium' })}
-					</p>
-				</div>
-				<Link
-					href={`/groups/${group.id}/edit`}
-					className='inline-flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-base font-medium hover:bg-muted transition'>
-					<Settings className='h-4 w-4' />
-					Ubah
-				</Link>
-			</div>
+			<PageHeader
+				title={group.name}
+				description={`Dibuat ${new Date(group.createdAt).toLocaleDateString('id-ID', { dateStyle: 'medium' })}`}
+				action={
+					<ButtonLink href={`/groups/${group.id}/edit`} variant='outline'>
+						<Settings className='h-4 w-4' aria-hidden='true' />
+						Ubah
+					</ButtonLink>
+				}
+			/>
 
 			{/* Stats Cards */}
 			<div className='grid grid-cols-2 gap-4 mb-6'>

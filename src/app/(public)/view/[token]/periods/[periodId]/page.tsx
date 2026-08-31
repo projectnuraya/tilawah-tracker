@@ -1,8 +1,11 @@
 import { getPublicPeriodDetails } from '@/components/lib/public-utils'
 import { PublicProgressList } from '@/components/public/public-progress-list'
-import { ArrowLeft, Calendar } from 'lucide-react'
+import { BackButton } from '@/components/ui/back-button'
+import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
+import { PageHeader } from '@/components/ui/page-header'
+import { PeriodBadge } from '@/components/ui/status-badge'
+import { Calendar } from 'lucide-react'
 import { Metadata } from 'next'
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
 interface PageProps {
@@ -47,33 +50,30 @@ export default async function PublicPeriodDetailPage({ params }: PageProps) {
 
 	return (
 		<div className='min-h-screen bg-background'>
-			<div className='max-w-4xl mx-auto'>
-				{/* Back Button */}
-				<Link
-					href={`/view/${token}`}
-					className='inline-flex items-center gap-1 text-base text-muted-foreground hover:text-foreground mb-6'>
-					<ArrowLeft className='h-4 w-4' />
-					Kembali ke Grup
-				</Link>
+			<div>
+				<BreadcrumbNav
+					items={[
+						{ label: period.group.name, href: `/view/${token}` },
+						{ label: `Periode #${period.periodNumber}`, href: '#', current: true },
+					]}
+				/>
 
-				{/* Header */}
-				<div className='mb-6'>
-					<div className='flex items-center gap-3 mb-2'>
-						<h1 className='text-2xl font-semibold'>Periode #{period.periodNumber}</h1>
-						<span
-							className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-sm font-medium ${
-								isActive ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'
-							}`}>
-							{isActive ? 'Aktif' : 'Terkunci'}
-						</span>
-					</div>
-					<p className='text-muted-foreground text-base mb-1'>{period.group.name}</p>
-					<div className='flex items-center gap-2 text-base text-muted-foreground'>
-						<Calendar className='h-4 w-4' />
-						{new Date(period.startDate).toLocaleDateString('id-ID', { dateStyle: 'long' })} -{' '}
-						{new Date(period.endDate).toLocaleDateString('id-ID', { dateStyle: 'long' })}
-					</div>
-				</div>
+				<BackButton href={`/view/${token}`} label={`Kembali ke ${period.group.name}`} className='mb-6' />
+
+				<PageHeader
+					title={`Periode #${period.periodNumber}`}
+					badge={<PeriodBadge status={period.status} />}
+					description={
+						<>
+							<p className='mb-1'>{period.group.name}</p>
+							<span className='flex items-center gap-2'>
+								<Calendar className='h-4 w-4' aria-hidden='true' />
+								{new Date(period.startDate).toLocaleDateString('id-ID', { dateStyle: 'long' })} -{' '}
+								{new Date(period.endDate).toLocaleDateString('id-ID', { dateStyle: 'long' })}
+							</span>
+						</>
+					}
+				/>
 
 				{/* Stats Cards */}
 				<div className={`grid gap-3 mb-8 ${!isActive ? 'grid-cols-3' : 'grid-cols-2'}`}>

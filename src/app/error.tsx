@@ -29,7 +29,7 @@ export default function ErrorPage({ error, reset }: ErrorProps) {
 							<AlertCircle className='text-destructive' size={48} />
 						</div>
 					</div>
-					<h1 className='text-4xl font-bold text-destructive'>500</h1>
+					<h1 className='text-6xl font-bold text-destructive'>500</h1>
 					<p className='text-2xl font-semibold text-foreground'>Kesalahan Server</p>
 				</div>
 

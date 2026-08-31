@@ -1,7 +1,9 @@
 'use client'
 
 import { logger } from '@/components/lib/logger'
-import { Loader2, UserMinus } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { ConfirmDialog } from '@/components/ui/confirm-dialog'
+import { UserMinus } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { toast } from 'sonner'
@@ -9,9 +11,10 @@ import { toast } from 'sonner'
 interface DeactivateButtonProps {
 	participantId: string
 	groupId: string
+	participantName: string
 }
 
-export function DeactivateButton({ participantId, groupId }: DeactivateButtonProps) {
+export function DeactivateButton({ participantId, groupId, participantName }: DeactivateButtonProps) {
 	const router = useRouter()
 	const [isConfirming, setIsConfirming] = useState(false)
 	const [isLoading, setIsLoading] = useState(false)
@@ -41,31 +44,26 @@ export function DeactivateButton({ participantId, groupId }: DeactivateButtonPro
 		}
 	}
 
-	if (isConfirming) {
-		return (
-			<div className='flex items-center gap-2'>
-				<button
-					onClick={handleDeactivate}
-					disabled={isLoading}
-					className='min-h-11 rounded-lg bg-destructive px-3 py-2 text-base text-destructive-foreground font-medium hover:bg-destructive/90 disabled:opacity-50'>
-					{isLoading ? <Loader2 className='h-4 w-4 animate-spin' /> : 'Ya, Nonaktifkan'}
-				</button>
-				<button
-					onClick={() => setIsConfirming(false)}
-					disabled={isLoading}
-					className='min-h-11 rounded-lg border border-border px-3 py-2 text-base font-medium hover:bg-muted disabled:opacity-50'>
-					Batal
-				</button>
-			</div>
-		)
-	}
-
 	return (
-		<button
-			onClick={() => setIsConfirming(true)}
-			className='inline-flex min-h-11 items-center gap-2 rounded-lg border border-warning/50 px-3 py-2 text-base font-medium text-warning hover:bg-warning-bg transition'>
-			<UserMinus className='h-4 w-4' />
-			Nonaktifkan
-		</button>
+		<>
+			<Button
+				variant='outline'
+				onClick={() => setIsConfirming(true)}
+				className='border-warning/50 text-warning hover:bg-warning-bg'>
+				<UserMinus className='h-4 w-4' aria-hidden='true' />
+				Nonaktifkan
+			</Button>
+
+			<ConfirmDialog
+				open={isConfirming}
+				onOpenChange={setIsConfirming}
+				title={`Nonaktifkan ${participantName}?`}
+				description='Peserta ini tidak akan disertakan di periode baru, tetapi riwayat tilawahnya tetap tersimpan. Anda bisa mengaktifkannya kembali kapan saja.'
+				confirmLabel='Ya, Nonaktifkan'
+				pendingLabel='Menonaktifkan...'
+				isPending={isLoading}
+				onConfirm={handleDeactivate}
+			/>
+		</>
 	)
 }

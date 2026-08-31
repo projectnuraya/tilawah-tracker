@@ -1,7 +1,9 @@
 'use client'
 
 import { logger } from '@/components/lib/logger'
-import { Loader2, Lock } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { ConfirmDialog } from '@/components/ui/confirm-dialog'
+import { Lock } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { toast } from 'sonner'
@@ -39,51 +41,39 @@ export function LockPeriodButton({ periodId, notFinishedCount }: LockPeriodButto
 		}
 	}
 
-	if (isConfirming) {
-		return (
-			<div className='rounded-xl border border-destructive/20 bg-error-bg p-4'>
-				<p className='text-base text-error-bg-foreground mb-3'>
-					{notFinishedCount > 0 ? (
+	return (
+		<>
+			<Button
+				variant='outline'
+				onClick={() => setIsConfirming(true)}
+				aria-label='Kunci periode untuk menandai peserta yang belum selesai sebagai terlewat'
+				className='border-destructive/50 text-destructive hover:bg-error-bg'>
+				<Lock className='h-4 w-4' aria-hidden='true' />
+				Kunci Periode
+			</Button>
+
+			<ConfirmDialog
+				open={isConfirming}
+				onOpenChange={setIsConfirming}
+				title='Kunci periode ini?'
+				description={
+					notFinishedCount > 0 ? (
 						<>
-							<strong>{notFinishedCount} peserta</strong> akan ditandai sebagai <strong>Terlewat (💔)</strong>.
-							Tindakan ini tidak dapat dibatalkan.
+							<strong>{notFinishedCount} peserta</strong> yang belum selesai akan ditandai{' '}
+							<strong>Terlewat (💔)</strong>. Setelah dikunci, laporan susulan tidak bisa dicatat lagi dan tindakan
+							ini tidak dapat dibatalkan.
 						</>
 					) : (
-						<>Apakah Anda yakin ingin mengunci periode ini? Tindakan ini tidak dapat dibatalkan.</>
-					)}
-				</p>
-				<div className='flex items-center gap-2'>
-					<button
-						onClick={handleLock}
-						disabled={isLocking}
-						className='min-h-11 rounded-lg bg-destructive px-4 py-2 text-base text-destructive-foreground font-medium hover:bg-destructive/90 disabled:opacity-50'>
-						{isLocking ? (
-							<span className='inline-flex items-center gap-2'>
-								<Loader2 className='h-4 w-4 animate-spin' />
-								Mengunci...
-							</span>
-						) : (
-							'Ya, Kunci Periode'
-						)}
-					</button>
-					<button
-						onClick={() => setIsConfirming(false)}
-						disabled={isLocking}
-						className='min-h-11 rounded-lg border border-border px-4 py-2 text-base font-medium hover:bg-muted disabled:opacity-50'>
-						Batal
-					</button>
-				</div>
-			</div>
-		)
-	}
-
-	return (
-		<button
-			onClick={() => setIsConfirming(true)}
-			aria-label='Kunci periode untuk menandai peserta yang belum selesai sebagai terlewat'
-			className='inline-flex min-h-11 items-center gap-2 rounded-lg border border-destructive/50 px-4 py-2.5 text-base font-medium text-destructive hover:bg-error-bg transition'>
-			<Lock className='h-4 w-4' />
-			Kunci Periode
-		</button>
+						<>
+							Setelah dikunci, laporan susulan tidak bisa dicatat lagi dan tindakan ini tidak dapat dibatalkan.
+						</>
+					)
+				}
+				confirmLabel='Ya, Kunci Periode'
+				pendingLabel='Mengunci...'
+				isPending={isLocking}
+				onConfirm={handleLock}
+			/>
+		</>
 	)
 }

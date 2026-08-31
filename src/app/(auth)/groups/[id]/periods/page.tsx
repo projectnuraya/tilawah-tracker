@@ -3,6 +3,7 @@ import { prisma } from '@/components/lib/db'
 import { CreatePeriodButton } from '@/components/periods/create-period-button'
 import { BackButton } from '@/components/ui/back-button'
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
+import { PageHeader } from '@/components/ui/page-header'
 import { Calendar, Users } from 'lucide-react'
 import { getServerSession } from 'next-auth'
 import Link from 'next/link'
@@ -93,12 +94,7 @@ export default async function PeriodsListPage({ params }: PageProps) {
 			<BackButton href={`/groups/${group.id}`} label={`Kembali ke ${group.name}`} className='mb-6' />
 
 			{/* Header */}
-			<div className='mb-6'>
-				<div>
-					<h1 className='text-2xl font-semibold'>Periode</h1>
-					<p className='text-muted-foreground text-base mt-1'>{group.periods.length} total periode</p>
-				</div>
-			</div>
+			<PageHeader title='Periode' description={`${group.periods.length} total periode`} />
 
 			{/* Add Period Button */}
 			<CreatePeriodButton groupId={group.id} hasActivePeriod={!!activePeriod} />

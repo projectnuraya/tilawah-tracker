@@ -3,6 +3,7 @@ import { prisma } from '@/components/lib/db'
 import { ParticipantsList } from '@/components/participants/participants-list'
 import { BackButton } from '@/components/ui/back-button'
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
+import { PageHeader } from '@/components/ui/page-header'
 import { Plus } from 'lucide-react'
 import { getServerSession } from 'next-auth'
 import Link from 'next/link'
@@ -109,12 +110,7 @@ export default async function ParticipantsPage({ params }: PageProps) {
 			<BackButton href={`/groups/${group.id}`} label={`Kembali ke ${group.name}`} className='mb-6' />
 
 			{/* Header */}
-			<div className='mb-6'>
-				<div>
-					<h1 className='text-2xl font-semibold'>Peserta</h1>
-					<p className='text-muted-foreground text-base mt-1'>{activeParticipants.length} peserta aktif</p>
-				</div>
-			</div>
+			<PageHeader title='Peserta' description={`${activeParticipants.length} peserta aktif`} />
 
 			{/* Add Participant Button */}
 			<Link

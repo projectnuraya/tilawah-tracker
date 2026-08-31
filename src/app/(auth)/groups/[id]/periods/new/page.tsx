@@ -1,7 +1,9 @@
 'use client'
 
+import { useGroupName } from '@/components/lib/use-group-name'
 import { BackButton } from '@/components/ui/back-button'
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
+import { PageHeader } from '@/components/ui/page-header'
 import { AlertCircle, Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -39,6 +41,7 @@ function isMonday(dateString: string): boolean {
 export default function NewPeriodPage({ params }: PageProps) {
 	const router = useRouter()
 	const [groupId, setGroupId] = useState<string | null>(null)
+	const groupName = useGroupName(groupId)
 	const [startDate, setStartDate] = useState(getNextMonday())
 	const [isLoading, setIsLoading] = useState(false)
 	const [error, setError] = useState('')
@@ -124,21 +127,22 @@ export default function NewPeriodPage({ params }: PageProps) {
 
 	return (
 		<div>
-			{/* Breadcrumb Navigation - Note: groupName would need to be fetched or passed */}
 			<BreadcrumbNav
 				items={[
 					{ label: 'Dashboard', href: '/dashboard' },
-					{ label: 'Grup', href: `/groups/${groupId}` },
+					{ label: groupName || 'Grup', href: `/groups/${groupId}` },
 					{ label: 'Periode Baru', href: '#', current: true },
 				]}
 			/>
 
-			{/* Enhanced Back Button */}
-			<BackButton href={`/groups/${groupId}`} label='Kembali ke Grup' className='mb-6' />
+			<BackButton
+				href={`/groups/${groupId}`}
+				label={groupName ? `Kembali ke ${groupName}` : 'Kembali ke Grup'}
+				className='mb-6'
+			/>
 
 			<div className='max-w-md'>
-				<h1 className='text-2xl font-semibold mb-2'>Mulai Periode Baru</h1>
-				<p className='text-muted-foreground text-base mb-6'>Buat periode tilawah mingguan baru untuk grup Anda.</p>
+				<PageHeader title='Mulai Periode Baru' description='Buat periode tilawah mingguan baru untuk grup Anda.' />
 
 				{/* Info Card */}
 				<div className='rounded-lg border border-info/30 bg-info-bg p-4 mb-6'>

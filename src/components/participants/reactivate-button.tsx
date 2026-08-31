@@ -1,6 +1,7 @@
 'use client'
 
 import { logger } from '@/components/lib/logger'
+import { Button } from '@/components/ui/button'
 import { Loader2, UserPlus } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
@@ -42,18 +43,18 @@ export function ReactivateButton({ participantId, groupId }: ReactivateButtonPro
 	}
 
 	return (
-		<button
-			onClick={handleReactivate}
-			disabled={isLoading}
-			className='inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-primary-foreground font-medium shadow-sm transition hover:bg-primary-hover disabled:opacity-50'>
+		<Button onClick={handleReactivate} disabled={isLoading}>
 			{isLoading ? (
-				<Loader2 className='h-4 w-4 animate-spin' />
+				<>
+					<Loader2 className='h-4 w-4 animate-spin' aria-hidden='true' />
+					Mengaktifkan...
+				</>
 			) : (
 				<>
-					<UserPlus className='h-4 w-4' />
+					<UserPlus className='h-4 w-4' aria-hidden='true' />
 					Aktifkan Kembali
 				</>
 			)}
-		</button>
+		</Button>
 	)
 }

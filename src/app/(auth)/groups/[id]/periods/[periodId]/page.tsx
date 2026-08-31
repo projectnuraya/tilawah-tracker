@@ -3,6 +3,8 @@ import { prisma } from '@/components/lib/db'
 import { PeriodProgressList } from '@/components/periods/period-progress-list'
 import { BackButton } from '@/components/ui/back-button'
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
+import { PageHeader } from '@/components/ui/page-header'
+import { PeriodBadge } from '@/components/ui/status-badge'
 import { Calendar } from 'lucide-react'
 import { getServerSession } from 'next-auth'
 import { notFound, redirect } from 'next/navigation'
@@ -100,24 +102,17 @@ export default async function PeriodDetailPage({ params }: PageProps) {
 			<BackButton href={`/groups/${period.group.id}/periods`} label='Kembali ke Periode' className='mb-6' />
 
 			{/* Header */}
-			<div className='flex items-start justify-between mb-4'>
-				<div>
-					<div className='flex items-center gap-3 mb-1'>
-						<h1 className='text-2xl font-semibold'>Periode #{period.periodNumber}</h1>
-						<span
-							className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-sm font-medium ${
-								isActive ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'
-							}`}>
-							{isActive ? 'Aktif' : 'Terkunci'}
-						</span>
-					</div>
-					<div className='flex items-center gap-2 text-base text-muted-foreground'>
-						<Calendar className='h-4 w-4' />
+			<PageHeader
+				title={`Periode #${period.periodNumber}`}
+				badge={<PeriodBadge status={period.status} />}
+				description={
+					<span className='flex items-center gap-2'>
+						<Calendar className='h-4 w-4' aria-hidden='true' />
 						{new Date(period.startDate).toLocaleDateString('id-ID', { dateStyle: 'long' })} -{' '}
 						{new Date(period.endDate).toLocaleDateString('id-ID', { dateStyle: 'long' })}
-					</div>
-				</div>
-			</div>
+					</span>
+				}
+			/>
 
 			{/* Stats Cards */}
 			<div className={`grid gap-3 mb-6 ${!isActive ? 'grid-cols-3' : 'grid-cols-2'}`}>

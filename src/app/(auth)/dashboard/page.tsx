@@ -1,5 +1,6 @@
 import { authOptions } from '@/components/lib/auth'
 import { prisma } from '@/components/lib/db'
+import { PageHeader } from '@/components/ui/page-header'
 import { Calendar, ChevronRight, Plus, Users } from 'lucide-react'
 import { getServerSession } from 'next-auth'
 import Link from 'next/link'
@@ -54,7 +55,7 @@ export default async function DashboardPage() {
 		<div>
 			{/* Header */}
 			<div className='mb-6'>
-				<h1 className='text-4xl font-bold mb-4'>Grup Saya</h1>
+				<PageHeader title='Grup Saya' className='mb-4' />
 				<Link
 					href='/groups/new'
 					className='flex min-h-12 items-center justify-center gap-2 w-full rounded-xl bg-primary px-4 py-3.5 text-primary-foreground font-semibold shadow-sm transition hover:bg-primary-hover'>
