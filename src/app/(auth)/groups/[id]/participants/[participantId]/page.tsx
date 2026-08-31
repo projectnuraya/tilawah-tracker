@@ -4,9 +4,11 @@ import { DeactivateButton } from '@/components/participants/deactivate-button'
 import { EditParticipantForm } from '@/components/participants/edit-form'
 import { ReactivateButton } from '@/components/participants/reactivate-button'
 import { BackButton } from '@/components/ui/back-button'
+import { buttonClasses } from '@/components/ui/button'
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
 import { PageHeader } from '@/components/ui/page-header'
 import { StatusText } from '@/components/ui/status-badge'
+import { MessageCircle } from 'lucide-react'
 import { getServerSession } from 'next-auth'
 import { notFound, redirect } from 'next/navigation'
 
@@ -108,21 +110,20 @@ export default async function ParticipantDetailPage({ params }: PageProps) {
 					<EditParticipantForm participant={participant} />
 				</div>
 
-				{/* WhatsApp Reminder */}
-				{/* Disable for now */}
-				{/* {participant.isActive && whatsappLink && (
+				{/* WhatsApp Reminder — coordinator-only, per docs/product-concept.md */}
+				{participant.isActive && whatsappLink && (
 					<div className='rounded-xl border border-border bg-card p-4 mb-6'>
 						<h2 className='font-medium mb-2'>Aksi Cepat</h2>
 						<a
 							href={whatsappLink}
 							target='_blank'
 							rel='noopener noreferrer'
-							className='inline-flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2.5 text-primary-foreground font-medium shadow-sm transition hover:bg-green-700'>
-							<MessageCircle className='h-4 w-4' />
+							className={buttonClasses()}>
+							<MessageCircle className='h-4 w-4' aria-hidden='true' />
 							Ingatkan via WhatsApp
 						</a>
 					</div>
-				)} */}
+				)}
 
 				{/* Recent History */}
 				{participant.participantPeriods.length > 0 && (
