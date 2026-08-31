@@ -37,7 +37,7 @@ export default function EditGroupPage({ params }: PageProps) {
 				data = await response.json()
 			} catch (err) {
 				console.error('Failed to parse JSON response:', err)
-				setError('Invalid response from server')
+				setError('Respons dari server tidak valid')
 				setIsLoading(false)
 				return
 			}
@@ -85,7 +85,7 @@ export default function EditGroupPage({ params }: PageProps) {
 				data = await response.json()
 			} catch (err) {
 				console.error('Failed to parse JSON response:', err)
-				setError('Invalid response from server')
+				setError('Respons dari server tidak valid')
 				return
 			}
 
@@ -140,7 +140,7 @@ export default function EditGroupPage({ params }: PageProps) {
 							id='name'
 							value={name}
 							onChange={(e) => setName(e.target.value)}
-							placeholder='e.g., Keluarga Besar Bani Adam'
+							placeholder='contoh: Keluarga Besar Bani Adam'
 							className='w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent'
 							disabled={isSaving}
 							autoFocus

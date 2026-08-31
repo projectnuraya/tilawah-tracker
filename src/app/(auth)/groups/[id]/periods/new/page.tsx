@@ -90,7 +90,7 @@ export default function NewPeriodPage({ params }: PageProps) {
 				data = await response.json()
 			} catch (err) {
 				console.error('Failed to parse JSON response:', err)
-				setError('Invalid response from server')
+				setError('Respons dari server tidak valid')
 				return
 			}
 

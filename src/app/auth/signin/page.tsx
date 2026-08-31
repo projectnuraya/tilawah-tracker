@@ -69,7 +69,7 @@ function SignInContent() {
 									value={username}
 									onChange={(e) => setUsername(e.target.value)}
 									className='w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2'
-									placeholder='Enter username'
+									placeholder='Masukkan username'
 									required
 								/>
 							</div>
@@ -83,7 +83,7 @@ function SignInContent() {
 									value={password}
 									onChange={(e) => setPassword(e.target.value)}
 									className='w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2'
-									placeholder='Enter password'
+									placeholder='Masukkan password'
 									required
 								/>
 							</div>

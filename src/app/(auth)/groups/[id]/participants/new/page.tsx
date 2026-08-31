@@ -79,19 +79,19 @@ export default function NewParticipantPage({ params }: PageProps) {
 				data = await response.json()
 			} catch (err) {
 				console.error('Failed to parse JSON response:', err)
-				setError('Invalid response from server')
+				setError('Respons dari server tidak valid')
 				return
 			}
 
 			if (!data.success) {
-				setError(data.error?.message || 'Failed to add participants')
+				setError(data.error?.message || 'Gagal menambahkan peserta')
 				return
 			}
 
 			router.replace(`/groups/${groupId}/participants`)
 			router.refresh()
 		} catch {
-			setError('An unexpected error occurred')
+			setError('Terjadi kesalahan yang tidak terduga')
 		} finally {
 			setIsLoading(false)
 		}

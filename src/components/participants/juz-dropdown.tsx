@@ -41,7 +41,7 @@ export function JuzDropdown({ participantPeriodId, currentJuz, participantName }
 			} catch (err) {
 				setSelectedJuz(currentJuz)
 				console.error('Failed to parse JSON response:', err)
-				setError('Invalid response from server')
+				setError('Respons dari server tidak valid')
 				return
 			}
 

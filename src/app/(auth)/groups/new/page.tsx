@@ -18,7 +18,7 @@ export default function NewGroupPage() {
 		setError('')
 
 		if (!name.trim()) {
-			setError('Group name is required')
+			setError('Nama grup wajib diisi')
 			return
 		}
 
@@ -38,18 +38,18 @@ export default function NewGroupPage() {
 				data = await response.json()
 			} catch (err) {
 				console.error('Failed to parse JSON response:', err)
-				setError('Invalid response from server')
+				setError('Respons dari server tidak valid')
 				return
 			}
 
 			if (!data.success) {
-				setError(data.error?.message || 'Failed to create group')
+				setError(data.error?.message || 'Gagal membuat grup')
 				return
 			}
 
 			router.replace(`/groups/${data.data.id}`)
 		} catch {
-			setError('An unexpected error occurred')
+			setError('Terjadi kesalahan yang tidak terduga')
 		} finally {
 			setIsLoading(false)
 		}

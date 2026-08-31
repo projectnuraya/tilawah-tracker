@@ -55,7 +55,7 @@ export function EditParticipantForm({ participant }: EditParticipantFormProps) {
 				data = await response.json()
 			} catch (err) {
 				console.error('Failed to parse JSON response:', err)
-				setError('Invalid response from server')
+				setError('Respons dari server tidak valid')
 				return
 			}
 
