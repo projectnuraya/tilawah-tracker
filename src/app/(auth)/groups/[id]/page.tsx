@@ -1,10 +1,14 @@
+import { getPeriodPhase } from '@/components/lib/period-status'
 import { ParticipantsPreview } from '@/components/groups/participants-preview'
+import { LockPrompt } from '@/components/periods/lock-prompt'
 import { ShareFab } from '@/components/groups/share-fab'
 import { authOptions } from '@/components/lib/auth'
 import { prisma } from '@/components/lib/db'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { ButtonLink } from '@/components/ui/button'
 import { BackButton } from '@/components/ui/back-button'
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
+import { PageHeader } from '@/components/ui/page-header'
 import { Calendar, Plus, Settings, Users } from 'lucide-react'
 import { getServerSession } from 'next-auth'
 import Link from 'next/link'
@@ -77,6 +81,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
 	}
 
 	const activePeriod = group.periods.find((p) => p.status === 'active')
+	const activePhase = activePeriod ? getPeriodPhase(activePeriod) : null
 	const publicUrl = `${process.env.NEXT_PUBLIC_APP_URL || ''}/view/${group.publicToken}`
 
 	return (
@@ -93,20 +98,24 @@ export default async function GroupDetailPage({ params }: PageProps) {
 			<BackButton href='/dashboard' label='Kembali ke Dashboard' className='mb-6' />
 
 			{/* Group Header */}
-			<div className='flex items-start justify-between gap-4 mb-6'>
-				<div>
-					<h1 className='text-2xl font-semibold'>{group.name}</h1>
-					<p className='text-muted-foreground text-base mt-1'>
-						Dibuat {new Date(group.createdAt).toLocaleDateString('id-ID', { dateStyle: 'medium' })}
-					</p>
-				</div>
-				<Link
-					href={`/groups/${group.id}/edit`}
-					className='inline-flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-base font-medium hover:bg-muted transition'>
-					<Settings className='h-4 w-4' />
-					Ubah
-				</Link>
-			</div>
+			<PageHeader
+				title={group.name}
+				description={`Dibuat ${new Date(group.createdAt).toLocaleDateString('id-ID', { dateStyle: 'medium' })}`}
+				action={
+					<ButtonLink href={`/groups/${group.id}/edit`} variant='outline'>
+						<Settings className='h-4 w-4' aria-hidden='true' />
+						Ubah
+					</ButtonLink>
+				}
+			/>
+
+			{activePeriod && activePhase === 'awaiting_lock' && (
+				<LockPrompt
+					periodNumber={activePeriod.periodNumber}
+					endDate={activePeriod.endDate}
+					href={`/groups/${group.id}/periods/${activePeriod.id}`}
+				/>
+			)}
 
 			{/* Stats Cards */}
 			<div className='grid grid-cols-2 gap-4 mb-6'>
@@ -127,8 +136,8 @@ export default async function GroupDetailPage({ params }: PageProps) {
 					href={`/groups/${group.id}/periods`}
 					className='block rounded-xl border border-border bg-card p-4 hover:bg-muted transition'>
 					<div className='flex items-center gap-3'>
-						<div className='rounded-full bg-amber-500/10 p-2'>
-							<Calendar className='h-5 w-5 text-amber-500' />
+						<div className='rounded-full bg-accent/10 p-2'>
+							<Calendar className='h-5 w-5 text-accent' />
 						</div>
 						<div>
 							<p className='text-2xl font-semibold'>{group.periods.length}</p>

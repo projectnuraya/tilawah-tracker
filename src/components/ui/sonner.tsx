@@ -1,17 +1,15 @@
 'use client'
 
 import { CircleCheck, Info, LoaderCircle, OctagonX, TriangleAlert } from 'lucide-react'
-import { useTheme } from 'next-themes'
 import { Toaster as Sonner } from 'sonner'
 
 type ToasterProps = React.ComponentProps<typeof Sonner>
 
 const Toaster = ({ ...props }: ToasterProps) => {
-	const { theme = 'system' } = useTheme()
-
 	return (
 		<Sonner
-			theme={theme as ToasterProps['theme']}
+			// Pinned: the app has no dark mode, so a system-dark toast would be the only dark surface.
+			theme='light'
       richColors
 			className='toaster group'
 			icons={{
@@ -27,7 +25,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
 					description: 'group-[.toast]:text-muted-foreground',
 					actionButton: 'group-[.toast]:bg-primary group-[.toast]:text-primary-foreground',
 					cancelButton: 'group-[.toast]:bg-muted group-[.toast]:text-muted-foreground',
-					error: 'group-[.toast]:bg-[#dc2626] group-[.toast]:text-white group-[.toast]:border-[#dc2626]',
+					error: 'group-[.toast]:bg-destructive group-[.toast]:text-destructive-foreground group-[.toast]:border-destructive',
 				},
 			}}
 			{...props}

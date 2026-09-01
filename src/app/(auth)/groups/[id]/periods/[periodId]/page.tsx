@@ -1,8 +1,14 @@
 import { authOptions } from '@/components/lib/auth'
 import { prisma } from '@/components/lib/db'
+import { getPeriodPhase } from '@/components/lib/period-status'
+import { LockPrompt } from '@/components/periods/lock-prompt'
+import { PeriodStats } from '@/components/periods/period-stats'
+import { ProgressSummary } from '@/components/periods/progress-summary'
 import { PeriodProgressList } from '@/components/periods/period-progress-list'
 import { BackButton } from '@/components/ui/back-button'
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
+import { PageHeader } from '@/components/ui/page-header'
+import { PeriodBadge } from '@/components/ui/status-badge'
 import { Calendar } from 'lucide-react'
 import { getServerSession } from 'next-auth'
 import { notFound, redirect } from 'next/navigation'
@@ -83,6 +89,7 @@ export default async function PeriodDetailPage({ params }: PageProps) {
 	}
 
 	const isActive = period.status === 'active'
+	const phase = getPeriodPhase(period)
 
 	return (
 		<div>
@@ -100,42 +107,28 @@ export default async function PeriodDetailPage({ params }: PageProps) {
 			<BackButton href={`/groups/${period.group.id}/periods`} label='Kembali ke Periode' className='mb-6' />
 
 			{/* Header */}
-			<div className='flex items-start justify-between mb-4'>
-				<div>
-					<div className='flex items-center gap-3 mb-1'>
-						<h1 className='text-2xl font-semibold'>Periode #{period.periodNumber}</h1>
-						<span
-							className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-sm font-medium ${
-								isActive ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'
-							}`}>
-							{isActive ? 'Aktif' : 'Terkunci'}
-						</span>
-					</div>
-					<div className='flex items-center gap-2 text-base text-muted-foreground'>
-						<Calendar className='h-4 w-4' />
+			<PageHeader
+				title={`Periode #${period.periodNumber}`}
+				badge={<PeriodBadge phase={phase} />}
+				description={
+					<span className='flex items-center gap-2'>
+						<Calendar className='h-4 w-4' aria-hidden='true' />
 						{new Date(period.startDate).toLocaleDateString('id-ID', { dateStyle: 'long' })} -{' '}
 						{new Date(period.endDate).toLocaleDateString('id-ID', { dateStyle: 'long' })}
-					</div>
-				</div>
-			</div>
+					</span>
+				}
+			/>
 
-			{/* Stats Cards */}
-			<div className={`grid gap-3 mb-6 ${!isActive ? 'grid-cols-3' : 'grid-cols-2'}`}>
-				<div className='rounded-lg border border-border bg-card p-3 text-center'>
-					<p className='text-2xl font-semibold text-primary'>{stats.finished}</p>
-					<p className='text-base text-muted-foreground'>👑 Selesai</p>
-				</div>
-				<div className='rounded-lg border border-border bg-card p-3 text-center'>
-					<p className='text-2xl font-semibold text-muted-foreground'>{stats.not_finished}</p>
-					<p className='text-base text-muted-foreground'>⏳ Dalam Proses</p>
-				</div>
-				{!isActive && (
-					<div className='rounded-lg border border-border bg-card p-3 text-center'>
-						<p className='text-2xl font-semibold text-destructive'>{stats.missed}</p>
-						<p className='text-base text-muted-foreground'>💔 Terlewat</p>
-					</div>
-				)}
-			</div>
+			{phase === 'awaiting_lock' && <LockPrompt periodNumber={period.periodNumber} endDate={period.endDate} />}
+
+			<PeriodStats
+				finished={stats.finished}
+				notFinished={stats.not_finished}
+				missed={stats.missed}
+				showMissed={!isActive}
+			/>
+
+			<ProgressSummary finished={stats.finished} total={stats.total} />
 
 			{/* Period Progress List with Search and Filters */}
 			<PeriodProgressList

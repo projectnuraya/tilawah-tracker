@@ -1,8 +1,12 @@
 'use client'
 
 import { logger } from '@/components/lib/logger'
-import { Check, Copy, Share2, X } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Label, Textarea } from '@/components/ui/input'
+import { Check, Copy, Share2 } from 'lucide-react'
 import { useState } from 'react'
+import { toast } from 'sonner'
 
 interface Period {
 	id: string
@@ -116,81 +120,65 @@ export function ShareButton({ period, groupName, publicToken, coordinators }: Sh
 			}
 		} catch (err) {
 			logger.error({ err }, 'Failed to copy share text to clipboard')
+			toast.error('Gagal menyalin teks', {
+				description: 'Peramban memblokir akses clipboard. Salin manual dari kotak pratinjau.',
+			})
 		}
 	}
 
 	return (
 		<>
-			<button
-				onClick={() => setIsOpen(true)}
-				aria-label='Bagikan progress periode ke WhatsApp'
-				className='inline-flex items-center gap-2 rounded-lg border border-gray-400 px-3 py-2 text-base font-medium hover:bg-muted transition'>
-				<Share2 className='h-4 w-4' />
+			<Button variant='outline' size='sm' onClick={() => setIsOpen(true)} aria-label='Bagikan progress periode ke WhatsApp'>
+				<Share2 className='h-4 w-4' aria-hidden='true' />
 				Bagikan
-			</button>
+			</Button>
 
-			{isOpen && (
-				<>
-					{/* Backdrop */}
-					<div className='fixed inset-0 bg-black/50 z-40' onClick={() => setIsOpen(false)} />
+			<Dialog open={isOpen} onOpenChange={setIsOpen}>
+				<DialogContent className='sm:max-w-md'>
+					<DialogHeader>
+						<DialogTitle>Bagikan ke WhatsApp</DialogTitle>
+					</DialogHeader>
 
-					{/* Modal */}
-					<div className='fixed inset-x-4 top-1/2 -translate-y-1/2 z-50 mx-auto max-w-md rounded-xl bg-card border border-border shadow-xl'>
-						<div className='flex items-center justify-between px-4 py-3 border-b border-border'>
-							<h2 className='font-semibold'>Bagikan ke WhatsApp</h2>
-							<button onClick={() => setIsOpen(false)} className='p-1 hover:bg-muted rounded-lg transition'>
-								<X className='h-5 w-5' />
-							</button>
+					<div className='space-y-4'>
+						<div>
+							<Label htmlFor='customMessage'>Pesan Kustom (opsional)</Label>
+							<Textarea
+								id='customMessage'
+								value={customMessage}
+								onChange={(e) => setCustomMessage(e.target.value)}
+								placeholder='contoh: Semangat semua! Mari kita lanjutkan tilawah minggu ini...'
+								rows={3}
+							/>
 						</div>
 
-						<div className='p-4 space-y-4'>
-							{/* Custom Message Input */}
-							<div>
-								<label htmlFor='customMessage' className='block text-base font-medium mb-2'>
-									Pesan Kustom (opsional)
-								</label>
-								<textarea
-									id='customMessage'
-									value={customMessage}
-									onChange={(e) => setCustomMessage(e.target.value)}
-									placeholder='e.g., Semangat semua! Mari kita lanjutkan tilawah minggu ini...'
-									rows={3}
-									className='w-full rounded-lg border border-border bg-background px-3 py-2 text-base placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none'
-								/>
+						<div>
+							<p className='text-base font-medium mb-2'>Pratinjau</p>
+							{/* Monospace so the preview lines up the way the pasted WhatsApp message will */}
+							<div className='max-h-48 overflow-y-auto rounded-lg border border-border bg-muted p-4'>
+								<pre className='text-sm whitespace-pre-wrap font-mono'>{generateShareText()}</pre>
 							</div>
-
-							{/* Preview */}
-							<div>
-								<p className='text-base font-medium mb-2'>Pratinjau</p>
-								<div className='max-h-48 overflow-y-auto rounded-lg border border-border bg-muted/50 p-3'>
-									<pre className='text-base whitespace-pre-wrap font-sans'>{generateShareText()}</pre>
-								</div>
-							</div>
-
-							{/* Copy Button */}
-							<button
-								onClick={handleCopy}
-								className='w-full inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 text-white font-medium shadow-sm transition hover:bg-primary/90'>
-								{copied ? (
-									<>
-										<Check className='h-4 w-4' />
-										Tersalin!
-									</>
-								) : (
-									<>
-										<Copy className='h-4 w-4' />
-										Salin ke Clipboard
-									</>
-								)}
-							</button>
-
-							<p className='text-base text-center text-muted-foreground'>
-								Tempel teks yang disalin ke grup WhatsApp Anda.
-							</p>
 						</div>
+
+						<Button onClick={handleCopy} fullWidth size='lg'>
+							{copied ? (
+								<>
+									<Check className='h-4 w-4' aria-hidden='true' />
+									Tersalin!
+								</>
+							) : (
+								<>
+									<Copy className='h-4 w-4' aria-hidden='true' />
+									Salin ke Clipboard
+								</>
+							)}
+						</Button>
+
+						<p className='text-base text-center text-muted-foreground'>
+							Tempel teks yang disalin ke grup WhatsApp Anda.
+						</p>
 					</div>
-				</>
-			)}
+				</DialogContent>
+			</Dialog>
 		</>
 	)
 }

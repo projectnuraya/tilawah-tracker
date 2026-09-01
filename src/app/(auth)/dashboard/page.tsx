@@ -1,5 +1,6 @@
 import { authOptions } from '@/components/lib/auth'
 import { prisma } from '@/components/lib/db'
+import { PageHeader } from '@/components/ui/page-header'
 import { Calendar, ChevronRight, Plus, Users } from 'lucide-react'
 import { getServerSession } from 'next-auth'
 import Link from 'next/link'
@@ -54,10 +55,10 @@ export default async function DashboardPage() {
 		<div>
 			{/* Header */}
 			<div className='mb-6'>
-				<h1 className='text-4xl font-bold mb-4'>Grup Saya</h1>
+				<PageHeader title='Grup Saya' className='mb-4' />
 				<Link
 					href='/groups/new'
-					className='flex items-center justify-center gap-2 w-full rounded-xl bg-primary px-4 py-3.5 text-white font-semibold shadow-sm transition hover:bg-primary/90'>
+					className='flex min-h-12 items-center justify-center gap-2 w-full rounded-xl bg-primary px-4 py-3.5 text-primary-foreground font-semibold shadow-sm transition hover:bg-primary-hover'>
 					<Plus className='h-5 w-5' />
 					<span>Tambah Grup Baru</span>
 				</Link>
@@ -75,7 +76,7 @@ export default async function DashboardPage() {
 					</p>
 					<Link
 						href='/groups/new'
-						className='inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-white font-medium shadow-sm transition hover:bg-primary/90'>
+						className='inline-flex min-h-12 items-center gap-2 rounded-lg bg-primary px-6 py-3 text-primary-foreground font-medium shadow-sm transition hover:bg-primary-hover'>
 						<Plus className='h-4 w-4' />
 						Buat Grup Baru
 					</Link>
@@ -90,7 +91,7 @@ export default async function DashboardPage() {
 							{/* Status Badge */}
 							<div>
 								{group.hasActivePeriod ? (
-									<span className='inline-flex items-center rounded-full bg-green-500/20 px-3 py-1 text-sm font-bold text-green-600'>
+									<span className='inline-flex items-center rounded-full bg-success-bg px-3 py-1 text-sm font-bold text-success-bg-foreground'>
 										● SEDANG BERLANGSUNG
 									</span>
 								) : (
@@ -135,7 +136,7 @@ export default async function DashboardPage() {
 							<div>
 								<Link
 									href={`/groups/${group.id}`}
-									className='flex items-center justify-center gap-2 w-full rounded-md border-2 border-secondary text-secondary-background bg-secondary px-4 py-2.5 font-semibold transition hover:bg-secondary/10'>
+									className='flex items-center justify-center gap-2 w-full rounded-md bg-secondary text-secondary-foreground px-4 py-2.5 font-semibold transition hover:bg-secondary/90'>
 									<span>Buka Grup</span>
 									<ChevronRight className='h-5 w-5' />
 								</Link>

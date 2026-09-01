@@ -15,8 +15,8 @@ export function ShareFab({ publicUrl, publicToken }: ShareFabProps) {
 		<Dialog>
 			<DialogTrigger asChild>
 				<button
-					className='fixed bottom-4 right-4 rounded-full bg-primary p-4 text-primary-foreground shadow-lg hover:bg-primary/90 transition'
-					title='Share public link'>
+					className='fixed bottom-4 right-4 rounded-full bg-primary p-4 text-primary-foreground shadow-lg hover:bg-primary-hover transition'
+					aria-label='Bagikan tautan publik'>
 					<Share2 className='h-8 w-8' />
 				</button>
 			</DialogTrigger>
@@ -37,7 +37,7 @@ export function ShareFab({ publicUrl, publicToken }: ShareFabProps) {
 						href={`/view/${publicToken}`}
 						target='_blank'
 						className='rounded-lg border border-border p-2 hover:bg-muted transition'
-						title='Open public view'>
+						aria-label='Buka tampilan publik'>
 						<ExternalLink className='h-4 w-4' />
 					</Link>
 				</div>

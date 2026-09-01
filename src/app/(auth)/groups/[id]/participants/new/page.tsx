@@ -1,8 +1,11 @@
 'use client'
 
+import { useGroupName } from '@/components/lib/use-group-name'
 import { sanitizeWhatsAppNumber } from '@/components/lib/utils'
-import { ArrowLeft, Loader2, Plus, X } from 'lucide-react'
-import Link from 'next/link'
+import { BackButton } from '@/components/ui/back-button'
+import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
+import { PageHeader } from '@/components/ui/page-header'
+import { Loader2, Plus, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
@@ -20,6 +23,7 @@ interface ParticipantInput {
 export default function NewParticipantPage({ params }: PageProps) {
 	const router = useRouter()
 	const [groupId, setGroupId] = useState<string | null>(null)
+	const groupName = useGroupName(groupId)
 	const [participants, setParticipants] = useState<ParticipantInput[]>([{ id: uuidv4(), name: '', whatsappNumber: '' }])
 	const [isLoading, setIsLoading] = useState(false)
 	const [error, setError] = useState('')
@@ -75,19 +79,19 @@ export default function NewParticipantPage({ params }: PageProps) {
 				data = await response.json()
 			} catch (err) {
 				console.error('Failed to parse JSON response:', err)
-				setError('Invalid response from server')
+				setError('Respons dari server tidak valid')
 				return
 			}
 
 			if (!data.success) {
-				setError(data.error?.message || 'Failed to add participants')
+				setError(data.error?.message || 'Gagal menambahkan peserta')
 				return
 			}
 
 			router.replace(`/groups/${groupId}/participants`)
 			router.refresh()
 		} catch {
-			setError('An unexpected error occurred')
+			setError('Terjadi kesalahan yang tidak terduga')
 		} finally {
 			setIsLoading(false)
 		}
@@ -102,22 +106,20 @@ export default function NewParticipantPage({ params }: PageProps) {
 	}
 
 	return (
-		<div className='flex flex-col items-center'>
-			{/* Back Button */}
-			<div className='w-full max-w-2xl mb-6'>
-				<Link
-					href={`/groups/${groupId}/participants`}
-					className='inline-flex items-center gap-1 text-base text-muted-foreground hover:text-foreground'>
-					<ArrowLeft className='h-4 w-4' />
-					Kembali ke Peserta
-				</Link>
-			</div>
+		<div>
+			<BreadcrumbNav
+				items={[
+					{ label: 'Dashboard', href: '/dashboard' },
+					{ label: groupName || 'Grup', href: `/groups/${groupId}` },
+					{ label: 'Peserta', href: `/groups/${groupId}/participants` },
+					{ label: 'Tambah', href: '#', current: true },
+				]}
+			/>
 
-			<div className='w-full max-w-2xl'>
-				<h1 className='text-2xl font-semibold mb-2 text-center'>Tambah Peserta</h1>
-				<p className='text-muted-foreground text-xl mb-6 text-center'>
-					Tambahkan satu atau lebih anggota ke grup tilawah ini.
-				</p>
+			<BackButton href={`/groups/${groupId}/participants`} label='Kembali ke Peserta' className='mb-6' />
+
+			<div>
+				<PageHeader title='Tambah Peserta' description='Tambahkan satu atau lebih anggota ke grup tilawah ini.' />
 
 				<form onSubmit={handleSubmit} className='space-y-6'>
 					{/* Participant Rows */}
@@ -126,7 +128,7 @@ export default function NewParticipantPage({ params }: PageProps) {
 							<div key={participant.id} className='flex gap-3 items-start'>
 								<div className='flex-1 space-y-3'>
 									<div>
-										<label htmlFor={`name-${participant.id}`} className='block text-xl font-medium mb-2'>
+										<label htmlFor={`name-${participant.id}`} className='block text-base font-medium mb-2'>
 											Nama {index === 0 && <span className='text-destructive'>*</span>}
 										</label>
 										<input
@@ -135,14 +137,14 @@ export default function NewParticipantPage({ params }: PageProps) {
 											value={participant.name}
 											onChange={(e) => updateParticipant(participant.id, 'name', e.target.value)}
 											placeholder='contoh: Ahmad'
-											className='w-full rounded-lg border border-border bg-background px-4 py-2.5 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
+											className='w-full rounded-lg border border-border bg-background px-4 py-2.5 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent'
 											disabled={isLoading}
 											autoFocus={index === 0}
 										/>
 									</div>
 
 									<div>
-										<label htmlFor={`whatsapp-${participant.id}`} className='block text-xl font-medium mb-2'>
+										<label htmlFor={`whatsapp-${participant.id}`} className='block text-base font-medium mb-2'>
 											WhatsApp <span className='text-muted-foreground text-sm'>(opsional)</span>
 										</label>
 										<input
@@ -151,7 +153,7 @@ export default function NewParticipantPage({ params }: PageProps) {
 											value={participant.whatsappNumber}
 											onChange={(e) => updateParticipant(participant.id, 'whatsappNumber', e.target.value)}
 											placeholder='contoh: +6281234567890'
-											className='w-full rounded-lg border border-border bg-background px-4 py-2.5 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
+											className='w-full rounded-lg border border-border bg-background px-4 py-2.5 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent'
 											disabled={isLoading}
 										/>
 									</div>
@@ -164,7 +166,7 @@ export default function NewParticipantPage({ params }: PageProps) {
 										onClick={() => removeParticipantRow(participant.id)}
 										disabled={isLoading}
 										className='mt-8 p-2 rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition disabled:opacity-50'
-										title='Remove'>
+										aria-label='Hapus baris peserta ini'>
 										<X className='h-5 w-5' />
 									</button>
 								)}
@@ -177,7 +179,7 @@ export default function NewParticipantPage({ params }: PageProps) {
 						type='button'
 						onClick={addParticipantRow}
 						disabled={isLoading}
-						className='w-full rounded-lg border-2 border-dashed border-border px-4 py-3 text-xl font-medium text-muted-foreground hover:border-primary hover:text-primary transition disabled:opacity-50'>
+						className='w-full min-h-12 rounded-lg border-2 border-dashed border-border px-4 py-3 text-base font-medium text-muted-foreground hover:border-primary hover:text-primary transition disabled:opacity-50'>
 						<Plus className='h-5 w-5 inline-block mr-2' />
 						Tambah Peserta Lagi
 					</button>
@@ -193,7 +195,7 @@ export default function NewParticipantPage({ params }: PageProps) {
 						<button
 							type='submit'
 							disabled={isLoading}
-							className='w-full rounded-lg bg-primary px-4 py-3 text-white font-medium shadow-sm transition hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'>
+							className='w-full rounded-lg bg-primary px-4 py-3 text-primary-foreground font-medium shadow-sm transition hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'>
 							{isLoading ? (
 								<span className='inline-flex items-center gap-2'>
 									<Loader2 className='h-4 w-4 animate-spin' />
@@ -206,7 +208,7 @@ export default function NewParticipantPage({ params }: PageProps) {
 					</div>
 				</form>
 
-				<p className='mt-6 text-base text-muted-foreground text-center'>
+				<p className='mt-6 text-base text-muted-foreground'>
 					Jika ada periode aktif, peserta akan otomatis mendapat nomor juz yang tersedia.
 				</p>
 			</div>

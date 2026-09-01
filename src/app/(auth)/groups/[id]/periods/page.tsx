@@ -1,8 +1,12 @@
 import { authOptions } from '@/components/lib/auth'
 import { prisma } from '@/components/lib/db'
+import { getPeriodPhase } from '@/components/lib/period-status'
 import { CreatePeriodButton } from '@/components/periods/create-period-button'
+import { LockPrompt } from '@/components/periods/lock-prompt'
 import { BackButton } from '@/components/ui/back-button'
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
+import { PeriodBadge } from '@/components/ui/status-badge'
+import { PageHeader } from '@/components/ui/page-header'
 import { Calendar, Users } from 'lucide-react'
 import { getServerSession } from 'next-auth'
 import Link from 'next/link'
@@ -76,6 +80,7 @@ export default async function PeriodsListPage({ params }: PageProps) {
 	)
 
 	const activePeriod = periodsWithStats.find((p) => p.status === 'active')
+	const activePhase = activePeriod ? getPeriodPhase(activePeriod) : null
 	const lockedPeriods = periodsWithStats.filter((p) => p.status === 'locked')
 
 	return (
@@ -93,12 +98,15 @@ export default async function PeriodsListPage({ params }: PageProps) {
 			<BackButton href={`/groups/${group.id}`} label={`Kembali ke ${group.name}`} className='mb-6' />
 
 			{/* Header */}
-			<div className='mb-6'>
-				<div>
-					<h1 className='text-2xl font-semibold'>Periode</h1>
-					<p className='text-muted-foreground text-base mt-1'>{group.periods.length} total periode</p>
-				</div>
-			</div>
+			<PageHeader title='Periode' description={`${group.periods.length} total periode`} />
+
+			{activePeriod && activePhase === 'awaiting_lock' && (
+				<LockPrompt
+					periodNumber={activePeriod.periodNumber}
+					endDate={activePeriod.endDate}
+					href={`/groups/${group.id}/periods/${activePeriod.id}`}
+				/>
+			)}
 
 			{/* Add Period Button */}
 			<CreatePeriodButton groupId={group.id} hasActivePeriod={!!activePeriod} />
@@ -114,9 +122,7 @@ export default async function PeriodsListPage({ params }: PageProps) {
 							<div>
 								<div className='flex items-center gap-2 mb-2'>
 									<span className='font-semibold text-xl'>Periode #{activePeriod.periodNumber}</span>
-									<span className='inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-sm font-medium text-primary'>
-										Aktif
-									</span>
+									<PeriodBadge phase={activePhase ?? 'running'} />
 								</div>
 								<div className='flex items-center gap-4 text-base text-muted-foreground'>
 									<span className='inline-flex items-center gap-1'>
@@ -189,7 +195,7 @@ export default async function PeriodsListPage({ params }: PageProps) {
 					</p>
 					<Link
 						href={`/groups/${group.id}/periods/new`}
-						className='inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-white font-medium shadow-sm transition hover:bg-primary/90'>
+						className='inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-primary-foreground font-medium shadow-sm transition hover:bg-primary-hover'>
 						Mulai Periode Pertama
 					</Link>
 				</div>

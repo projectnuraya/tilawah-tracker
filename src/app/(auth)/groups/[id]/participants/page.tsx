@@ -3,6 +3,7 @@ import { prisma } from '@/components/lib/db'
 import { ParticipantsList } from '@/components/participants/participants-list'
 import { BackButton } from '@/components/ui/back-button'
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
+import { PageHeader } from '@/components/ui/page-header'
 import { Plus } from 'lucide-react'
 import { getServerSession } from 'next-auth'
 import Link from 'next/link'
@@ -109,17 +110,12 @@ export default async function ParticipantsPage({ params }: PageProps) {
 			<BackButton href={`/groups/${group.id}`} label={`Kembali ke ${group.name}`} className='mb-6' />
 
 			{/* Header */}
-			<div className='mb-6'>
-				<div>
-					<h1 className='text-2xl font-semibold'>Peserta</h1>
-					<p className='text-muted-foreground text-base mt-1'>{activeParticipants.length} peserta aktif</p>
-				</div>
-			</div>
+			<PageHeader title='Peserta' description={`${activeParticipants.length} peserta aktif`} />
 
 			{/* Add Participant Button */}
 			<Link
 				href={`/groups/${group.id}/participants/new`}
-				className='flex items-center justify-center gap-2 w-full rounded-xl bg-primary px-4 py-3.5 text-white font-semibold shadow-sm transition hover:bg-primary/90 mb-6'>
+				className='flex items-center justify-center gap-2 w-full rounded-xl bg-primary px-4 py-3.5 text-primary-foreground font-semibold shadow-sm transition hover:bg-primary-hover mb-6'>
 				<Plus className='h-5 w-5' />
 				<span>Tambah Peserta</span>
 			</Link>

@@ -1,7 +1,9 @@
 'use client'
 
+import { useGroupName } from '@/components/lib/use-group-name'
 import { BackButton } from '@/components/ui/back-button'
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
+import { PageHeader } from '@/components/ui/page-header'
 import { AlertCircle, Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -10,23 +12,36 @@ interface PageProps {
 	params: Promise<{ id: string }>
 }
 
+/** Formats a Date using its local calendar fields. Never use toISOString() here: it converts to UTC
+ *  first, which shifts the date back a day for east-of-UTC users during early-morning hours. */
+function toDateInputValue(date: Date): string {
+	const year = date.getFullYear()
+	const month = String(date.getMonth() + 1).padStart(2, '0')
+	const day = String(date.getDate()).padStart(2, '0')
+	return `${year}-${month}-${day}`
+}
+
+/** The Monday to start on: today when today is already Monday (coordinators lock the old period and
+ *  start the new one in the same Monday sitting), otherwise the upcoming Monday. */
 function getNextMonday(): string {
 	const today = new Date()
 	const dayOfWeek = today.getDay()
 	const daysUntilMonday = dayOfWeek === 1 ? 0 : (8 - dayOfWeek) % 7
 	const nextMonday = new Date(today)
 	nextMonday.setDate(today.getDate() + daysUntilMonday)
-	return nextMonday.toISOString().split('T')[0]
+	return toDateInputValue(nextMonday)
 }
 
 function isMonday(dateString: string): boolean {
-	const date = new Date(dateString)
-	return date.getDay() === 1
+	// Date-only strings parse as UTC midnight, so compare in UTC to stay timezone-independent.
+	const date = new Date(`${dateString}T00:00:00Z`)
+	return date.getUTCDay() === 1
 }
 
 export default function NewPeriodPage({ params }: PageProps) {
 	const router = useRouter()
 	const [groupId, setGroupId] = useState<string | null>(null)
+	const groupName = useGroupName(groupId)
 	const [startDate, setStartDate] = useState(getNextMonday())
 	const [isLoading, setIsLoading] = useState(false)
 	const [error, setError] = useState('')
@@ -75,7 +90,7 @@ export default function NewPeriodPage({ params }: PageProps) {
 				data = await response.json()
 			} catch (err) {
 				console.error('Failed to parse JSON response:', err)
-				setError('Invalid response from server')
+				setError('Respons dari server tidak valid')
 				return
 			}
 
@@ -93,11 +108,11 @@ export default function NewPeriodPage({ params }: PageProps) {
 		}
 	}
 
-	// Calculate end date
+	// Calculate end date (start + 6 days), in UTC to match how isMonday() reads the date-only value
 	const endDate = startDate
 		? (() => {
-				const end = new Date(startDate)
-				end.setDate(end.getDate() + 6)
+				const end = new Date(`${startDate}T00:00:00Z`)
+				end.setUTCDate(end.getUTCDate() + 6)
 				return end.toISOString().split('T')[0]
 			})()
 		: ''
@@ -112,29 +127,30 @@ export default function NewPeriodPage({ params }: PageProps) {
 
 	return (
 		<div>
-			{/* Breadcrumb Navigation - Note: groupName would need to be fetched or passed */}
 			<BreadcrumbNav
 				items={[
 					{ label: 'Dashboard', href: '/dashboard' },
-					{ label: 'Grup', href: `/groups/${groupId}` },
+					{ label: groupName || 'Grup', href: `/groups/${groupId}` },
 					{ label: 'Periode Baru', href: '#', current: true },
 				]}
 			/>
 
-			{/* Enhanced Back Button */}
-			<BackButton href={`/groups/${groupId}`} label='Kembali ke Grup' className='mb-6' />
+			<BackButton
+				href={`/groups/${groupId}`}
+				label={groupName ? `Kembali ke ${groupName}` : 'Kembali ke Grup'}
+				className='mb-6'
+			/>
 
 			<div className='max-w-md'>
-				<h1 className='text-2xl font-semibold mb-2'>Mulai Periode Baru</h1>
-				<p className='text-muted-foreground text-base mb-6'>Buat periode tilawah mingguan baru untuk grup Anda.</p>
+				<PageHeader title='Mulai Periode Baru' description='Buat periode tilawah mingguan baru untuk grup Anda.' />
 
 				{/* Info Card */}
-				<div className='rounded-lg border border-blue-200 bg-blue-50 p-4 mb-6'>
+				<div className='rounded-lg border border-info/30 bg-info-bg p-4 mb-6'>
 					<div className='flex gap-3'>
-						<AlertCircle className='h-5 w-5 text-blue-600 shrink-0 mt-0.5' />
-						<div className='text-base text-blue-800'>
+						<AlertCircle className='h-5 w-5 text-info-bg-foreground shrink-0 mt-0.5' aria-hidden='true' />
+						<div className='text-base text-info-bg-foreground'>
 							<p className='font-medium mb-1'>Aturan Periode</p>
-							<ul className='list-disc list-inside space-y-1 text-blue-700'>
+							<ul className='list-disc list-inside space-y-1'>
 								<li>Harus dimulai pada hari Senin</li>
 								<li>Berlangsung tepat 7 hari (Senin sampai Minggu)</li>
 								<li>Pembagian juz otomatis bergilir dari periode sebelumnya</li>
@@ -156,7 +172,7 @@ export default function NewPeriodPage({ params }: PageProps) {
 								onChange={(e) => handleDateChange(e.target.value)}
 								className={`w-full rounded-lg border ${
 									dateError ? 'border-destructive' : 'border-border'
-								} bg-background px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent`}
+								} bg-background px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent`}
 								disabled={isLoading}
 							/>
 						</div>
@@ -167,18 +183,20 @@ export default function NewPeriodPage({ params }: PageProps) {
 						<div className='rounded-lg border border-border bg-muted/50 p-4'>
 							<p className='text-base font-medium mb-2'>Durasi Periode</p>
 							<p className='text-base text-muted-foreground'>
-								{new Date(startDate).toLocaleDateString('id-ID', {
+								{new Date(`${startDate}T00:00:00Z`).toLocaleDateString('id-ID', {
 									weekday: 'long',
 									year: 'numeric',
 									month: 'long',
 									day: 'numeric',
+									timeZone: 'UTC',
 								})}
 								{' → '}
-								{new Date(endDate).toLocaleDateString('id-ID', {
+								{new Date(`${endDate}T00:00:00Z`).toLocaleDateString('id-ID', {
 									weekday: 'long',
 									year: 'numeric',
 									month: 'long',
 									day: 'numeric',
+									timeZone: 'UTC',
 								})}
 							</p>
 						</div>
@@ -194,7 +212,7 @@ export default function NewPeriodPage({ params }: PageProps) {
 						<button
 							type='submit'
 							disabled={isLoading || !!dateError}
-							className='w-full rounded-lg bg-primary px-4 py-3 text-white font-medium shadow-sm transition hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'>
+							className='w-full rounded-lg bg-primary px-4 py-3 text-primary-foreground font-medium shadow-sm transition hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'>
 							{isLoading ? (
 								<span className='inline-flex items-center gap-2'>
 									<Loader2 className='h-4 w-4 animate-spin' />

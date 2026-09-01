@@ -1,9 +1,12 @@
 'use client'
 
 import { logger } from '@/components/lib/logger'
-import { Loader2, Lock } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { ConfirmDialog } from '@/components/ui/confirm-dialog'
+import { Lock } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { toast } from 'sonner'
 
 interface LockPeriodButtonProps {
 	periodId: string
@@ -24,61 +27,53 @@ export function LockPeriodButton({ periodId, notFinishedCount }: LockPeriodButto
 			})
 
 			if (response.ok) {
+				toast.success('Periode berhasil dikunci')
 				router.refresh()
+			} else {
+				toast.error('Gagal mengunci periode', { description: 'Silakan coba lagi.' })
 			}
 		} catch (err) {
 			logger.error({ err, periodId }, 'Failed to lock period')
+			toast.error('Gagal mengunci periode', { description: 'Periksa koneksi internet Anda.' })
 		} finally {
 			setIsLocking(false)
 			setIsConfirming(false)
 		}
 	}
 
-	if (isConfirming) {
-		return (
-			<div className='rounded-xl border border-red-200 bg-red-50 p-4'>
-				<p className='text-base text-red-800 mb-3'>
-					{notFinishedCount > 0 ? (
+	return (
+		<>
+			<Button
+				variant='outline'
+				onClick={() => setIsConfirming(true)}
+				aria-label='Kunci periode untuk menandai peserta yang belum selesai sebagai terlewat'
+				className='border-destructive/50 text-destructive hover:bg-error-bg'>
+				<Lock className='h-4 w-4' aria-hidden='true' />
+				Kunci Periode
+			</Button>
+
+			<ConfirmDialog
+				open={isConfirming}
+				onOpenChange={setIsConfirming}
+				title='Kunci periode ini?'
+				description={
+					notFinishedCount > 0 ? (
 						<>
-							<strong>{notFinishedCount} peserta</strong> akan ditandai sebagai <strong>Terlewat (💔)</strong>.
-							Tindakan ini tidak dapat dibatalkan.
+							<strong>{notFinishedCount} peserta</strong> yang belum selesai akan ditandai{' '}
+							<strong>Terlewat (💔)</strong>. Setelah dikunci, laporan susulan tidak bisa dicatat lagi dan tindakan
+							ini tidak dapat dibatalkan.
 						</>
 					) : (
-						<>Apakah Anda yakin ingin mengunci periode ini? Tindakan ini tidak dapat dibatalkan.</>
-					)}
-				</p>
-				<div className='flex items-center gap-2'>
-					<button
-						onClick={handleLock}
-						disabled={isLocking}
-						className='rounded-lg bg-red-600 px-4 py-2 text-base text-white font-medium hover:bg-red-700 disabled:opacity-50'>
-						{isLocking ? (
-							<span className='inline-flex items-center gap-2'>
-								<Loader2 className='h-4 w-4 animate-spin' />
-								Mengunci...
-							</span>
-						) : (
-							'Ya, Kunci Periode'
-						)}
-					</button>
-					<button
-						onClick={() => setIsConfirming(false)}
-						disabled={isLocking}
-						className='rounded-lg border border-border px-4 py-2 text-base font-medium hover:bg-muted disabled:opacity-50'>
-						Batal
-					</button>
-				</div>
-			</div>
-		)
-	}
-
-	return (
-		<button
-			onClick={() => setIsConfirming(true)}
-			aria-label='Kunci periode untuk menandai peserta yang belum selesai sebagai terlewat'
-			className='inline-flex items-center gap-2 rounded-lg border border-red-500/50 px-4 py-2.5 text-base font-medium text-red-600 hover:bg-red-50 transition'>
-			<Lock className='h-4 w-4' />
-			Kunci Periode
-		</button>
+						<>
+							Setelah dikunci, laporan susulan tidak bisa dicatat lagi dan tindakan ini tidak dapat dibatalkan.
+						</>
+					)
+				}
+				confirmLabel='Ya, Kunci Periode'
+				pendingLabel='Mengunci...'
+				isPending={isLocking}
+				onConfirm={handleLock}
+			/>
+		</>
 	)
 }

@@ -1,7 +1,10 @@
 'use client'
 
 import { DeleteGroupButton } from '@/components/groups/delete-group-button'
-import { ArrowLeft, Loader2 } from 'lucide-react'
+import { BackButton } from '@/components/ui/back-button'
+import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
+import { PageHeader } from '@/components/ui/page-header'
+import { Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -34,7 +37,7 @@ export default function EditGroupPage({ params }: PageProps) {
 				data = await response.json()
 			} catch (err) {
 				console.error('Failed to parse JSON response:', err)
-				setError('Invalid response from server')
+				setError('Respons dari server tidak valid')
 				setIsLoading(false)
 				return
 			}
@@ -82,7 +85,7 @@ export default function EditGroupPage({ params }: PageProps) {
 				data = await response.json()
 			} catch (err) {
 				console.error('Failed to parse JSON response:', err)
-				setError('Invalid response from server')
+				setError('Respons dari server tidak valid')
 				return
 			}
 
@@ -110,17 +113,22 @@ export default function EditGroupPage({ params }: PageProps) {
 
 	return (
 		<div className='flex flex-col min-h-screen'>
-			{/* Back Button */}
-			<Link
+			<BreadcrumbNav
+				items={[
+					{ label: 'Dashboard', href: '/dashboard' },
+					{ label: originalName || 'Grup', href: `/groups/${groupId}` },
+					{ label: 'Edit', href: '#', current: true },
+				]}
+			/>
+
+			<BackButton
 				href={`/groups/${groupId}`}
-				className='inline-flex items-center gap-1 text-base text-muted-foreground hover:text-foreground mb-6'>
-				<ArrowLeft className='h-4 w-4' />
-				Kembali ke Grup
-			</Link>
+				label={originalName ? `Kembali ke ${originalName}` : 'Kembali ke Grup'}
+				className='mb-6'
+			/>
 
 			<div className='max-w-md'>
-				<h1 className='text-2xl font-semibold mb-2'>Edit Grup</h1>
-				<p className='text-muted-foreground text-base mb-6'>Perbarui pengaturan grup Anda.</p>
+				<PageHeader title='Edit Grup' description='Perbarui pengaturan grup Anda.' />
 
 				<form onSubmit={handleSubmit} className='space-y-4'>
 					<div>
@@ -132,8 +140,8 @@ export default function EditGroupPage({ params }: PageProps) {
 							id='name'
 							value={name}
 							onChange={(e) => setName(e.target.value)}
-							placeholder='e.g., Keluarga Besar Bani Adam'
-							className='w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
+							placeholder='contoh: Keluarga Besar Bani Adam'
+							className='w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent'
 							disabled={isSaving}
 							autoFocus
 						/>
@@ -144,7 +152,7 @@ export default function EditGroupPage({ params }: PageProps) {
 						<button
 							type='submit'
 							disabled={isSaving}
-							className='flex-1 rounded-lg bg-primary px-4 py-3 text-white font-medium shadow-sm transition hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'>
+							className='flex-1 rounded-lg bg-primary px-4 py-3 text-primary-foreground font-medium shadow-sm transition hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'>
 							{isSaving ? (
 								<span className='inline-flex items-center justify-center gap-2'>
 									<Loader2 className='h-4 w-4 animate-spin' />

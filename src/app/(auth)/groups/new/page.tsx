@@ -1,7 +1,9 @@
 'use client'
 
-import { ArrowLeft, Loader2 } from 'lucide-react'
-import Link from 'next/link'
+import { BackButton } from '@/components/ui/back-button'
+import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
+import { PageHeader } from '@/components/ui/page-header'
+import { Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
@@ -16,7 +18,7 @@ export default function NewGroupPage() {
 		setError('')
 
 		if (!name.trim()) {
-			setError('Group name is required')
+			setError('Nama grup wajib diisi')
 			return
 		}
 
@@ -36,18 +38,18 @@ export default function NewGroupPage() {
 				data = await response.json()
 			} catch (err) {
 				console.error('Failed to parse JSON response:', err)
-				setError('Invalid response from server')
+				setError('Respons dari server tidak valid')
 				return
 			}
 
 			if (!data.success) {
-				setError(data.error?.message || 'Failed to create group')
+				setError(data.error?.message || 'Gagal membuat grup')
 				return
 			}
 
 			router.replace(`/groups/${data.data.id}`)
 		} catch {
-			setError('An unexpected error occurred')
+			setError('Terjadi kesalahan yang tidak terduga')
 		} finally {
 			setIsLoading(false)
 		}
@@ -55,17 +57,17 @@ export default function NewGroupPage() {
 
 	return (
 		<div>
-			{/* Back Button */}
-			<Link
-				href='/dashboard'
-				className='inline-flex items-center gap-1 text-base text-muted-foreground hover:text-foreground mb-6'>
-				<ArrowLeft className='h-4 w-4' />
-				Kembali ke Dashboard
-			</Link>
+			<BreadcrumbNav
+				items={[
+					{ label: 'Dashboard', href: '/dashboard' },
+					{ label: 'Grup Baru', href: '#', current: true },
+				]}
+			/>
+
+			<BackButton href='/dashboard' label='Kembali ke Dashboard' className='mb-6' />
 
 			<div className='max-w-md'>
-				<h1 className='text-2xl font-semibold mb-2'>Buat Grup Baru</h1>
-				<p className='text-muted-foreground text-base mb-6'>Mulai grup tilawah baru untuk komunitas Anda.</p>
+				<PageHeader title='Buat Grup Baru' description='Mulai grup tilawah baru untuk komunitas Anda.' />
 
 				<form onSubmit={handleSubmit} className='space-y-4'>
 					<div>
@@ -78,7 +80,7 @@ export default function NewGroupPage() {
 							value={name}
 							onChange={(e) => setName(e.target.value)}
 							placeholder='contoh: Keluarga Besar Bani Adam'
-							className='w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
+							className='w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent'
 							disabled={isLoading}
 							autoFocus
 						/>
@@ -89,7 +91,7 @@ export default function NewGroupPage() {
 						<button
 							type='submit'
 							disabled={isLoading}
-							className='w-full rounded-lg bg-primary px-4 py-3 text-white font-medium shadow-sm transition hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'>
+							className='w-full rounded-lg bg-primary px-4 py-3 text-primary-foreground font-medium shadow-sm transition hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'>
 							{isLoading ? (
 								<span className='inline-flex items-center gap-2'>
 									<Loader2 className='h-4 w-4 animate-spin' />

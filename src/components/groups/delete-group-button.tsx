@@ -1,9 +1,12 @@
 'use client'
 
 import { logger } from '@/components/lib/logger'
-import { Loader2, Trash2 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { ConfirmDialog } from '@/components/ui/confirm-dialog'
+import { Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { toast } from 'sonner'
 
 interface DeleteGroupButtonProps {
 	groupId: string
@@ -24,42 +27,42 @@ export function DeleteGroupButton({ groupId, groupName }: DeleteGroupButtonProps
 			})
 
 			if (response.ok) {
+				// Navigating away, so state is intentionally left as-is to avoid a flash of the idle button
 				router.push('/dashboard')
 				router.refresh()
+			} else {
+				toast.error('Gagal menghapus grup', { description: 'Silakan coba lagi.' })
+				setIsDeleting(false)
+				setIsConfirming(false)
 			}
 		} catch (err) {
 			logger.error({ err, groupId }, 'Failed to delete group')
+			toast.error('Gagal menghapus grup', { description: 'Periksa koneksi internet Anda.' })
 			setIsDeleting(false)
 			setIsConfirming(false)
 		}
 	}
 
-	if (isConfirming) {
-		return (
-			<div className='flex items-center gap-2'>
-				<span className='text-base text-destructive'>Hapus &quot;{groupName}&quot;?</span>
-				<button
-					onClick={handleDelete}
-					disabled={isDeleting}
-					className='rounded-lg bg-destructive px-3 py-1.5 text-base text-white font-medium hover:bg-destructive/90 disabled:opacity-50'>
-					{isDeleting ? <Loader2 className='h-4 w-4 animate-spin' /> : 'Ya, Hapus'}
-				</button>
-				<button
-					onClick={() => setIsConfirming(false)}
-					disabled={isDeleting}
-					className='rounded-lg border border-border px-3 py-1.5 text-base font-medium hover:bg-muted disabled:opacity-50'>
-					Batal
-				</button>
-			</div>
-		)
-	}
-
 	return (
-		<button
-			onClick={() => setIsConfirming(true)}
-			className='inline-flex items-center gap-2 rounded-lg border border-destructive/50 px-3 py-2 text-base font-medium text-destructive hover:bg-destructive/10 transition'>
-			<Trash2 className='h-4 w-4' />
-			Hapus Grup
-		</button>
+		<>
+			<Button
+				variant='outline'
+				onClick={() => setIsConfirming(true)}
+				className='border-destructive/50 text-destructive hover:bg-error-bg'>
+				<Trash2 className='h-4 w-4' aria-hidden='true' />
+				Hapus Grup
+			</Button>
+
+			<ConfirmDialog
+				open={isConfirming}
+				onOpenChange={setIsConfirming}
+				title={`Hapus "${groupName}"?`}
+				description='Semua peserta, periode, dan data progress grup ini akan ikut terhapus permanen. Tindakan ini tidak dapat dibatalkan.'
+				confirmLabel='Ya, Hapus'
+				pendingLabel='Menghapus...'
+				isPending={isDeleting}
+				onConfirm={handleDelete}
+			/>
+		</>
 	)
 }

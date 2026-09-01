@@ -42,7 +42,7 @@ export default async function PublicGroupPage({ params }: PageProps) {
 
 	return (
 		<div className='min-h-screen bg-background'>
-			<div className='max-w-4xl mx-auto'>
+			<div>
 				{/* Header */}
 				<div className='mb-8 text-center'>
 					<div className='inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4'>
@@ -53,12 +53,12 @@ export default async function PublicGroupPage({ params }: PageProps) {
 				</div>
 
 				{/* Info Banner */}
-				<div className='rounded-lg border border-blue-200 bg-blue-50 p-4 mb-6'>
+				<div className='rounded-lg border border-info/30 bg-info-bg p-4 mb-6'>
 					<div className='flex gap-3'>
-						<AlertCircle className='h-5 w-5 text-blue-600 shrink-0 mt-0.5' />
-						<div className='text-base text-blue-800'>
+						<AlertCircle className='h-5 w-5 text-info-bg-foreground shrink-0 mt-0.5' aria-hidden='true' />
+						<div className='text-base text-info-bg-foreground'>
 							<p className='font-medium mb-1'>Tampilan Publik</p>
-							<p className='text-blue-700'>
+							<p>
 								Halaman ini menampilkan progress tilawah grup secara real-time. Hanya koordinator yang dapat
 								mengedit data.
 							</p>
@@ -107,11 +107,6 @@ export default async function PublicGroupPage({ params }: PageProps) {
 					</div>
 				)}
 
-				{/* Footer */}
-				<div className='mt-12 pt-6 border-t border-border text-center text-base text-muted-foreground'>
-					<p>Tilawah Tracker - Sistem tracking tilawah grup</p>
-					<p className='mt-1'>PT Nuraya Digital Nusantara</p>
-				</div>
 			</div>
 		</div>
 	)

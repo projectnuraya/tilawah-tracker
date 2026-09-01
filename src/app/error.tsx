@@ -29,12 +29,12 @@ export default function ErrorPage({ error, reset }: ErrorProps) {
 							<AlertCircle className='text-destructive' size={48} />
 						</div>
 					</div>
-					<h1 className='text-4xl font-bold text-destructive'>500</h1>
+					<h1 className='text-6xl font-bold text-destructive'>500</h1>
 					<p className='text-2xl font-semibold text-foreground'>Kesalahan Server</p>
 				</div>
 
 				{/* Islamic Quote */}
-				<div className='bg-amber-50 dark:bg-amber-950/20 border-l-4 border-amber-500 rounded-r-lg p-6 space-y-2'>
+				<div className='bg-warning-bg border-l-4 border-warning rounded-r-lg p-6 space-y-2'>
 					<p className='text-base italic text-muted-foreground'>
 						&quot;Maka sesungguhnya beserta kesulitan ada kemudahan, sesungguhnya beserta kesulitan itu ada
 						kemudahan.&quot;
@@ -52,7 +52,7 @@ export default function ErrorPage({ error, reset }: ErrorProps) {
 				<div className='flex flex-col sm:flex-row justify-center gap-3 pt-4'>
 					<button
 						onClick={reset}
-						className='inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 text-base font-medium text-primary-foreground shadow-sm transition hover:bg-primary/90'>
+						className='inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 text-base font-medium text-primary-foreground shadow-sm transition hover:bg-primary-hover'>
 						<RefreshCw size={18} />
 						Coba Lagi
 					</button>

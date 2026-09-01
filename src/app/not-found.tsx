@@ -1,6 +1,5 @@
-'use client'
-
-import { ArrowLeft } from 'lucide-react'
+import { ButtonLink } from '@/components/ui/button'
+import { Home } from 'lucide-react'
 
 export default function NotFound() {
 	return (
@@ -23,18 +22,19 @@ export default function NotFound() {
 
 				{/* Description */}
 				<p className='text-lg text-muted-foreground leading-relaxed'>
-					Sepertinya kita tidak dapat menemukan halaman yang Anda cari. Ini mungkin karena URL tidak benar atau halaman
-					telah dipindahkan.
+					Sepertinya kita tidak dapat menemukan halaman yang Anda cari. Ini mungkin karena tautannya salah, atau
+					halaman tersebut sudah dipindahkan.
 				</p>
 
-				{/* Navigation Button */}
+				{/*
+				  Deliberately a link home rather than history.back(). The likeliest way to reach this page is
+				  following a bad public group link from WhatsApp, where there is no history to go back to.
+				*/}
 				<div className='pt-4'>
-					<button
-						onClick={() => window.history.back()}
-						className='inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 text-base font-medium text-primary-foreground shadow-sm transition hover:bg-primary/90'>
-						<ArrowLeft size={18} />
-						Kembali
-					</button>
+					<ButtonLink href='/' size='lg'>
+						<Home size={18} aria-hidden='true' />
+						Kembali ke Beranda
+					</ButtonLink>
 				</div>
 			</div>
 		</div>

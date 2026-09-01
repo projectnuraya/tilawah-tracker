@@ -28,7 +28,7 @@ export function ParticipantsPreview({ participants, groupId }: ParticipantsPrevi
 				<p className='text-xl text-muted-foreground mb-3'>Belum ada peserta.</p>
 				<Link
 					href={`/groups/${groupId}/participants/new`}
-					className='inline-flex items-center gap-2 rounded-sm bg-primary px-4 py-2 text-xl font-medium text-primary-foreground hover:bg-primary/90 transition'>
+					className='inline-flex items-center gap-2 rounded-sm bg-primary px-4 py-2 text-xl font-medium text-primary-foreground hover:bg-primary-hover transition'>
 					<Plus className='h-4 w-4' />
 					Tambah Peserta
 				</Link>
