@@ -1,6 +1,8 @@
 import { apiError, apiSuccess, ForbiddenError, NotFoundError, requireAuth, ValidationError } from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
 import { logger } from '@/components/lib/logger'
+import { getIdentifier, rateLimit } from '@/components/lib/rate-limit'
+import { createRateLimitResponse } from '@/components/lib/rate-limit-middleware'
 import { updateParticipantSchema, validateInput } from '@/components/lib/validators'
 import { NextRequest } from 'next/server'
 
@@ -71,6 +73,14 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 	try {
 		const session = await requireAuth()
 		const { id } = await params
+
+		// Rate limit: 60 requests per minute
+		const identifier = getIdentifier(request, session.user.id)
+		const rateLimitResult = await rateLimit.singleParticipant(identifier)
+
+		if (!rateLimitResult.success) {
+			return createRateLimitResponse(rateLimitResult)
+		}
 
 		await getParticipantWithAccess(session.user.id, id)
 
@@ -164,6 +174,14 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
 	try {
 		const session = await requireAuth()
 		const { id } = await params
+
+		// Rate limit: 60 requests per minute
+		const identifier = getIdentifier(request, session.user.id)
+		const rateLimitResult = await rateLimit.singleParticipant(identifier)
+
+		if (!rateLimitResult.success) {
+			return createRateLimitResponse(rateLimitResult)
+		}
 
 		await getParticipantWithAccess(session.user.id, id)
 

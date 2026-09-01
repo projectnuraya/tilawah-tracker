@@ -1,5 +1,7 @@
 import { apiError, apiSuccess, ForbiddenError, NotFoundError, requireAuth } from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
+import { getIdentifier, rateLimit } from '@/components/lib/rate-limit'
+import { createRateLimitResponse } from '@/components/lib/rate-limit-middleware'
 import { NextRequest } from 'next/server'
 
 interface RouteParams {
@@ -44,6 +46,14 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 	try {
 		const session = await requireAuth()
 		const { id } = await params
+
+		// Rate limit: 100 requests per minute
+		const identifier = getIdentifier(request, session.user.id)
+		const rateLimitResult = await rateLimit.read(identifier)
+
+		if (!rateLimitResult.success) {
+			return createRateLimitResponse(rateLimitResult)
+		}
 
 		const period = await getPeriodWithAccess(session.user.id, id)
 

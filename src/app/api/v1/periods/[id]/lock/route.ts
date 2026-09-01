@@ -1,5 +1,7 @@
 import { apiError, apiSuccess, ForbiddenError, NotFoundError, requireAuth, ValidationError } from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
+import { getIdentifier, rateLimit } from '@/components/lib/rate-limit'
+import { createRateLimitResponse } from '@/components/lib/rate-limit-middleware'
 import { NextRequest } from 'next/server'
 
 interface RouteParams {
@@ -15,6 +17,14 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 	try {
 		const session = await requireAuth()
 		const { id } = await params
+
+		// Rate limit: 30 requests per minute — locking is irreversible
+		const identifier = getIdentifier(request, session.user.id)
+		const rateLimitResult = await rateLimit.write(identifier)
+
+		if (!rateLimitResult.success) {
+			return createRateLimitResponse(rateLimitResult)
+		}
 
 		// Get period with access check via coordinator-group relationship
 		const period = await prisma.period.findUnique({

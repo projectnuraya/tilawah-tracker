@@ -8,6 +8,8 @@ import {
 } from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
 import { logger } from '@/components/lib/logger'
+import { getIdentifier, rateLimit } from '@/components/lib/rate-limit'
+import { createRateLimitResponse } from '@/components/lib/rate-limit-middleware'
 import { createPeriodSchema, listPeriodsSchema, validateInput } from '@/components/lib/validators'
 import { NextRequest } from 'next/server'
 
@@ -93,6 +95,14 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 	try {
 		const session = await requireAuth()
 		const { id: groupId } = await params
+
+		// Rate limit: 30 requests per minute
+		const identifier = getIdentifier(request, session.user.id)
+		const rateLimitResult = await rateLimit.write(identifier)
+
+		if (!rateLimitResult.success) {
+			return createRateLimitResponse(rateLimitResult)
+		}
 
 		await requireGroupAccess(session.user.id, groupId)
 
