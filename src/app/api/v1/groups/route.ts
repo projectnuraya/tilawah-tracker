@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
 		const validation = validateInput(createGroupSchema, body)
 
 		if (!validation.success) {
-			throw new ValidationError(validation.error.message)
+			throw new ValidationError(validation.error.message, validation.error.details)
 		}
 
 		const { name } = validation.data

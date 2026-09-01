@@ -97,7 +97,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 		const validation = validateInput(updateGroupSchema, body)
 
 		if (!validation.success) {
-			throw new ValidationError(validation.error.message)
+			throw new ValidationError(validation.error.message, validation.error.details)
 		}
 
 		const { name } = validation.data

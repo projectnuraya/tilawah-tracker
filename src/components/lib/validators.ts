@@ -120,6 +120,18 @@ export const generateShareSchema = z.object({
 export type GenerateShareInput = z.infer<typeof generateShareSchema>
 
 /**
+ * The message a coordinator should actually read.
+ *
+ * `message` used to be the constant 'Input tidak valid', and every route surfaces exactly that
+ * field to the browser — so the Indonesian per-field messages written above ("Nama grup minimal 3
+ * karakter", "Periode harus dimulai pada hari Senin") were defined but never shown to anyone.
+ * Zod orders issues as encountered, so the first one is the field the coordinator hit first.
+ */
+function firstIssueMessage(error: z.ZodError): string {
+	return error.issues[0]?.message ?? 'Input tidak valid'
+}
+
+/**
  * Validate input against schema and return typed result with error details
  * Used throughout API routes for consistent input validation
  *
@@ -138,7 +150,7 @@ export function validateInput<T>(
 			success: false,
 			error: {
 				code: 'VALIDATION_ERROR',
-				message: 'Input tidak valid',
+				message: firstIssueMessage(result.error),
 				details: result.error.flatten(),
 			},
 		}

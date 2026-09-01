@@ -42,7 +42,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 		})
 
 		if (!queryValidation.success) {
-			throw new ValidationError(queryValidation.error.message)
+			throw new ValidationError(queryValidation.error.message, queryValidation.error.details)
 		}
 
 		const { includeInactive } = queryValidation.data
@@ -90,7 +90,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 		const validation = validateInput(createParticipantSchema, body)
 
 		if (!validation.success) {
-			throw new ValidationError(validation.error.message)
+			throw new ValidationError(validation.error.message, validation.error.details)
 		}
 
 		const { name, whatsappNumber } = validation.data

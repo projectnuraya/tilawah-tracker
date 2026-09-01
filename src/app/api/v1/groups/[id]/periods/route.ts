@@ -33,7 +33,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 		})
 
 		if (!queryValidation.success) {
-			throw new ValidationError(queryValidation.error.message)
+			throw new ValidationError(queryValidation.error.message, queryValidation.error.details)
 		}
 
 		const { limit, includeArchived } = queryValidation.data
@@ -106,7 +106,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 		const validation = validateInput(createPeriodSchema, body)
 
 		if (!validation.success) {
-			throw new ValidationError(validation.error.message)
+			throw new ValidationError(validation.error.message, validation.error.details)
 		}
 
 		const { startDate } = validation.data

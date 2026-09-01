@@ -40,11 +40,17 @@ export class NotFoundError extends Error {
 /**
  * Custom error: Invalid input data failed validation
  * Maps to HTTP 400 Bad Request with validation details
+ *
+ * `message` is shown to the coordinator verbatim, so it must be Indonesian. `details` carries the
+ * flattened Zod error for debugging and is optional — errors raised by hand rarely have one.
  */
 export class ValidationError extends Error {
-	constructor(message: string) {
+	readonly details?: unknown
+
+	constructor(message: string, details?: unknown) {
 		super(message)
 		this.name = 'ValidationError'
+		this.details = details
 	}
 }
 
@@ -98,7 +104,13 @@ export function apiError(error: unknown) {
 	}
 
 	if (error instanceof ValidationError) {
-		return NextResponse.json({ success: false, error: { code: 'VALIDATION_ERROR', message: error.message } }, { status: 400 })
+		return NextResponse.json(
+			{
+				success: false,
+				error: { code: 'VALIDATION_ERROR', message: error.message, ...(error.details ? { details: error.details } : {}) },
+			},
+			{ status: 400 },
+		)
 	}
 
 	logger.error({ err: error }, 'API Error')

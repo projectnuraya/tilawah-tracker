@@ -39,7 +39,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 		const validation = validateInput(createParticipantBulkSchema, body)
 
 		if (!validation.success) {
-			throw new ValidationError(validation.error.message)
+			throw new ValidationError(validation.error.message, validation.error.details)
 		}
 
 		const { participants } = validation.data

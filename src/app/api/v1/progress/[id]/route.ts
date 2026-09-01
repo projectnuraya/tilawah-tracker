@@ -41,7 +41,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 		const validation = validateInput(updateProgressSchema, body)
 
 		if (!validation.success) {
-			throw new ValidationError(validation.error.message)
+			throw new ValidationError(validation.error.message, validation.error.details)
 		}
 
 		const { status } = validation.data
