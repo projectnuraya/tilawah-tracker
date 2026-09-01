@@ -72,10 +72,17 @@ class RateLimiter {
 	}
 }
 
-// Create different rate limiters for different time windows
+// One limiter instance per policy, never shared.
+//
+// `singleParticipant`, `progress` and `write` used to share a single limiter, whose Map is keyed
+// by identifier alone. Each caller passed its own limit into that one shared bucket, so 31
+// progress updates in a minute would push the coordinator's next `write` (create a group, start a
+// period) past its limit of 30 and return 429 — three policies quietly spending one budget.
 const rateLimiters = {
 	auth: new RateLimiter({ interval: 15 * 60 * 1000, uniqueTokenPerInterval: 500 }), // 15 min
-	bulkWrite: new RateLimiter({ interval: 5 * 60 * 1000, uniqueTokenPerInterval: 500 }), // 5 min
+	bulkParticipant: new RateLimiter({ interval: 5 * 60 * 1000, uniqueTokenPerInterval: 500 }), // 5 min
+	singleParticipant: new RateLimiter({ interval: 60 * 1000, uniqueTokenPerInterval: 500 }), // 1 min
+	progress: new RateLimiter({ interval: 60 * 1000, uniqueTokenPerInterval: 500 }), // 1 min
 	write: new RateLimiter({ interval: 60 * 1000, uniqueTokenPerInterval: 500 }), // 1 min
 	read: new RateLimiter({ interval: 60 * 1000, uniqueTokenPerInterval: 500 }), // 1 min
 	public: new RateLimiter({ interval: 60 * 1000, uniqueTokenPerInterval: 1000 }), // 1 min
@@ -105,13 +112,13 @@ export const rateLimit = {
 	auth: (identifier: string) => rateLimiters.auth.check(identifier, 5),
 
 	// Bulk participant operations: 5 requests per 5 minutes (500 participants max)
-	bulkParticipant: (identifier: string) => rateLimiters.bulkWrite.check(identifier, 5),
+	bulkParticipant: (identifier: string) => rateLimiters.bulkParticipant.check(identifier, 5),
 
 	// Single participant operations: 60 requests per minute
-	singleParticipant: (identifier: string) => rateLimiters.write.check(identifier, 60),
+	singleParticipant: (identifier: string) => rateLimiters.singleParticipant.check(identifier, 60),
 
 	// Progress updates: 100 requests per minute (active tracking sessions)
-	progress: (identifier: string) => rateLimiters.write.check(identifier, 100),
+	progress: (identifier: string) => rateLimiters.progress.check(identifier, 100),
 
 	// General write operations: 30 requests per minute
 	write: (identifier: string) => rateLimiters.write.check(identifier, 30),
