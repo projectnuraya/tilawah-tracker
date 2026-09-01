@@ -139,20 +139,16 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 			throw new NotFoundError('Group not found')
 		}
 
-		// Check if there's already an active period
+		// These two are the most common outcomes of the Monday flow, so they must reach the
+		// coordinator as readable 400s. They used to be passed to apiError() as plain object
+		// literals, and apiError dispatches on `instanceof` — so both fell through to the 500
+		// branch and surfaced as "An unexpected error occurred".
 		if (group.periods.length > 0) {
-			return apiError({
-				name: 'ValidationError',
-				message: 'There is already an active period. Lock it first before creating a new one.',
-			})
+			throw new ValidationError('Masih ada periode aktif. Kunci periode itu dulu sebelum memulai yang baru.')
 		}
 
-		// Check if there are active participants
 		if (group.participants.length === 0) {
-			return apiError({
-				name: 'ValidationError',
-				message: 'Add at least one participant before creating a period.',
-			})
+			throw new ValidationError('Tambahkan minimal satu peserta sebelum memulai periode.')
 		}
 
 		// Calculate end date (start + 6 days = 7 days total)
