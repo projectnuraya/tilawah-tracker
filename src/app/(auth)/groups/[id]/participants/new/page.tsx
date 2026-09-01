@@ -144,7 +144,9 @@ export default function NewParticipantPage({ params }: PageProps) {
 									</div>
 
 									<div>
-										<label htmlFor={`whatsapp-${participant.id}`} className='block text-base font-medium mb-2'>
+										<label
+											htmlFor={`whatsapp-${participant.id}`}
+											className='block text-base font-medium mb-2'>
 											WhatsApp <span className='text-muted-foreground text-sm'>(opsional)</span>
 										</label>
 										<input

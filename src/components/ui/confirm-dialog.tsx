@@ -1,14 +1,7 @@
 'use client'
 
 import { Button, type ButtonVariant } from '@/components/ui/button'
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-} from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Loader2 } from 'lucide-react'
 
 interface ConfirmDialogProps {
@@ -51,7 +44,11 @@ export function ConfirmDialog({
 					<DialogDescription>{description}</DialogDescription>
 				</DialogHeader>
 				<DialogFooter className='flex-row gap-2 sm:gap-2'>
-					<Button variant='outline' onClick={() => onOpenChange(false)} disabled={isPending} className='flex-1 sm:flex-none'>
+					<Button
+						variant='outline'
+						onClick={() => onOpenChange(false)}
+						disabled={isPending}
+						className='flex-1 sm:flex-none'>
 						{cancelLabel}
 					</Button>
 					<Button variant={confirmVariant} onClick={onConfirm} disabled={isPending} className='flex-1 sm:flex-none'>

@@ -100,7 +100,6 @@ export default async function PublicPeriodDetailPage({ params }: PageProps) {
 						<p className='text-muted-foreground text-sm'>Periode ini belum memiliki peserta.</p>
 					</div>
 				)}
-
 			</div>
 		</div>
 	)

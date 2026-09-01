@@ -106,7 +106,6 @@ export default async function PublicGroupPage({ params }: PageProps) {
 						</p>
 					</div>
 				)}
-
 			</div>
 		</div>
 	)

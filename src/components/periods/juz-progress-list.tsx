@@ -3,7 +3,7 @@
 import { cn } from '@/components/lib/utils'
 import { ProgressStatusDropdown } from '@/components/periods/progress-dropdown'
 import { fieldClasses } from '@/components/ui/input'
-import { PROGRESS_STATUS, StatusText, type ProgressStatus } from '@/components/ui/status-badge'
+import { PROGRESS_STATUS, type ProgressStatus, StatusText } from '@/components/ui/status-badge'
 import { ChevronDown, Search, X } from 'lucide-react'
 import { useMemo, useState } from 'react'
 
@@ -43,10 +43,33 @@ const JUZ_GROUPS = [
 ]
 
 const FILTERS: { value: ProgressStatus | null; label: string; icon?: string; on: string; off: string }[] = [
-	{ value: null, label: 'Semua Status', on: 'bg-primary text-primary-foreground shadow-sm', off: 'border-2 border-border bg-background text-foreground hover:bg-muted' },
-	{ value: 'finished', label: PROGRESS_STATUS.finished.label, icon: PROGRESS_STATUS.finished.icon, on: 'bg-success text-success-foreground shadow-sm', off: 'border-2 border-success bg-success-bg text-success-bg-foreground' },
-	{ value: 'not_finished', label: PROGRESS_STATUS.not_finished.label, icon: PROGRESS_STATUS.not_finished.icon, on: 'bg-warning text-warning-foreground shadow-sm', off: 'border-2 border-warning bg-warning-bg text-warning-bg-foreground' },
-	{ value: 'missed', label: PROGRESS_STATUS.missed.label, icon: PROGRESS_STATUS.missed.icon, on: 'bg-destructive text-destructive-foreground shadow-sm', off: 'border-2 border-destructive bg-error-bg text-error-bg-foreground' },
+	{
+		value: null,
+		label: 'Semua Status',
+		on: 'bg-primary text-primary-foreground shadow-sm',
+		off: 'border-2 border-border bg-background text-foreground hover:bg-muted',
+	},
+	{
+		value: 'finished',
+		label: PROGRESS_STATUS.finished.label,
+		icon: PROGRESS_STATUS.finished.icon,
+		on: 'bg-success text-success-foreground shadow-sm',
+		off: 'border-2 border-success bg-success-bg text-success-bg-foreground',
+	},
+	{
+		value: 'not_finished',
+		label: PROGRESS_STATUS.not_finished.label,
+		icon: PROGRESS_STATUS.not_finished.icon,
+		on: 'bg-warning text-warning-foreground shadow-sm',
+		off: 'border-2 border-warning bg-warning-bg text-warning-bg-foreground',
+	},
+	{
+		value: 'missed',
+		label: PROGRESS_STATUS.missed.label,
+		icon: PROGRESS_STATUS.missed.icon,
+		on: 'bg-destructive text-destructive-foreground shadow-sm',
+		off: 'border-2 border-destructive bg-error-bg text-error-bg-foreground',
+	},
 ]
 
 /**
@@ -58,7 +81,12 @@ const FILTERS: { value: ProgressStatus | null; label: string; icon?: string; on:
  * their empty-state buttons had different styles. Sections now start open on both sides and can
  * still be collapsed.
  */
-export function JuzProgressList({ participantPeriods, editable = false, showMissedFilter = false, actions }: JuzProgressListProps) {
+export function JuzProgressList({
+	participantPeriods,
+	editable = false,
+	showMissedFilter = false,
+	actions,
+}: JuzProgressListProps) {
 	const [searchQuery, setSearchQuery] = useState('')
 	const [filterStatus, setFilterStatus] = useState<ProgressStatus | null>(null)
 	const [collapsed, setCollapsed] = useState<Record<number, boolean>>({})
@@ -185,7 +213,10 @@ export function JuzProgressList({ participantPeriods, editable = false, showMiss
 									<div className='flex items-center gap-2'>
 										<span className='text-base text-muted-foreground'>{rows.length} peserta</span>
 										<ChevronDown
-											className={cn('h-4 w-4 text-muted-foreground transition-transform duration-200', isOpen && 'rotate-180')}
+											className={cn(
+												'h-4 w-4 text-muted-foreground transition-transform duration-200',
+												isOpen && 'rotate-180',
+											)}
 											aria-hidden='true'
 										/>
 									</div>
@@ -203,7 +234,9 @@ export function JuzProgressList({ participantPeriods, editable = false, showMiss
 													</div>
 													<div className='min-w-0'>
 														<div className='flex items-center gap-2'>
-															<p className='font-medium text-base truncate'>{pp.participant.name}</p>
+															<p className='font-medium text-base truncate'>
+																{pp.participant.name}
+															</p>
 															{pp.missedStreak > 0 && (
 																<span
 																	className='inline-flex shrink-0 items-center px-1.5 py-0.5 rounded text-sm font-medium bg-error-bg text-error-bg-foreground'

@@ -26,8 +26,8 @@ export function LockPrompt({ periodNumber, endDate, href }: LockPromptProps) {
 						Periode #{periodNumber} berakhir {describeDaysSinceEnd(endDate)}
 					</p>
 					<p className='text-base text-warning-bg-foreground/90 mt-1'>
-						Catat dulu laporan susulan yang masuk, lalu kunci periode ini untuk menyimpannya sebagai riwayat.
-						Setelah terkunci, Anda bisa memulai periode berikutnya.
+						Catat dulu laporan susulan yang masuk, lalu kunci periode ini untuk menyimpannya sebagai riwayat. Setelah
+						terkunci, Anda bisa memulai periode berikutnya.
 					</p>
 					{href && (
 						<ButtonLink href={href} variant='outline' size='sm' className='mt-3 bg-card'>

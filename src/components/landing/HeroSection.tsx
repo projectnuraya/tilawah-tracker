@@ -1,9 +1,9 @@
 'use client'
 
+import { GoogleIcon } from '@/components/ui/icons'
 import { ShieldCheck, Zap } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { GoogleIcon } from '@/components/ui/icons'
 import { landingCopy } from './copy'
 import { buildMailtoLink } from './utils'
 

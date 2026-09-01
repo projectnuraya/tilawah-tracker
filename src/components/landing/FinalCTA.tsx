@@ -1,7 +1,7 @@
 'use client'
 
-import Link from 'next/link'
 import { GoogleIcon } from '@/components/ui/icons'
+import Link from 'next/link'
 import { landingCopy } from './copy'
 import { buildMailtoLink } from './utils'
 

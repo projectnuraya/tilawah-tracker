@@ -64,9 +64,7 @@ export function LockPeriodButton({ periodId, notFinishedCount }: LockPeriodButto
 							ini tidak dapat dibatalkan.
 						</>
 					) : (
-						<>
-							Setelah dikunci, laporan susulan tidak bisa dicatat lagi dan tindakan ini tidak dapat dibatalkan.
-						</>
+						<>Setelah dikunci, laporan susulan tidak bisa dicatat lagi dan tindakan ini tidak dapat dibatalkan.</>
 					)
 				}
 				confirmLabel='Ya, Kunci Periode'

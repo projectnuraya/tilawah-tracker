@@ -67,8 +67,7 @@ export function PeriodBadge({ phase, className }: { phase: PeriodPhase; classNam
 		locked: 'bg-muted text-muted-foreground',
 	}
 	return (
-		<span
-			className={cn('inline-flex items-center rounded-full px-2.5 py-0.5 text-sm font-medium', styles[phase], className)}>
+		<span className={cn('inline-flex items-center rounded-full px-2.5 py-0.5 text-sm font-medium', styles[phase], className)}>
 			{PERIOD_PHASE_LABEL[phase]}
 		</span>
 	)

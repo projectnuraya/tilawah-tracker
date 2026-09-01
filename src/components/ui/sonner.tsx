@@ -10,7 +10,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
 		<Sonner
 			// Pinned: the app has no dark mode, so a system-dark toast would be the only dark surface.
 			theme='light'
-      richColors
+			richColors
 			className='toaster group'
 			icons={{
 				success: <CircleCheck className='h-4 w-4' />,

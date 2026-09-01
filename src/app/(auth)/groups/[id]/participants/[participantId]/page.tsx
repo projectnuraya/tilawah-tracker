@@ -4,8 +4,8 @@ import { DeactivateButton } from '@/components/participants/deactivate-button'
 import { EditParticipantForm } from '@/components/participants/edit-form'
 import { ReactivateButton } from '@/components/participants/reactivate-button'
 import { BackButton } from '@/components/ui/back-button'
-import { buttonClasses } from '@/components/ui/button'
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
+import { buttonClasses } from '@/components/ui/button'
 import { PageHeader } from '@/components/ui/page-header'
 import { StatusText } from '@/components/ui/status-badge'
 import { MessageCircle } from 'lucide-react'
@@ -114,11 +114,7 @@ export default async function ParticipantDetailPage({ params }: PageProps) {
 				{participant.isActive && whatsappLink && (
 					<div className='rounded-xl border border-border bg-card p-4 mb-6'>
 						<h2 className='font-medium mb-2'>Aksi Cepat</h2>
-						<a
-							href={whatsappLink}
-							target='_blank'
-							rel='noopener noreferrer'
-							className={buttonClasses()}>
+						<a href={whatsappLink} target='_blank' rel='noopener noreferrer' className={buttonClasses()}>
 							<MessageCircle className='h-4 w-4' aria-hidden='true' />
 							Ingatkan via WhatsApp
 						</a>
