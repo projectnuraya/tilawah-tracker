@@ -1,6 +1,5 @@
 'use client'
 
-import { logger } from '@/components/lib/logger'
 import { Button } from '@/components/ui/button'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { Trash2 } from 'lucide-react'
@@ -36,7 +35,7 @@ export function DeleteGroupButton({ groupId, groupName }: DeleteGroupButtonProps
 				setIsConfirming(false)
 			}
 		} catch (err) {
-			logger.error({ err, groupId }, 'Failed to delete group')
+			console.error('Failed to delete group', groupId, err)
 			toast.error('Gagal menghapus grup', { description: 'Periksa koneksi internet Anda.' })
 			setIsDeleting(false)
 			setIsConfirming(false)

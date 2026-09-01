@@ -1,6 +1,5 @@
 'use client'
 
-import { logger } from '@/components/lib/logger'
 import { Button } from '@/components/ui/button'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { Lock } from 'lucide-react'
@@ -33,7 +32,7 @@ export function LockPeriodButton({ periodId, notFinishedCount }: LockPeriodButto
 				toast.error('Gagal mengunci periode', { description: 'Silakan coba lagi.' })
 			}
 		} catch (err) {
-			logger.error({ err, periodId }, 'Failed to lock period')
+			console.error('Failed to lock period', periodId, err)
 			toast.error('Gagal mengunci periode', { description: 'Periksa koneksi internet Anda.' })
 		} finally {
 			setIsLocking(false)

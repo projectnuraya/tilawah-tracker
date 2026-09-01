@@ -1,6 +1,5 @@
 'use client'
 
-import { logger } from '@/components/lib/logger'
 import { Button } from '@/components/ui/button'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { UserMinus } from 'lucide-react'
@@ -37,7 +36,7 @@ export function DeactivateButton({ participantId, groupId, participantName }: De
 				setIsConfirming(false)
 			}
 		} catch (err) {
-			logger.error({ err, participantId }, 'Failed to deactivate participant')
+			console.error('Failed to deactivate participant', participantId, err)
 			toast.error('Gagal menonaktifkan peserta', { description: 'Periksa koneksi internet Anda.' })
 			setIsLoading(false)
 			setIsConfirming(false)

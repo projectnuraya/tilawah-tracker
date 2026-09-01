@@ -1,6 +1,5 @@
 'use client'
 
-import { logger } from '@/components/lib/logger'
 import { formatPeriodDate } from '@/components/lib/period-status'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -116,7 +115,7 @@ export function ShareButton({ period, groupName, publicToken, coordinators }: Sh
 				setTimeout(() => setCopied(false), 2000)
 			}
 		} catch (err) {
-			logger.error({ err }, 'Failed to copy share text to clipboard')
+			console.error('Failed to copy share text to clipboard', err)
 			toast.error('Gagal menyalin teks', {
 				description: 'Peramban memblokir akses clipboard. Salin manual dari kotak pratinjau.',
 			})
