@@ -32,7 +32,7 @@ export async function handleDemoSignIn(email: string): Promise<boolean> {
 		logger.info('Demo sign in allowed')
 		return true
 	} catch (error) {
-		logger.error(`Error handling demo sign in: ${String(error)}`)
+		logger.error({ err: error }, 'Error handling demo sign in')
 		return false
 	}
 }

@@ -101,7 +101,7 @@ export function apiError(error: unknown) {
 		return NextResponse.json({ success: false, error: { code: 'VALIDATION_ERROR', message: error.message } }, { status: 400 })
 	}
 
-	logger.error({ error }, 'API Error')
+	logger.error({ err: error }, 'API Error')
 	return NextResponse.json(
 		{ success: false, error: { code: 'INTERNAL_ERROR', message: 'An unexpected error occurred' } },
 		{ status: 500 },
