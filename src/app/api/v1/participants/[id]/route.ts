@@ -11,6 +11,28 @@ interface RouteParams {
 }
 
 /**
+ * Lowest-numbered juz carrying the fewest people, for load balancing.
+ *
+ * The same loop exists in the participant-create and period-rotation paths; Phase 4 folds all
+ * three into one shared helper.
+ */
+function leastUsedJuz(counts: { juzNumber: number; _count: { juzNumber: number } }[]): number {
+	const perJuz = new Map<number, number>()
+	for (let juz = 1; juz <= 30; juz++) perJuz.set(juz, 0)
+	for (const row of counts) perJuz.set(row.juzNumber, row._count.juzNumber)
+
+	let best = 1
+	let bestCount = Infinity
+	for (const [juz, count] of perJuz) {
+		if (count < bestCount) {
+			bestCount = count
+			best = juz
+		}
+	}
+	return best
+}
+
+/**
  * Helper to verify coordinator has access to a participant
  * Checks the participant's group's coordinatorGroups relationship
  */
@@ -82,7 +104,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 			return createRateLimitResponse(rateLimitResult)
 		}
 
-		await getParticipantWithAccess(session.user.id, id)
+		const participant = await getParticipantWithAccess(session.user.id, id)
 
 		let body
 		try {
@@ -109,27 +131,20 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 		if (name !== undefined) {
 			const trimmedName = name.trim()
 			// Check if another participant in the same group has the same name
-			const currentParticipant = await prisma.participant.findUnique({
-				where: { id },
-				select: { groupId: true },
+			const existing = await prisma.participant.findFirst({
+				where: {
+					groupId: participant.groupId,
+					name: {
+						equals: trimmedName,
+						mode: 'insensitive',
+					},
+					id: { not: id }, // Exclude current participant
+				},
+				select: { id: true },
 			})
 
-			if (currentParticipant) {
-				const existing = await prisma.participant.findFirst({
-					where: {
-						groupId: currentParticipant.groupId,
-						name: {
-							equals: trimmedName,
-							mode: 'insensitive',
-						},
-						id: { not: id }, // Exclude current participant
-					},
-					select: { id: true },
-				})
-
-				if (existing) {
-					throw new ValidationError(`Peserta dengan nama "${trimmedName}" sudah ada di grup ini`)
-				}
+			if (existing) {
+				throw new ValidationError(`Peserta dengan nama "${trimmedName}" sudah ada di grup ini.`)
 			}
 
 			updateData.name = trimmedName
@@ -153,9 +168,52 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 			updateData.isActive = isActive
 		}
 
-		const updated = await prisma.participant.update({
-			where: { id },
-			data: updateData,
+		const reactivating = isActive === true && !participant.isActive
+
+		const updated = await prisma.$transaction(async (tx) => {
+			const row = await tx.participant.update({
+				where: { id },
+				data: updateData,
+			})
+
+			// Adding a *new* participant during an active period assigns them a juz straight away.
+			// Reactivating one did not, so they stayed invisible for the rest of the running week —
+			// absent from the progress list, the stats and the WhatsApp share text — until the next
+			// period rolled over. Give them the same treatment.
+			if (reactivating) {
+				const activePeriod = await tx.period.findFirst({
+					where: { groupId: participant.groupId, status: 'active' },
+					select: { id: true },
+				})
+
+				if (activePeriod) {
+					const alreadyAssigned = await tx.participantPeriod.findUnique({
+						where: { participantId_periodId: { participantId: id, periodId: activePeriod.id } },
+						select: { id: true },
+					})
+
+					// Deactivating leaves the row in place, so someone toggled off and on again inside
+					// the same period keeps their original juz rather than being reassigned.
+					if (!alreadyAssigned) {
+						const juzCounts = await tx.participantPeriod.groupBy({
+							by: ['juzNumber'],
+							where: { periodId: activePeriod.id },
+							_count: { juzNumber: true },
+						})
+
+						await tx.participantPeriod.create({
+							data: {
+								participantId: id,
+								periodId: activePeriod.id,
+								juzNumber: leastUsedJuz(juzCounts),
+								progressStatus: 'not_finished',
+							},
+						})
+					}
+				}
+			}
+
+			return row
 		})
 
 		return apiSuccess(updated)
