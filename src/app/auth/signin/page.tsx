@@ -1,6 +1,6 @@
 'use client'
 
-import { isDemoMode } from '@/components/lib/demo-auth'
+import { isDemoMode } from '@/components/lib/demo-mode'
 import { GoogleIcon } from '@/components/ui/icons'
 import { signIn } from 'next-auth/react'
 import Image from 'next/image'

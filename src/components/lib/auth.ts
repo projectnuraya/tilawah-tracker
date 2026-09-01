@@ -1,5 +1,6 @@
 import { prisma } from '@/components/lib/db'
-import { handleDemoSignIn, isDemoMode } from '@/components/lib/demo-auth'
+import { handleDemoSignIn } from '@/components/lib/demo-auth'
+import { DEMO_EMAIL, isDemoMode } from '@/components/lib/demo-mode'
 import { logger } from '@/components/lib/logger'
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import { NextAuthOptions } from 'next-auth'
@@ -25,14 +26,22 @@ export const authOptions: NextAuthOptions = {
 							password: { label: 'Password', type: 'password' },
 						},
 						async authorize(credentials) {
-							if (
-								credentials?.username === process.env.DEMO_USERNAME &&
-								credentials?.password === process.env.DEMO_PASSWORD
-							) {
+							const expectedUsername = process.env.DEMO_USERNAME
+							const expectedPassword = process.env.DEMO_PASSWORD
+
+							// Without this guard, a deployment that sets NEXT_PUBLIC_IS_DEMO=true but forgets
+							// the credentials would compare `undefined === undefined` and let a request that
+							// simply omits the fields sign in as the demo coordinator.
+							if (!expectedUsername || !expectedPassword) {
+								logger.error('Demo mode is on but DEMO_USERNAME/DEMO_PASSWORD are unset; refusing sign in')
+								return null
+							}
+
+							if (credentials?.username === expectedUsername && credentials?.password === expectedPassword) {
 								// Return a demo user object
 								return {
 									id: 'demo-user-id',
-									email: 'demo@example.com',
+									email: DEMO_EMAIL,
 									name: 'Demo Coordinator',
 								}
 							}
@@ -50,9 +59,9 @@ export const authOptions: NextAuthOptions = {
 		}),
 	],
 	callbacks: {
-		async signIn({ user, account, profile }) {
+		async signIn({ user, account }) {
 			// Handle demo mode sign in
-			if (isDemoMode() && user.email === 'demo@example.com') {
+			if (isDemoMode() && user.email === DEMO_EMAIL) {
 				return await handleDemoSignIn(user.email)
 			}
 
