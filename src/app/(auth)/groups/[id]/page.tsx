@@ -2,7 +2,7 @@ import { ParticipantsPreview } from '@/components/groups/participants-preview'
 import { ShareFab } from '@/components/groups/share-fab'
 import { authOptions } from '@/components/lib/auth'
 import { prisma } from '@/components/lib/db'
-import { getPeriodPhase } from '@/components/lib/period-status'
+import { formatPeriodDate, formatPeriodRange, getPeriodPhase } from '@/components/lib/period-status'
 import { LockPrompt } from '@/components/periods/lock-prompt'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { BackButton } from '@/components/ui/back-button'
@@ -168,8 +168,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
 							<div>
 								<p className='font-medium'>Periode #{activePeriod.periodNumber}</p>
 								<p className='text-base text-muted-foreground'>
-									{new Date(activePeriod.startDate).toLocaleDateString('id-ID', { dateStyle: 'medium' })} -{' '}
-									{new Date(activePeriod.endDate).toLocaleDateString('id-ID', { dateStyle: 'medium' })}
+									{formatPeriodRange(activePeriod.startDate, activePeriod.endDate)}
 								</p>
 							</div>
 							<span className='inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-sm font-medium text-primary'>
@@ -232,7 +231,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
 								<div>
 									<span className='text-xl font-medium'>Periode #{period.periodNumber}</span>
 									<p className='text-base text-muted-foreground'>
-										{new Date(period.startDate).toLocaleDateString('id-ID', { dateStyle: 'short' })}
+										{formatPeriodDate(period.startDate, { dateStyle: 'short' })}
 									</p>
 								</div>
 								<span

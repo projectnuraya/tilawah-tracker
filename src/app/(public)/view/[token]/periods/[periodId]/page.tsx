@@ -1,4 +1,4 @@
-import { getPeriodPhase } from '@/components/lib/period-status'
+import { formatPeriodRange, getPeriodPhase } from '@/components/lib/period-status'
 import { getPublicPeriodDetails } from '@/components/lib/public-utils'
 import { PeriodStats } from '@/components/periods/period-stats'
 import { ProgressSummary } from '@/components/periods/progress-summary'
@@ -72,8 +72,7 @@ export default async function PublicPeriodDetailPage({ params }: PageProps) {
 							<p className='mb-1'>{period.group.name}</p>
 							<span className='flex items-center gap-2'>
 								<Calendar className='h-4 w-4' aria-hidden='true' />
-								{new Date(period.startDate).toLocaleDateString('id-ID', { dateStyle: 'long' })} -{' '}
-								{new Date(period.endDate).toLocaleDateString('id-ID', { dateStyle: 'long' })}
+								{formatPeriodRange(period.startDate, period.endDate, { dateStyle: 'long' })}
 							</span>
 						</>
 					}

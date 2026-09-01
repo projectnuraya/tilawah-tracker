@@ -31,6 +31,30 @@ export function describeDaysSinceEnd(endDate: Date | string, now: Date = new Dat
 	return `${days} hari lalu`
 }
 
+/**
+ * Period start/end are `@db.Date` columns, so Prisma hands them back as midnight **UTC**. Rendering
+ * them with the viewer's timezone shifts the whole week: west of UTC "Senin 5 Jan" reads as
+ * "Minggu 4 Jan". These helpers pin the calendar to UTC so a period reads the same on the server,
+ * in the browser, and inside the copied WhatsApp text.
+ *
+ * Only for period dates. Real timestamps (`createdAt`, `lockedAt`) are instants and should keep
+ * rendering in the viewer's own timezone.
+ */
+const PERIOD_DATE_TZ = 'UTC'
+
+export function formatPeriodDate(date: Date | string, options: Intl.DateTimeFormatOptions = { dateStyle: 'medium' }): string {
+	return new Date(date).toLocaleDateString('id-ID', { ...options, timeZone: PERIOD_DATE_TZ })
+}
+
+/** "5 Jan 2026 - 11 Jan 2026". The separator matches what the pages already rendered by hand. */
+export function formatPeriodRange(
+	start: Date | string,
+	end: Date | string,
+	options: Intl.DateTimeFormatOptions = { dateStyle: 'medium' },
+): string {
+	return `${formatPeriodDate(start, options)} - ${formatPeriodDate(end, options)}`
+}
+
 export const PERIOD_PHASE_LABEL: Record<PeriodPhase, string> = {
 	running: 'Aktif',
 	awaiting_lock: 'Menunggu dikunci',

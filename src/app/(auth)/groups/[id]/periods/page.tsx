@@ -1,6 +1,6 @@
 import { authOptions } from '@/components/lib/auth'
 import { prisma } from '@/components/lib/db'
-import { getPeriodPhase } from '@/components/lib/period-status'
+import { formatPeriodRange, getPeriodPhase } from '@/components/lib/period-status'
 import { CreatePeriodButton } from '@/components/periods/create-period-button'
 import { LockPrompt } from '@/components/periods/lock-prompt'
 import { BackButton } from '@/components/ui/back-button'
@@ -127,10 +127,7 @@ export default async function PeriodsListPage({ params }: PageProps) {
 								<div className='flex items-center gap-4 text-base text-muted-foreground'>
 									<span className='inline-flex items-center gap-1'>
 										<Calendar className='h-4 w-4' />
-										{new Date(activePeriod.startDate).toLocaleDateString('id-ID', {
-											dateStyle: 'medium',
-										})}{' '}
-										- {new Date(activePeriod.endDate).toLocaleDateString('id-ID', { dateStyle: 'medium' })}
+										{formatPeriodRange(activePeriod.startDate, activePeriod.endDate)}
 									</span>
 									<span className='inline-flex items-center gap-1'>
 										<Users className='h-4 w-4' />
@@ -168,8 +165,7 @@ export default async function PeriodsListPage({ params }: PageProps) {
 											</span>
 										</div>
 										<p className='text-base text-muted-foreground'>
-											{new Date(period.startDate).toLocaleDateString('id-ID', { dateStyle: 'medium' })} -{' '}
-											{new Date(period.endDate).toLocaleDateString('id-ID', { dateStyle: 'medium' })}
+											{formatPeriodRange(period.startDate, period.endDate)}
 										</p>
 									</div>
 									<div className='flex items-center gap-4 text-sm'>

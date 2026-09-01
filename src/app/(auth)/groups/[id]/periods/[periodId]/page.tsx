@@ -1,6 +1,6 @@
 import { authOptions } from '@/components/lib/auth'
 import { prisma } from '@/components/lib/db'
-import { getPeriodPhase } from '@/components/lib/period-status'
+import { formatPeriodRange, getPeriodPhase } from '@/components/lib/period-status'
 import { LockPrompt } from '@/components/periods/lock-prompt'
 import { PeriodProgressList } from '@/components/periods/period-progress-list'
 import { PeriodStats } from '@/components/periods/period-stats'
@@ -113,8 +113,7 @@ export default async function PeriodDetailPage({ params }: PageProps) {
 				description={
 					<span className='flex items-center gap-2'>
 						<Calendar className='h-4 w-4' aria-hidden='true' />
-						{new Date(period.startDate).toLocaleDateString('id-ID', { dateStyle: 'long' })} -{' '}
-						{new Date(period.endDate).toLocaleDateString('id-ID', { dateStyle: 'long' })}
+						{formatPeriodRange(period.startDate, period.endDate, { dateStyle: 'long' })}
 					</span>
 				}
 			/>

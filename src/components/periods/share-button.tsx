@@ -1,6 +1,7 @@
 'use client'
 
 import { logger } from '@/components/lib/logger'
+import { formatPeriodDate } from '@/components/lib/period-status'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Label, Textarea } from '@/components/ui/input'
@@ -41,12 +42,8 @@ export function ShareButton({ period, groupName, publicToken, coordinators }: Sh
 	const [copied, setCopied] = useState(false)
 
 	const generateShareText = () => {
-		const startDate = new Date(period.startDate).toLocaleDateString('id-ID', {
-			dateStyle: 'medium',
-		})
-		const endDate = new Date(period.endDate).toLocaleDateString('id-ID', {
-			dateStyle: 'medium',
-		})
+		const startDate = formatPeriodDate(period.startDate)
+		const endDate = formatPeriodDate(period.endDate)
 
 		// Group participants by juz
 		const byJuz: Record<number, typeof period.participantPeriods> = {}

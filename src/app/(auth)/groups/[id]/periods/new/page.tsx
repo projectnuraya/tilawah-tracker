@@ -1,5 +1,6 @@
 'use client'
 
+import { formatPeriodDate } from '@/components/lib/period-status'
 import { useGroupName } from '@/components/lib/use-group-name'
 import { BackButton } from '@/components/ui/back-button'
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
@@ -10,6 +11,13 @@ import { useEffect, useState } from 'react'
 
 interface PageProps {
 	params: Promise<{ id: string }>
+}
+
+const WEEKDAY_FORMAT: Intl.DateTimeFormatOptions = {
+	weekday: 'long',
+	year: 'numeric',
+	month: 'long',
+	day: 'numeric',
 }
 
 /** Formats a Date using its local calendar fields. Never use toISOString() here: it converts to UTC
@@ -183,21 +191,9 @@ export default function NewPeriodPage({ params }: PageProps) {
 						<div className='rounded-lg border border-border bg-muted/50 p-4'>
 							<p className='text-base font-medium mb-2'>Durasi Periode</p>
 							<p className='text-base text-muted-foreground'>
-								{new Date(`${startDate}T00:00:00Z`).toLocaleDateString('id-ID', {
-									weekday: 'long',
-									year: 'numeric',
-									month: 'long',
-									day: 'numeric',
-									timeZone: 'UTC',
-								})}
+								{formatPeriodDate(`${startDate}T00:00:00Z`, WEEKDAY_FORMAT)}
 								{' → '}
-								{new Date(`${endDate}T00:00:00Z`).toLocaleDateString('id-ID', {
-									weekday: 'long',
-									year: 'numeric',
-									month: 'long',
-									day: 'numeric',
-									timeZone: 'UTC',
-								})}
+								{formatPeriodDate(`${endDate}T00:00:00Z`, WEEKDAY_FORMAT)}
 							</p>
 						</div>
 					)}
