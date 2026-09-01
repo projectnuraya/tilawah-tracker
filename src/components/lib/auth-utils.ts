@@ -9,7 +9,7 @@ import { NextResponse } from 'next/server'
  * Maps to HTTP 401 Unauthorized
  */
 export class UnauthorizedError extends Error {
-	constructor(message = 'Unauthorized') {
+	constructor(message = 'Sesi Anda sudah berakhir. Silakan masuk kembali.') {
 		super(message)
 		this.name = 'UnauthorizedError'
 	}
@@ -20,7 +20,7 @@ export class UnauthorizedError extends Error {
  * Maps to HTTP 403 Forbidden
  */
 export class ForbiddenError extends Error {
-	constructor(message = 'Forbidden') {
+	constructor(message = 'Anda tidak punya akses ke data ini.') {
 		super(message)
 		this.name = 'ForbiddenError'
 	}
@@ -31,7 +31,7 @@ export class ForbiddenError extends Error {
  * Maps to HTTP 404 Not Found
  */
 export class NotFoundError extends Error {
-	constructor(message = 'Not Found') {
+	constructor(message = 'Data tidak ditemukan.') {
 		super(message)
 		this.name = 'NotFoundError'
 	}
@@ -80,7 +80,7 @@ export async function requireGroupAccess(coordinatorId: string, groupId: string)
 	})
 
 	if (!access) {
-		throw new ForbiddenError("You don't have access to this group")
+		throw new ForbiddenError('Anda tidak punya akses ke grup ini.')
 	}
 
 	return access
@@ -115,7 +115,7 @@ export function apiError(error: unknown) {
 
 	logger.error({ err: error }, 'API Error')
 	return NextResponse.json(
-		{ success: false, error: { code: 'INTERNAL_ERROR', message: 'An unexpected error occurred' } },
+		{ success: false, error: { code: 'INTERNAL_ERROR', message: 'Terjadi kesalahan di server. Silakan coba lagi.' } },
 		{ status: 500 },
 	)
 }

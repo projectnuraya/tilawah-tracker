@@ -111,7 +111,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 			body = await request.json()
 		} catch (err) {
 			logger.error({ err }, 'Failed to parse JSON in request body')
-			throw new ValidationError('Invalid JSON in request body')
+			throw new ValidationError('Isi permintaan tidak valid.')
 		}
 		const validation = validateInput(createPeriodSchema, body)
 
@@ -136,7 +136,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 		})
 
 		if (!group) {
-			throw new NotFoundError('Group not found')
+			throw new NotFoundError('Grup tidak ditemukan.')
 		}
 
 		// These two are the most common outcomes of the Monday flow, so they must reach the

@@ -27,11 +27,11 @@ async function getPeriodWithAccess(coordinatorId: string, periodId: string) {
 	})
 
 	if (!period) {
-		throw new NotFoundError('Period not found')
+		throw new NotFoundError('Periode tidak ditemukan.')
 	}
 
 	if (period.group.coordinatorGroups.length === 0) {
-		throw new ForbiddenError("You don't have access to this period")
+		throw new ForbiddenError('Anda tidak punya akses ke periode ini.')
 	}
 
 	return period

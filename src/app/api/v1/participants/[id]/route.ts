@@ -51,11 +51,11 @@ async function getParticipantWithAccess(coordinatorId: string, participantId: st
 	})
 
 	if (!participant) {
-		throw new NotFoundError('Participant not found')
+		throw new NotFoundError('Peserta tidak ditemukan.')
 	}
 
 	if (participant.group.coordinatorGroups.length === 0) {
-		throw new ForbiddenError("You don't have access to this participant")
+		throw new ForbiddenError('Anda tidak punya akses ke peserta ini.')
 	}
 
 	return participant
@@ -111,7 +111,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 			body = await request.json()
 		} catch (err) {
 			logger.error({ err }, 'Failed to parse JSON in request body')
-			throw new ValidationError('Invalid JSON in request body')
+			throw new ValidationError('Isi permintaan tidak valid.')
 		}
 		const validation = validateInput(updateParticipantSchema, body)
 

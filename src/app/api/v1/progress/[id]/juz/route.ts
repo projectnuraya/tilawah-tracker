@@ -36,7 +36,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 			body = await request.json()
 		} catch (err) {
 			logger.error({ err }, 'Failed to parse JSON in request body')
-			throw new ValidationError('Invalid JSON in request body')
+			throw new ValidationError('Isi permintaan tidak valid.')
 		}
 		const validation = validateInput(updateJuzSchema, body)
 
@@ -59,7 +59,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 		})
 
 		if (!participantPeriod) {
-			throw new NotFoundError('Participant period not found')
+			throw new NotFoundError('Data progress peserta tidak ditemukan.')
 		}
 
 		// Verify coordinator access to the group
@@ -67,7 +67,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 
 		// Cannot change juz for locked periods (immutable history)
 		if (participantPeriod.period.status === 'locked') {
-			throw new ValidationError('Cannot update juz for a locked period')
+			throw new ValidationError('Periode sudah terkunci, pembagian juz tidak bisa diubah.')
 		}
 
 		// Update the juz assignment

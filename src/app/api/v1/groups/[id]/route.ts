@@ -67,7 +67,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 		})
 
 		if (!group) {
-			throw new NotFoundError('Group not found')
+			throw new NotFoundError('Grup tidak ditemukan.')
 		}
 
 		return apiSuccess({
@@ -110,7 +110,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 			body = await request.json()
 		} catch (err) {
 			logger.error({ err }, 'Failed to parse JSON in request body')
-			throw new ValidationError('Invalid JSON in request body')
+			throw new ValidationError('Isi permintaan tidak valid.')
 		}
 		const validation = validateInput(updateGroupSchema, body)
 

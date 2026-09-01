@@ -34,7 +34,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 			body = await request.json()
 		} catch (err) {
 			logger.error({ err }, 'Failed to parse JSON in request body')
-			throw new ValidationError('Invalid JSON in request body')
+			throw new ValidationError('Isi permintaan tidak valid.')
 		}
 		const validation = validateInput(createParticipantBulkSchema, body)
 

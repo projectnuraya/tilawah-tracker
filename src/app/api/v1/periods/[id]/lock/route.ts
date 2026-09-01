@@ -41,16 +41,16 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 		})
 
 		if (!period) {
-			throw new NotFoundError('Period not found')
+			throw new NotFoundError('Periode tidak ditemukan.')
 		}
 
 		if (period.group.coordinatorGroups.length === 0) {
-			throw new ForbiddenError("You don't have access to this period")
+			throw new ForbiddenError('Anda tidak punya akses ke periode ini.')
 		}
 
 		// Cannot lock an already locked period
 		if (period.status === 'locked') {
-			throw new ValidationError('This period is already locked')
+			throw new ValidationError('Periode ini sudah terkunci.')
 		}
 
 		// Lock period and auto-mark all incomplete as "missed" in a transaction
