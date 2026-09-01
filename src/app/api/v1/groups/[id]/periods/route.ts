@@ -151,10 +151,17 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 			throw new ValidationError('Tambahkan minimal satu peserta sebelum memulai periode.')
 		}
 
-		// Calculate end date (start + 6 days = 7 days total)
+		// Period runs Monday–Sunday, and both columns are `@db.Date`, so the arithmetic has to stay
+		// on the UTC calendar the date-only string parsed into. The previous
+		// `end.setDate(end.getDate() + 6)` mutated *local* fields instead, which lands on the wrong
+		// day in zones whose DST shift is not a whole hour (Australia/Lord_Howe, Pacific/Chatham):
+		// startDate 2024-09-30 stored an end date of 10-05 rather than 10-06.
+		//
+		// date-fns is the house convention, but its addDays is local-field arithmetic too and fails
+		// identically, so this one stays explicitly UTC.
 		const start = new Date(startDate)
 		const end = new Date(start)
-		end.setDate(end.getDate() + 6)
+		end.setUTCDate(end.getUTCDate() + 6)
 
 		// Get the last period number
 		const lastPeriod = await prisma.period.findFirst({
