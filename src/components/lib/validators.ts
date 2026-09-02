@@ -15,9 +15,6 @@ export const updateGroupSchema = z.object({
 	name: z.string().min(3, 'Nama grup minimal 3 karakter').max(255, 'Nama grup maksimal 255 karakter'),
 })
 
-export type CreateGroupInput = z.infer<typeof createGroupSchema>
-export type UpdateGroupInput = z.infer<typeof updateGroupSchema>
-
 // ==================== Participants ====================
 
 export const createParticipantSchema = z.object({
@@ -46,18 +43,6 @@ export const updateParticipantSchema = z.object({
 	isActive: z.boolean().optional(),
 })
 
-export const listParticipantsSchema = z.object({
-	includeInactive: z
-		.string()
-		.optional()
-		.transform((val) => val === 'true'),
-})
-
-export type CreateParticipantInput = z.infer<typeof createParticipantSchema>
-export type CreateParticipantBulkInput = z.infer<typeof createParticipantBulkSchema>
-export type UpdateParticipantInput = z.infer<typeof updateParticipantSchema>
-export type ListParticipantsInput = z.infer<typeof listParticipantsSchema>
-
 // ==================== Periods ====================
 
 export const createPeriodSchema = z.object({
@@ -79,23 +64,6 @@ export const createPeriodSchema = z.object({
 		),
 })
 
-export const listPeriodsSchema = z.object({
-	limit: z
-		.string()
-		.optional()
-		.transform((val) => {
-			const parsed = parseInt(val || '20')
-			return Math.min(Math.max(parsed, 1), 100) // Min 1, max 100
-		}),
-	includeArchived: z
-		.string()
-		.optional()
-		.transform((val) => val === 'true'),
-})
-
-export type CreatePeriodInput = z.infer<typeof createPeriodSchema>
-export type ListPeriodsInput = z.infer<typeof listPeriodsSchema>
-
 // ==================== Progress ====================
 
 export const updateProgressSchema = z.object({
@@ -107,17 +75,6 @@ export const updateProgressSchema = z.object({
 export const updateJuzSchema = z.object({
 	juzNumber: z.number().int('Nomor juz harus bilangan bulat').min(1, 'Nomor juz minimal 1').max(30, 'Nomor juz maksimal 30'),
 })
-
-export type UpdateProgressInput = z.infer<typeof updateProgressSchema>
-export type UpdateJuzInput = z.infer<typeof updateJuzSchema>
-
-// ==================== WhatsApp Share ====================
-
-export const generateShareSchema = z.object({
-	customMessage: z.string().max(500, 'Pesan kustom maksimal 500 karakter').optional(),
-})
-
-export type GenerateShareInput = z.infer<typeof generateShareSchema>
 
 /**
  * The message a coordinator should actually read.
