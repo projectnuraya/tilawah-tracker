@@ -12,7 +12,7 @@ export function createRateLimitResponse(result: RateLimitResult) {
 			success: false,
 			error: {
 				code: 'RATE_LIMIT_EXCEEDED',
-				message: 'Too many requests. Please try again later.',
+				message: 'Terlalu banyak permintaan. Coba lagi sebentar lagi.',
 			},
 		},
 		{
