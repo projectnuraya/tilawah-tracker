@@ -10,81 +10,11 @@ import { prisma } from '@/components/lib/db'
 import { logger } from '@/components/lib/logger'
 import { getIdentifier, rateLimit } from '@/components/lib/rate-limit'
 import { createRateLimitResponse } from '@/components/lib/rate-limit-middleware'
-import { createPeriodSchema, listPeriodsSchema, validateInput } from '@/components/lib/validators'
+import { createPeriodSchema, validateInput } from '@/components/lib/validators'
 import { NextRequest } from 'next/server'
 
 interface RouteParams {
 	params: Promise<{ id: string }>
-}
-
-/**
- * GET /api/v1/groups/[id]/periods
- * List all periods for a group
- */
-export async function GET(request: NextRequest, { params }: RouteParams) {
-	try {
-		const session = await requireAuth()
-		const { id: groupId } = await params
-
-		await requireGroupAccess(session.user.id, groupId)
-
-		const url = new URL(request.url)
-		const queryValidation = validateInput(listPeriodsSchema, {
-			limit: url.searchParams.get('limit'),
-			includeArchived: url.searchParams.get('includeArchived'),
-		})
-
-		if (!queryValidation.success) {
-			throw new ValidationError(queryValidation.error.message, queryValidation.error.details)
-		}
-
-		const { limit, includeArchived } = queryValidation.data
-
-		const periods = await prisma.period.findMany({
-			where: {
-				groupId,
-				...(includeArchived ? {} : { isArchived: false }),
-			},
-			orderBy: { periodNumber: 'desc' },
-			take: limit,
-			include: {
-				_count: {
-					select: { participantPeriods: true },
-				},
-			},
-		})
-
-		// Get summary stats for each period
-		const periodsWithStats = await Promise.all(
-			periods.map(async (period) => {
-				const stats = await prisma.participantPeriod.groupBy({
-					by: ['progressStatus'],
-					where: { periodId: period.id },
-					_count: { progressStatus: true },
-				})
-
-				const statusCounts = {
-					finished: 0,
-					not_finished: 0,
-					missed: 0,
-				}
-
-				for (const s of stats) {
-					statusCounts[s.progressStatus as keyof typeof statusCounts] = s._count.progressStatus
-				}
-
-				return {
-					...period,
-					participantCount: period._count.participantPeriods,
-					statusCounts,
-				}
-			}),
-		)
-
-		return apiSuccess(periodsWithStats)
-	} catch (error) {
-		return apiError(error)
-	}
 }
 
 /**

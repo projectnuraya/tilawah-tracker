@@ -13,8 +13,8 @@ interface RouteParams {
 /**
  * Lowest-numbered juz carrying the fewest people, for load balancing.
  *
- * The same loop exists in the participant-create and period-rotation paths; Phase 4 folds all
- * three into one shared helper.
+ * The same loop exists in the bulk-create and period-rotation paths; Phase 4 folds all three
+ * into one shared helper.
  */
 function leastUsedJuz(counts: { juzNumber: number; _count: { juzNumber: number } }[]): number {
 	const perJuz = new Map<number, number>()
@@ -59,31 +59,6 @@ async function getParticipantWithAccess(coordinatorId: string, participantId: st
 	}
 
 	return participant
-}
-
-/**
- * GET /api/v1/participants/[id]
- * Get participant details
- */
-export async function GET(request: NextRequest, { params }: RouteParams) {
-	try {
-		const session = await requireAuth()
-		const { id } = await params
-
-		const participant = await getParticipantWithAccess(session.user.id, id)
-
-		return apiSuccess({
-			id: participant.id,
-			groupId: participant.groupId,
-			name: participant.name,
-			whatsappNumber: participant.whatsappNumber,
-			isActive: participant.isActive,
-			createdAt: participant.createdAt,
-			updatedAt: participant.updatedAt,
-		})
-	} catch (error) {
-		return apiError(error)
-	}
 }
 
 /**

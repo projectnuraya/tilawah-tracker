@@ -8,66 +8,6 @@ import { createGroupSchema, validateInput } from '@/components/lib/validators'
 import { NextRequest } from 'next/server'
 
 /**
- * GET /api/v1/groups
- * List all groups for the authenticated coordinator
- */
-export async function GET(request: NextRequest) {
-	try {
-		const session = await requireAuth()
-
-		// Rate limit: 100 requests per minute
-		const identifier = getIdentifier(request, session.user.id)
-		const rateLimitResult = await rateLimit.read(identifier)
-
-		if (!rateLimitResult.success) {
-			return createRateLimitResponse(rateLimitResult)
-		}
-
-		const coordinatorGroups = await prisma.coordinatorGroup.findMany({
-			where: {
-				coordinatorId: session.user.id,
-			},
-			include: {
-				group: {
-					include: {
-						_count: {
-							select: {
-								participants: {
-									where: { isActive: true },
-								},
-								periods: true,
-							},
-						},
-						periods: {
-							where: { status: 'active' },
-							take: 1,
-						},
-					},
-				},
-			},
-			orderBy: {
-				joinedAt: 'desc',
-			},
-		})
-
-		const groups = coordinatorGroups.map((cg) => ({
-			id: cg.group.id,
-			name: cg.group.name,
-			publicToken: cg.group.publicToken,
-			participantCount: cg.group._count.participants,
-			periodCount: cg.group._count.periods,
-			hasActivePeriod: cg.group.periods.length > 0,
-			joinedAt: cg.joinedAt,
-			createdAt: cg.group.createdAt,
-		}))
-
-		return apiSuccess(groups)
-	} catch (error) {
-		return apiError(error)
-	}
-}
-
-/**
  * POST /api/v1/groups
  * Create a new group
  */
