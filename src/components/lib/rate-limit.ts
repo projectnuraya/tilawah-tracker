@@ -7,7 +7,6 @@ import { NextRequest } from 'next/server'
 
 type RateLimitConfig = {
 	interval: number // milliseconds
-	uniqueTokenPerInterval: number
 }
 
 type TokenBucket = {
@@ -18,15 +17,13 @@ type TokenBucket = {
 class RateLimiter {
 	private cache: Map<string, TokenBucket>
 	private interval: number
-	private maxTokens: number
 
 	constructor(config: RateLimitConfig) {
 		this.cache = new Map()
 		this.interval = config.interval
-		this.maxTokens = config.uniqueTokenPerInterval
 
-		// Cleanup expired entries every minute
-		setInterval(() => this.cleanup(), 60 * 1000)
+		// Cleanup expired entries every minute. unref() so this timer never keeps the process alive.
+		setInterval(() => this.cleanup(), 60 * 1000).unref()
 	}
 
 	private cleanup() {
@@ -79,18 +76,18 @@ class RateLimiter {
 // progress updates in a minute would push the coordinator's next `write` (create a group, start a
 // period) past its limit of 30 and return 429 — three policies quietly spending one budget.
 const rateLimiters = {
-	auth: new RateLimiter({ interval: 15 * 60 * 1000, uniqueTokenPerInterval: 500 }), // 15 min
-	bulkParticipant: new RateLimiter({ interval: 5 * 60 * 1000, uniqueTokenPerInterval: 500 }), // 5 min
-	singleParticipant: new RateLimiter({ interval: 60 * 1000, uniqueTokenPerInterval: 500 }), // 1 min
-	progress: new RateLimiter({ interval: 60 * 1000, uniqueTokenPerInterval: 500 }), // 1 min
-	write: new RateLimiter({ interval: 60 * 1000, uniqueTokenPerInterval: 500 }), // 1 min
-	read: new RateLimiter({ interval: 60 * 1000, uniqueTokenPerInterval: 500 }), // 1 min
-	public: new RateLimiter({ interval: 60 * 1000, uniqueTokenPerInterval: 1000 }), // 1 min
+	bulkParticipant: new RateLimiter({ interval: 5 * 60 * 1000 }), // 5 min
+	singleParticipant: new RateLimiter({ interval: 60 * 1000 }), // 1 min
+	progress: new RateLimiter({ interval: 60 * 1000 }), // 1 min
+	write: new RateLimiter({ interval: 60 * 1000 }), // 1 min
+	read: new RateLimiter({ interval: 60 * 1000 }), // 1 min
 }
 
 /**
  * Get unique identifier for rate limiting
- * Prefers user ID for authenticated requests, falls back to IP for public endpoints
+ *
+ * Every remaining endpoint runs behind requireAuth(), so in practice this always keys on the
+ * coordinator id. The IP fallback is kept as a backstop for a caller that has no session yet.
  */
 export function getIdentifier(request: NextRequest, userId?: string): string {
 	if (userId) return `user:${userId}`
@@ -108,9 +105,6 @@ export function getIdentifier(request: NextRequest, userId?: string): string {
  * Rate limit checkers for different endpoint types
  */
 export const rateLimit = {
-	// Authentication endpoints: 5 requests per 15 minutes
-	auth: (identifier: string) => rateLimiters.auth.check(identifier, 5),
-
 	// Bulk participant operations: 5 requests per 5 minutes (500 participants max)
 	bulkParticipant: (identifier: string) => rateLimiters.bulkParticipant.check(identifier, 5),
 
@@ -125,9 +119,6 @@ export const rateLimit = {
 
 	// Read operations: 100 requests per minute
 	read: (identifier: string) => rateLimiters.read.check(identifier, 100),
-
-	// Public endpoints: 60 requests per minute
-	public: (identifier: string) => rateLimiters.public.check(identifier, 60),
 }
 
 /**
