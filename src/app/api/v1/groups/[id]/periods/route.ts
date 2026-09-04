@@ -2,13 +2,13 @@ import {
 	apiError,
 	apiSuccess,
 	NotFoundError,
+	parseJsonBody,
 	requireAuth,
 	requireGroupAccess,
 	ValidationError,
 } from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
 import { juzTally, newAssignment, nextJuz, takeLeastUsedJuz, TOTAL_JUZ } from '@/components/lib/juz'
-import { logger } from '@/components/lib/logger'
 import { getIdentifier, rateLimit } from '@/components/lib/rate-limit'
 import { createRateLimitResponse } from '@/components/lib/rate-limit-middleware'
 import { PERIOD_STATUS, PROGRESS } from '@/components/lib/status'
@@ -38,13 +38,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
 		await requireGroupAccess(session.user.id, groupId)
 
-		let body
-		try {
-			body = await request.json()
-		} catch (err) {
-			logger.error({ err }, 'Failed to parse JSON in request body')
-			throw new ValidationError('Isi permintaan tidak valid.')
-		}
+		const body = await parseJsonBody(request)
 		const validation = validateInput(createPeriodSchema, body)
 
 		if (!validation.success) {

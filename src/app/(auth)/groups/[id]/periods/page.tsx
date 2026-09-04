@@ -1,4 +1,5 @@
 import { authOptions } from '@/components/lib/auth'
+import { hasGroupAccess } from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
 import { formatPeriodRange, getPeriodPhase } from '@/components/lib/period-status'
 import { CreatePeriodButton } from '@/components/periods/create-period-button'
@@ -17,16 +18,7 @@ interface PageProps {
 }
 
 async function getGroupWithPeriods(userId: string, groupId: string) {
-	const access = await prisma.coordinatorGroup.findUnique({
-		where: {
-			coordinatorId_groupId: {
-				coordinatorId: userId,
-				groupId,
-			},
-		},
-	})
-
-	if (!access) {
+	if (!(await hasGroupAccess(userId, groupId))) {
 		return null
 	}
 

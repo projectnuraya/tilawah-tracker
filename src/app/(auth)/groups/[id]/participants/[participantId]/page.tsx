@@ -1,4 +1,5 @@
 import { authOptions } from '@/components/lib/auth'
+import { hasGroupAccess } from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
 import { DeactivateButton } from '@/components/participants/deactivate-button'
 import { EditParticipantForm } from '@/components/participants/edit-form'
@@ -17,16 +18,7 @@ interface PageProps {
 }
 
 async function getParticipant(userId: string, groupId: string, participantId: string) {
-	const access = await prisma.coordinatorGroup.findUnique({
-		where: {
-			coordinatorId_groupId: {
-				coordinatorId: userId,
-				groupId,
-			},
-		},
-	})
-
-	if (!access) {
+	if (!(await hasGroupAccess(userId, groupId))) {
 		return null
 	}
 

@@ -1,4 +1,5 @@
 import { authOptions } from '@/components/lib/auth'
+import { hasGroupAccess } from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
 import { PERIOD_STATUS } from '@/components/lib/status'
 import { ParticipantsList } from '@/components/participants/participants-list'
@@ -15,16 +16,7 @@ interface PageProps {
 }
 
 async function getGroupWithParticipants(userId: string, groupId: string) {
-	const access = await prisma.coordinatorGroup.findUnique({
-		where: {
-			coordinatorId_groupId: {
-				coordinatorId: userId,
-				groupId,
-			},
-		},
-	})
-
-	if (!access) {
+	if (!(await hasGroupAccess(userId, groupId))) {
 		return null
 	}
 

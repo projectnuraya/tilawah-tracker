@@ -87,6 +87,75 @@ export async function requireGroupAccess(coordinatorId: string, groupId: string)
 }
 
 /**
+ * Read and parse a JSON request body.
+ *
+ * Every mutating route repeated this same try/catch, seven copies of it, purely so a malformed
+ * body surfaced as a 400 rather than an unhandled 500.
+ */
+export async function parseJsonBody(request: Request): Promise<unknown> {
+	try {
+		return await request.json()
+	} catch (err) {
+		logger.error({ err }, 'Failed to parse JSON in request body')
+		throw new ValidationError('Isi permintaan tidak valid.')
+	}
+}
+
+/**
+ * Non-throwing variant of requireGroupAccess, for server components.
+ *
+ * Pages want to fall through to notFound() rather than surface a 403 that tells the visitor the
+ * group exists. Five of them wrote this Prisma call out by hand.
+ */
+export async function hasGroupAccess(coordinatorId: string, groupId: string): Promise<boolean> {
+	const access = await prisma.coordinatorGroup.findUnique({
+		where: { coordinatorId_groupId: { coordinatorId, groupId } },
+		select: { id: true },
+	})
+	return access !== null
+}
+
+/**
+ * Load a participant, checking the caller coordinates its group.
+ *
+ * @throws NotFoundError when it does not exist, ForbiddenError when it is someone else's
+ */
+export async function getParticipantWithAccess(coordinatorId: string, participantId: string) {
+	const participant = await prisma.participant.findUnique({
+		where: { id: participantId },
+		include: { group: { include: { coordinatorGroups: { where: { coordinatorId } } } } },
+	})
+
+	if (!participant) {
+		throw new NotFoundError('Peserta tidak ditemukan.')
+	}
+	if (participant.group.coordinatorGroups.length === 0) {
+		throw new ForbiddenError('Anda tidak punya akses ke peserta ini.')
+	}
+	return participant
+}
+
+/**
+ * Load a period, checking the caller coordinates its group.
+ *
+ * @throws NotFoundError when it does not exist, ForbiddenError when it is someone else's
+ */
+export async function getPeriodWithAccess(coordinatorId: string, periodId: string) {
+	const period = await prisma.period.findUnique({
+		where: { id: periodId },
+		include: { group: { include: { coordinatorGroups: { where: { coordinatorId } } } } },
+	})
+
+	if (!period) {
+		throw new NotFoundError('Periode tidak ditemukan.')
+	}
+	if (period.group.coordinatorGroups.length === 0) {
+		throw new ForbiddenError('Anda tidak punya akses ke periode ini.')
+	}
+	return period
+}
+
+/**
  * Format error into standard API response
  * Maps custom error types to appropriate HTTP status codes
  */

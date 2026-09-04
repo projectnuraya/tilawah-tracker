@@ -1,6 +1,7 @@
 import { ParticipantsPreview } from '@/components/groups/participants-preview'
 import { ShareFab } from '@/components/groups/share-fab'
 import { authOptions } from '@/components/lib/auth'
+import { hasGroupAccess } from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
 import { formatPeriodDate, formatPeriodRange, getPeriodPhase } from '@/components/lib/period-status'
 import { PERIOD_STATUS } from '@/components/lib/status'
@@ -21,16 +22,7 @@ interface PageProps {
 
 async function getGroup(userId: string, groupId: string) {
 	// Check access
-	const access = await prisma.coordinatorGroup.findUnique({
-		where: {
-			coordinatorId_groupId: {
-				coordinatorId: userId,
-				groupId,
-			},
-		},
-	})
-
-	if (!access) {
+	if (!(await hasGroupAccess(userId, groupId))) {
 		return null
 	}
 

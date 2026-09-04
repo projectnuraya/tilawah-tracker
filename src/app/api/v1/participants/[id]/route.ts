@@ -1,7 +1,13 @@
-import { apiError, apiSuccess, ForbiddenError, NotFoundError, requireAuth, ValidationError } from '@/components/lib/auth-utils'
+import {
+	apiError,
+	apiSuccess,
+	getParticipantWithAccess,
+	parseJsonBody,
+	requireAuth,
+	ValidationError,
+} from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
 import { juzTally, newAssignment, takeLeastUsedJuz } from '@/components/lib/juz'
-import { logger } from '@/components/lib/logger'
 import { getIdentifier, rateLimit } from '@/components/lib/rate-limit'
 import { createRateLimitResponse } from '@/components/lib/rate-limit-middleware'
 import { PERIOD_STATUS } from '@/components/lib/status'
@@ -10,35 +16,6 @@ import { NextRequest } from 'next/server'
 
 interface RouteParams {
 	params: Promise<{ id: string }>
-}
-
-/**
- * Helper to verify coordinator has access to a participant
- * Checks the participant's group's coordinatorGroups relationship
- */
-async function getParticipantWithAccess(coordinatorId: string, participantId: string) {
-	const participant = await prisma.participant.findUnique({
-		where: { id: participantId },
-		include: {
-			group: {
-				include: {
-					coordinatorGroups: {
-						where: { coordinatorId },
-					},
-				},
-			},
-		},
-	})
-
-	if (!participant) {
-		throw new NotFoundError('Peserta tidak ditemukan.')
-	}
-
-	if (participant.group.coordinatorGroups.length === 0) {
-		throw new ForbiddenError('Anda tidak punya akses ke peserta ini.')
-	}
-
-	return participant
 }
 
 /**
@@ -61,13 +38,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 
 		const participant = await getParticipantWithAccess(session.user.id, id)
 
-		let body
-		try {
-			body = await request.json()
-		} catch (err) {
-			logger.error({ err }, 'Failed to parse JSON in request body')
-			throw new ValidationError('Isi permintaan tidak valid.')
-		}
+		const body = await parseJsonBody(request)
 		const validation = validateInput(updateParticipantSchema, body)
 
 		if (!validation.success) {

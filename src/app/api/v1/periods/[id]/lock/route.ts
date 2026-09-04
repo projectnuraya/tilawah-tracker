@@ -1,4 +1,4 @@
-import { apiError, apiSuccess, ForbiddenError, NotFoundError, requireAuth, ValidationError } from '@/components/lib/auth-utils'
+import { apiError, apiSuccess, getPeriodWithAccess, requireAuth, ValidationError } from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
 import { getIdentifier, rateLimit } from '@/components/lib/rate-limit'
 import { createRateLimitResponse } from '@/components/lib/rate-limit-middleware'
@@ -27,27 +27,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 			return createRateLimitResponse(rateLimitResult)
 		}
 
-		// Get period with access check via coordinator-group relationship
-		const period = await prisma.period.findUnique({
-			where: { id },
-			include: {
-				group: {
-					include: {
-						coordinatorGroups: {
-							where: { coordinatorId: session.user.id },
-						},
-					},
-				},
-			},
-		})
-
-		if (!period) {
-			throw new NotFoundError('Periode tidak ditemukan.')
-		}
-
-		if (period.group.coordinatorGroups.length === 0) {
-			throw new ForbiddenError('Anda tidak punya akses ke periode ini.')
-		}
+		const period = await getPeriodWithAccess(session.user.id, id)
 
 		// Cannot lock an already locked period
 		if (period.status === PERIOD_STATUS.locked) {
