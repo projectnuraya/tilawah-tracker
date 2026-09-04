@@ -1,5 +1,7 @@
 'use client'
 
+import { groupByJuz } from '@/components/lib/juz'
+import { PROGRESS } from '@/components/lib/status'
 import { cn } from '@/components/lib/utils'
 import { ProgressStatusDropdown } from '@/components/periods/progress-dropdown'
 import { fieldClasses } from '@/components/ui/input'
@@ -50,21 +52,21 @@ const FILTERS: { value: ProgressStatus | null; label: string; icon?: string; on:
 		off: 'border-2 border-border bg-background text-foreground hover:bg-muted',
 	},
 	{
-		value: 'finished',
+		value: PROGRESS.finished,
 		label: PROGRESS_STATUS.finished.label,
 		icon: PROGRESS_STATUS.finished.icon,
 		on: 'bg-success text-success-foreground shadow-sm',
 		off: 'border-2 border-success bg-success-bg text-success-bg-foreground',
 	},
 	{
-		value: 'not_finished',
+		value: PROGRESS.notFinished,
 		label: PROGRESS_STATUS.not_finished.label,
 		icon: PROGRESS_STATUS.not_finished.icon,
 		on: 'bg-warning text-warning-foreground shadow-sm',
 		off: 'border-2 border-warning bg-warning-bg text-warning-bg-foreground',
 	},
 	{
-		value: 'missed',
+		value: PROGRESS.missed,
 		label: PROGRESS_STATUS.missed.label,
 		icon: PROGRESS_STATUS.missed.icon,
 		on: 'bg-destructive text-destructive-foreground shadow-sm',
@@ -99,12 +101,7 @@ export function JuzProgressList({
 		return rows
 	}, [searchQuery, filterStatus, participantPeriods])
 
-	const byJuz = useMemo(() => {
-		const grouped: Record<number, JuzParticipantPeriod[]> = {}
-		for (let i = 1; i <= 30; i++) grouped[i] = []
-		for (const pp of filtered) grouped[pp.juzNumber]?.push(pp)
-		return grouped
-	}, [filtered])
+	const byJuz = useMemo(() => groupByJuz(filtered), [filtered])
 
 	const hasActiveFilters = searchQuery.trim() !== '' || filterStatus !== null
 
@@ -114,7 +111,7 @@ export function JuzProgressList({
 		setCollapsed({})
 	}
 
-	const visibleFilters = FILTERS.filter((f) => f.value !== 'missed' || showMissedFilter)
+	const visibleFilters = FILTERS.filter((f) => f.value !== PROGRESS.missed || showMissedFilter)
 
 	return (
 		<div>

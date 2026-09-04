@@ -1,5 +1,6 @@
 import { apiError, apiSuccess, ForbiddenError, NotFoundError, requireAuth, ValidationError } from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
+import { juzTally, newAssignment, takeLeastUsedJuz } from '@/components/lib/juz'
 import { logger } from '@/components/lib/logger'
 import { getIdentifier, rateLimit } from '@/components/lib/rate-limit'
 import { createRateLimitResponse } from '@/components/lib/rate-limit-middleware'
@@ -9,28 +10,6 @@ import { NextRequest } from 'next/server'
 
 interface RouteParams {
 	params: Promise<{ id: string }>
-}
-
-/**
- * Lowest-numbered juz carrying the fewest people, for load balancing.
- *
- * The same loop exists in the bulk-create and period-rotation paths; Phase 4 folds all three
- * into one shared helper.
- */
-function leastUsedJuz(counts: { juzNumber: number; _count: { juzNumber: number } }[]): number {
-	const perJuz = new Map<number, number>()
-	for (let juz = 1; juz <= 30; juz++) perJuz.set(juz, 0)
-	for (const row of counts) perJuz.set(row.juzNumber, row._count.juzNumber)
-
-	let best = 1
-	let bestCount = Infinity
-	for (const [juz, count] of perJuz) {
-		if (count < bestCount) {
-			bestCount = count
-			best = juz
-		}
-	}
-	return best
 }
 
 /**
@@ -178,12 +157,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 						})
 
 						await tx.participantPeriod.create({
-							data: {
-								participantId: id,
-								periodId: activePeriod.id,
-								juzNumber: leastUsedJuz(juzCounts),
-								progressStatus: 'not_finished',
-							},
+							data: newAssignment(id, activePeriod.id, takeLeastUsedJuz(juzTally(juzCounts))),
 						})
 					}
 				}

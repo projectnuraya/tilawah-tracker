@@ -1,5 +1,6 @@
 'use client'
 
+import { groupByJuz, JUZ_NUMBERS } from '@/components/lib/juz'
 import { formatPeriodDate } from '@/components/lib/period-status'
 import { isProgressStatus } from '@/components/lib/status'
 import { Button } from '@/components/ui/button'
@@ -46,14 +47,7 @@ export function ShareButton({ period, groupName, publicToken, coordinators }: Sh
 		const startDate = formatPeriodDate(period.startDate)
 		const endDate = formatPeriodDate(period.endDate)
 
-		// Group participants by juz
-		const byJuz: Record<number, typeof period.participantPeriods> = {}
-		for (const pp of period.participantPeriods) {
-			if (!byJuz[pp.juzNumber]) {
-				byJuz[pp.juzNumber] = []
-			}
-			byJuz[pp.juzNumber].push(pp)
-		}
+		const byJuz = groupByJuz(period.participantPeriods)
 
 		let text = `Bismillahirrahmanirrahim\n`
 		text += `_One Week One Juz_\n\n`
@@ -66,9 +60,9 @@ export function ShareButton({ period, groupName, publicToken, coordinators }: Sh
 			.filter(Boolean)
 			.join(', ')}\n\n`
 
-		for (let juz = 1; juz <= 30; juz++) {
+		for (const juz of JUZ_NUMBERS) {
 			const participants = byJuz[juz]
-			if (!participants || participants.length === 0) continue
+			if (participants.length === 0) continue
 
 			text += `*Juz ${juz}:*\n`
 			for (const pp of participants) {

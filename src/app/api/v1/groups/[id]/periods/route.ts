@@ -7,10 +7,11 @@ import {
 	ValidationError,
 } from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
+import { juzTally, newAssignment, nextJuz, takeLeastUsedJuz, TOTAL_JUZ } from '@/components/lib/juz'
 import { logger } from '@/components/lib/logger'
 import { getIdentifier, rateLimit } from '@/components/lib/rate-limit'
 import { createRateLimitResponse } from '@/components/lib/rate-limit-middleware'
-import { PERIOD_STATUS } from '@/components/lib/status'
+import { PERIOD_STATUS, PROGRESS } from '@/components/lib/status'
 import { createPeriodSchema, validateInput } from '@/components/lib/validators'
 import { NextRequest } from 'next/server'
 
@@ -122,82 +123,39 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
 			// Create participant periods with juz assignment logic
 			if (lastPeriod && lastPeriod.participantPeriods.length > 0) {
-				// Build map of previous assignments for existing participants
-				const previousAssignments = new Map<string, { juzNumber: number; status: string; missedStreak: number }>()
-				for (const pp of lastPeriod.participantPeriods) {
-					previousAssignments.set(pp.participantId, {
-						juzNumber: pp.juzNumber,
-						status: pp.progressStatus,
-						missedStreak: pp.missedStreak,
-					})
-				}
+				// Previous assignments, so returning participants can rotate off what they had
+				const previous = new Map(lastPeriod.participantPeriods.map((pp) => [pp.participantId, pp]))
 
-				// Assign juz for each active participant in the new period
+				// Running tally of the new period's juz load. This used to be re-queried with a
+				// groupBy inside the loop — one round trip per new participant — and the tally was
+				// stale anyway, since rows created earlier in the same transaction were counted only
+				// after the next query. Counting in memory is both correct and a single pass.
+				const tally = juzTally()
+				const rows = []
+
 				for (const participant of group.participants) {
-					const previous = previousAssignments.get(participant.id)
-					let newJuz: number
-					let newMissedStreak = 0
+					const last = previous.get(participant.id)
 
-					if (previous !== undefined) {
-						// Existing participant: always rotate to next juz, but track missed streak
-						newJuz = previous.juzNumber === 30 ? 1 : previous.juzNumber + 1
-						if (previous.status === 'missed') {
-							newMissedStreak = previous.missedStreak + 1
-						} else {
-							newMissedStreak = 0
-						}
+					if (last) {
+						// Returning participant: advance one juz, and carry the missed streak forward
+						const juz = nextJuz(last.juzNumber)
+						tally.set(juz, (tally.get(juz) ?? 0) + 1)
+						const streak = last.progressStatus === PROGRESS.missed ? last.missedStreak + 1 : 0
+						rows.push(newAssignment(participant.id, newPeriod.id, juz, streak))
 					} else {
-						// New participant: find least-assigned juz for load balancing
-						const juzCounts = await tx.participantPeriod.groupBy({
-							by: ['juzNumber'],
-							where: { periodId: newPeriod.id },
-							_count: { juzNumber: true },
-						})
-
-						const countMap = new Map<number, number>()
-						for (let i = 1; i <= 30; i++) {
-							countMap.set(i, 0)
-						}
-						for (const jc of juzCounts) {
-							countMap.set(jc.juzNumber, jc._count.juzNumber)
-						}
-
-						let minCount = Infinity
-						newJuz = 1
-						for (const [juz, count] of countMap) {
-							if (count < minCount) {
-								minCount = count
-								newJuz = juz
-							}
-						}
+						// New participant: take whichever juz is carrying the fewest people
+						rows.push(newAssignment(participant.id, newPeriod.id, takeLeastUsedJuz(tally)))
 					}
+				}
 
-					// Create the participant-period record
-					await tx.participantPeriod.create({
-						data: {
-							participantId: participant.id,
-							periodId: newPeriod.id,
-							juzNumber: newJuz,
-							progressStatus: 'not_finished',
-							missedStreak: newMissedStreak,
-						},
-					})
-				}
+				await tx.participantPeriod.createMany({ data: rows })
 			} else {
-				// First period: evenly distribute participants across 30 juz
-				const participants = group.participants
-				for (let i = 0; i < participants.length; i++) {
-					const juzNumber = (i % 30) + 1
-					await tx.participantPeriod.create({
-						data: {
-							participantId: participants[i].id,
-							periodId: newPeriod.id,
-							juzNumber,
-							progressStatus: 'not_finished',
-							missedStreak: 0,
-						},
-					})
-				}
+				// First period for this group: spread everyone round-robin across juz 1–30
+				await tx.participantPeriod.createMany({
+					data: group.participants.map((participant, i) =>
+						newAssignment(participant.id, newPeriod.id, (i % TOTAL_JUZ) + 1),
+					),
+				})
 			}
 
 			return newPeriod

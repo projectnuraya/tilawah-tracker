@@ -1,5 +1,6 @@
 import { apiError, apiSuccess, requireAuth, requireGroupAccess, ValidationError } from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
+import { juzTally, newAssignment, takeLeastUsedJuz } from '@/components/lib/juz'
 import { logger } from '@/components/lib/logger'
 import { getIdentifier, rateLimit } from '@/components/lib/rate-limit'
 import { createRateLimitResponse } from '@/components/lib/rate-limit-middleware'
@@ -96,47 +97,16 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 				),
 			)
 
-			// Auto-assign juz if active period exists
-			// Use load-balancing: assign each participant to the least-assigned juz
+			// Slot the new people into the running period, spreading them over whichever juz are
+			// carrying the fewest readers. takeLeastUsedJuz records each pick, so a batch fans out
+			// instead of piling onto one juz.
 			if (activePeriod) {
-				// Initialize count map for all 30 juz
-				const juzCounts = new Map<number, number>()
-				for (let i = 1; i <= 30; i++) {
-					juzCounts.set(i, 0)
-				}
-
-				// Count current assignments per juz
-				for (const pp of activePeriod.participantPeriods) {
-					juzCounts.set(pp.juzNumber, (juzCounts.get(pp.juzNumber) || 0) + 1)
-				}
-
-				// Assign each new participant to the juz with least assignments
-				for (const participant of newParticipants) {
-					// Find juz with minimum count
-					let minJuz = 1
-					let minCount = juzCounts.get(1) || 0
-
-					for (let juz = 2; juz <= 30; juz++) {
-						const count = juzCounts.get(juz) || 0
-						if (count < minCount) {
-							minCount = count
-							minJuz = juz
-						}
-					}
-
-					// Create participant period record
-					await tx.participantPeriod.create({
-						data: {
-							participantId: participant.id,
-							periodId: activePeriod.id,
-							juzNumber: minJuz,
-							progressStatus: 'not_finished',
-						},
-					})
-
-					// Update count for next iteration
-					juzCounts.set(minJuz, minCount + 1)
-				}
+				const tally = juzTally(activePeriod.participantPeriods)
+				await tx.participantPeriod.createMany({
+					data: newParticipants.map((participant) =>
+						newAssignment(participant.id, activePeriod.id, takeLeastUsedJuz(tally)),
+					),
+				})
 			}
 
 			return newParticipants
