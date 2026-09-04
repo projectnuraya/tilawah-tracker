@@ -2,6 +2,8 @@ import { authOptions } from '@/components/lib/auth'
 import { hasGroupAccess } from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
 import { formatPeriodRange, getPeriodPhase } from '@/components/lib/period-status'
+import { countByPeriod } from '@/components/lib/periods'
+import { PERIOD_STATUS } from '@/components/lib/status'
 import { CreatePeriodButton } from '@/components/periods/create-period-button'
 import { LockPrompt } from '@/components/periods/lock-prompt'
 import { BackButton } from '@/components/ui/back-button'
@@ -53,27 +55,13 @@ export default async function PeriodsListPage({ params }: PageProps) {
 		notFound()
 	}
 
-	// Get stats for each period
-	const periodsWithStats = await Promise.all(
-		group.periods.map(async (period) => {
-			const stats = await prisma.participantPeriod.groupBy({
-				by: ['progressStatus'],
-				where: { periodId: period.id },
-				_count: { progressStatus: true },
-			})
+	// One query for every period's counts, rather than a groupBy per period
+	const counts = await countByPeriod(group.periods.map((p) => p.id))
+	const periodsWithStats = group.periods.map((period) => ({ ...period, statusCounts: counts.get(period.id)! }))
 
-			const statusCounts = { finished: 0, not_finished: 0, missed: 0 }
-			for (const s of stats) {
-				statusCounts[s.progressStatus as keyof typeof statusCounts] = s._count.progressStatus
-			}
-
-			return { ...period, statusCounts }
-		}),
-	)
-
-	const activePeriod = periodsWithStats.find((p) => p.status === 'active')
+	const activePeriod = periodsWithStats.find((p) => p.status === PERIOD_STATUS.active)
 	const activePhase = activePeriod ? getPeriodPhase(activePeriod) : null
-	const lockedPeriods = periodsWithStats.filter((p) => p.status === 'locked')
+	const lockedPeriods = periodsWithStats.filter((p) => p.status === PERIOD_STATUS.locked)
 
 	return (
 		<div>
