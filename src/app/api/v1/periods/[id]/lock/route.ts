@@ -2,6 +2,7 @@ import { apiError, apiSuccess, ForbiddenError, NotFoundError, requireAuth, Valid
 import { prisma } from '@/components/lib/db'
 import { getIdentifier, rateLimit } from '@/components/lib/rate-limit'
 import { createRateLimitResponse } from '@/components/lib/rate-limit-middleware'
+import { countByStatus, PERIOD_STATUS, PROGRESS } from '@/components/lib/status'
 import { NextRequest } from 'next/server'
 
 interface RouteParams {
@@ -49,7 +50,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 		}
 
 		// Cannot lock an already locked period
-		if (period.status === 'locked') {
+		if (period.status === PERIOD_STATUS.locked) {
 			throw new ValidationError('Periode ini sudah terkunci.')
 		}
 
@@ -61,10 +62,10 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 			await tx.participantPeriod.updateMany({
 				where: {
 					periodId: id,
-					progressStatus: 'not_finished',
+					progressStatus: PROGRESS.notFinished,
 				},
 				data: {
-					progressStatus: 'missed',
+					progressStatus: PROGRESS.missed,
 				},
 			})
 
@@ -72,7 +73,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 			return tx.period.update({
 				where: { id },
 				data: {
-					status: 'locked',
+					status: PERIOD_STATUS.locked,
 					lockedAt: new Date(),
 				},
 			})
@@ -84,16 +85,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 			where: { periodId: id },
 			_count: { progressStatus: true },
 		})
-
-		const statusCounts = {
-			finished: 0,
-			not_finished: 0,
-			missed: 0,
-		}
-
-		for (const s of stats) {
-			statusCounts[s.progressStatus as keyof typeof statusCounts] = s._count.progressStatus
-		}
+		const statusCounts = countByStatus(stats)
 
 		return apiSuccess({
 			id: lockedPeriod.id,

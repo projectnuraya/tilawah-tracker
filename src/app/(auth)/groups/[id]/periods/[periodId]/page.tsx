@@ -1,6 +1,7 @@
 import { authOptions } from '@/components/lib/auth'
 import { prisma } from '@/components/lib/db'
 import { formatPeriodRange, getPeriodPhase } from '@/components/lib/period-status'
+import { countByStatus, PERIOD_STATUS } from '@/components/lib/status'
 import { LockPrompt } from '@/components/periods/lock-prompt'
 import { PeriodProgressList } from '@/components/periods/period-progress-list'
 import { PeriodStats } from '@/components/periods/period-stats'
@@ -81,14 +82,11 @@ export default async function PeriodDetailPage({ params }: PageProps) {
 	}
 
 	// Calculate stats
-	const stats = {
-		total: period.participantPeriods.length,
-		finished: period.participantPeriods.filter((pp) => pp.progressStatus === 'finished').length,
-		not_finished: period.participantPeriods.filter((pp) => pp.progressStatus === 'not_finished').length,
-		missed: period.participantPeriods.filter((pp) => pp.progressStatus === 'missed').length,
-	}
+	// Three passes over the same array, written out twice — countByStatus does it in one
+	const counts = countByStatus(period.participantPeriods)
+	const total = period.participantPeriods.length
 
-	const isActive = period.status === 'active'
+	const isActive = period.status === PERIOD_STATUS.active
 	const phase = getPeriodPhase(period)
 
 	return (
@@ -121,13 +119,13 @@ export default async function PeriodDetailPage({ params }: PageProps) {
 			{phase === 'awaiting_lock' && <LockPrompt periodNumber={period.periodNumber} endDate={period.endDate} />}
 
 			<PeriodStats
-				finished={stats.finished}
-				notFinished={stats.not_finished}
-				missed={stats.missed}
+				finished={counts.finished}
+				notFinished={counts.not_finished}
+				missed={counts.missed}
 				showMissed={!isActive}
 			/>
 
-			<ProgressSummary finished={stats.finished} total={stats.total} />
+			<ProgressSummary finished={counts.finished} total={total} />
 
 			{/* Period Progress List with Search and Filters */}
 			<PeriodProgressList
@@ -135,12 +133,12 @@ export default async function PeriodDetailPage({ params }: PageProps) {
 					...period,
 					participantPeriods: period.participantPeriods.map((pp) => ({
 						...pp,
-						progressStatus: pp.progressStatus as 'finished' | 'not_finished' | 'missed',
+						progressStatus: pp.progressStatus,
 						missedStreak: pp.missedStreak,
 					})),
 				}}
 				isActive={isActive}
-				notFinishedCount={stats.not_finished}
+				notFinishedCount={counts.not_finished}
 			/>
 		</div>
 	)

@@ -10,6 +10,7 @@ import { prisma } from '@/components/lib/db'
 import { logger } from '@/components/lib/logger'
 import { getIdentifier, rateLimit } from '@/components/lib/rate-limit'
 import { createRateLimitResponse } from '@/components/lib/rate-limit-middleware'
+import { PERIOD_STATUS } from '@/components/lib/status'
 import { createPeriodSchema, validateInput } from '@/components/lib/validators'
 import { NextRequest } from 'next/server'
 
@@ -56,7 +57,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 			where: { id: groupId },
 			include: {
 				periods: {
-					where: { status: 'active' },
+					where: { status: PERIOD_STATUS.active },
 					take: 1,
 				},
 				participants: {
@@ -114,7 +115,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 					periodNumber,
 					startDate: start,
 					endDate: end,
-					status: 'active',
+					status: PERIOD_STATUS.active,
 					isArchived: false,
 				},
 			})

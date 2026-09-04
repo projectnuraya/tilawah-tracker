@@ -1,7 +1,8 @@
 import { PERIOD_PHASE_LABEL, type PeriodPhase } from '@/components/lib/period-status'
+import { isProgressStatus, PROGRESS, type ProgressStatus } from '@/components/lib/status'
 import { cn } from '@/components/lib/utils'
 
-export type ProgressStatus = 'finished' | 'not_finished' | 'missed'
+export type { ProgressStatus }
 
 /** The single source of truth for how a progress status is worded and coloured.
  *  Before this existed, `not_finished` appeared as both "Dalam Proses" and "Belum selesai"
@@ -25,7 +26,7 @@ export const PROGRESS_STATUS: Record<ProgressStatus, { label: string; icon: stri
 }
 
 function resolve(status: string) {
-	return PROGRESS_STATUS[status as ProgressStatus] ?? PROGRESS_STATUS.not_finished
+	return isProgressStatus(status) ? PROGRESS_STATUS[status] : PROGRESS_STATUS[PROGRESS.notFinished]
 }
 
 /** Icon + label in the status colour. Used for read-only rows in locked periods and public views. */

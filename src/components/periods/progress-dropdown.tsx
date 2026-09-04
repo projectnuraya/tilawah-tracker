@@ -1,5 +1,7 @@
 'use client'
 
+import { PROGRESS, PROGRESS_STATUS_VALUES } from '@/components/lib/status'
+import { PROGRESS_STATUS } from '@/components/ui/status-badge'
 import { ChevronDown, MessageCircle } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
@@ -12,11 +14,9 @@ interface ProgressStatusDropdownProps {
 	whatsappNumber: string | null
 }
 
-const STATUS_OPTIONS = [
-	{ value: 'not_finished', label: 'Belum selesai', icon: '⏳' },
-	{ value: 'finished', label: 'Selesai', icon: '👑' },
-	{ value: 'missed', label: 'Terlewat', icon: '💔' },
-]
+// Wording and icons come from PROGRESS_STATUS, the same source the read-only rows use. This file
+// used to carry its own copy, which is how "not_finished" ended up worded two different ways.
+const STATUS_OPTIONS = PROGRESS_STATUS_VALUES.map((value) => ({ value, ...PROGRESS_STATUS[value] }))
 
 export function ProgressStatusDropdown({
 	participantPeriodId,
@@ -66,16 +66,16 @@ export function ProgressStatusDropdown({
 		: null
 
 	const statusStyles =
-		status === 'finished'
+		status === PROGRESS.finished
 			? 'border-primary/30 bg-primary/10 text-primary'
-			: status === 'missed'
+			: status === PROGRESS.missed
 				? 'border-destructive/30 bg-destructive/10 text-destructive'
 				: 'border-border bg-background text-foreground'
 
 	return (
 		<div className='flex items-center gap-2'>
 			{/* WhatsApp Reminder */}
-			{whatsappLink && status === 'not_finished' && (
+			{whatsappLink && status === PROGRESS.notFinished && (
 				<a
 					href={whatsappLink}
 					target='_blank'

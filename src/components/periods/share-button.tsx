@@ -1,9 +1,11 @@
 'use client'
 
 import { formatPeriodDate } from '@/components/lib/period-status'
+import { isProgressStatus } from '@/components/lib/status'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Label, Textarea } from '@/components/ui/input'
+import { PROGRESS_STATUS } from '@/components/ui/status-badge'
 import { Check, Copy, Share2 } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
@@ -70,14 +72,8 @@ export function ShareButton({ period, groupName, publicToken, coordinators }: Sh
 
 			text += `*Juz ${juz}:*\n`
 			for (const pp of participants) {
-				const statusIcon =
-					pp.progressStatus === 'finished'
-						? '👑'
-						: pp.progressStatus === 'missed'
-							? '💔'
-							: pp.progressStatus === 'not_finished'
-								? '⏳'
-								: ''
+				// Same icons the UI shows, so the pasted message matches the screen it came from
+				const statusIcon = isProgressStatus(pp.progressStatus) ? PROGRESS_STATUS[pp.progressStatus].icon : ''
 				const streakText = pp.missedStreak > 0 ? ` 💔×${pp.missedStreak}` : ''
 				text += `- ${pp.participant.name}${statusIcon ? ' ' + statusIcon : ''}${streakText}\n`
 			}

@@ -10,6 +10,7 @@ import { prisma } from '@/components/lib/db'
 import { logger } from '@/components/lib/logger'
 import { getIdentifier, rateLimit } from '@/components/lib/rate-limit'
 import { createRateLimitResponse } from '@/components/lib/rate-limit-middleware'
+import { PERIOD_STATUS } from '@/components/lib/status'
 import { updateJuzSchema, validateInput } from '@/components/lib/validators'
 import { NextRequest } from 'next/server'
 
@@ -66,7 +67,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 		await requireGroupAccess(session.user.id, participantPeriod.period.groupId)
 
 		// Cannot change juz for locked periods (immutable history)
-		if (participantPeriod.period.status === 'locked') {
+		if (participantPeriod.period.status === PERIOD_STATUS.locked) {
 			throw new ValidationError('Periode sudah terkunci, pembagian juz tidak bisa diubah.')
 		}
 

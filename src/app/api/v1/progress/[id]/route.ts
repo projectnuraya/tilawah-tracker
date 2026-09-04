@@ -10,6 +10,7 @@ import { prisma } from '@/components/lib/db'
 import { logger } from '@/components/lib/logger'
 import { getIdentifier, rateLimit } from '@/components/lib/rate-limit'
 import { createRateLimitResponse } from '@/components/lib/rate-limit-middleware'
+import { PERIOD_STATUS, PROGRESS } from '@/components/lib/status'
 import { updateProgressSchema, validateInput } from '@/components/lib/validators'
 import { NextRequest } from 'next/server'
 
@@ -66,7 +67,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 		await requireGroupAccess(session.user.id, participantPeriod.period.groupId)
 
 		// Cannot update progress for locked periods (immutable)
-		if (participantPeriod.period.status === 'locked') {
+		if (participantPeriod.period.status === PERIOD_STATUS.locked) {
 			throw new ValidationError('Periode sudah terkunci, progress tidak bisa diubah.')
 		}
 
@@ -76,7 +77,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 			where: { id },
 			data: {
 				progressStatus: status,
-				...(status === 'finished' && { missedStreak: 0 }),
+				...(status === PROGRESS.finished && { missedStreak: 0 }),
 			},
 		})
 

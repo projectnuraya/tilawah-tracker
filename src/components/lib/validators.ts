@@ -1,3 +1,4 @@
+import { PROGRESS_STATUS_VALUES } from '@/components/lib/status'
 import { z } from 'zod'
 
 /**
@@ -67,7 +68,7 @@ export const createPeriodSchema = z.object({
 // ==================== Progress ====================
 
 export const updateProgressSchema = z.object({
-	status: z.enum(['not_finished', 'finished', 'missed'], {
+	status: z.enum(PROGRESS_STATUS_VALUES, {
 		message: 'Status tidak valid',
 	}),
 })

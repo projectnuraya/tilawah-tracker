@@ -3,6 +3,7 @@ import { prisma } from '@/components/lib/db'
 import { logger } from '@/components/lib/logger'
 import { getIdentifier, rateLimit } from '@/components/lib/rate-limit'
 import { createRateLimitResponse } from '@/components/lib/rate-limit-middleware'
+import { PERIOD_STATUS } from '@/components/lib/status'
 import { updateParticipantSchema, validateInput } from '@/components/lib/validators'
 import { NextRequest } from 'next/server'
 
@@ -157,7 +158,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 			// period rolled over. Give them the same treatment.
 			if (reactivating) {
 				const activePeriod = await tx.period.findFirst({
-					where: { groupId: participant.groupId, status: 'active' },
+					where: { groupId: participant.groupId, status: PERIOD_STATUS.active },
 					select: { id: true },
 				})
 

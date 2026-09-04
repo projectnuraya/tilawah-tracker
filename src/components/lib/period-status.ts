@@ -1,3 +1,4 @@
+import { PERIOD_STATUS } from '@/components/lib/status'
 import { differenceInCalendarDays, startOfDay } from 'date-fns'
 
 export type PeriodPhase = 'running' | 'awaiting_lock' | 'locked'
@@ -13,7 +14,7 @@ export type PeriodPhase = 'running' | 'awaiting_lock' | 'locked'
  * to close it. See docs/product-concept.md.
  */
 export function getPeriodPhase(period: { status: string; endDate: Date | string }, now: Date = new Date()): PeriodPhase {
-	if (period.status !== 'active') return 'locked'
+	if (period.status !== PERIOD_STATUS.active) return 'locked'
 	const daysPastEnd = differenceInCalendarDays(startOfDay(now), startOfDay(new Date(period.endDate)))
 	return daysPastEnd > 0 ? 'awaiting_lock' : 'running'
 }

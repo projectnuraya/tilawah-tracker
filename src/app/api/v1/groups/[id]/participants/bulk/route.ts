@@ -3,6 +3,7 @@ import { prisma } from '@/components/lib/db'
 import { logger } from '@/components/lib/logger'
 import { getIdentifier, rateLimit } from '@/components/lib/rate-limit'
 import { createRateLimitResponse } from '@/components/lib/rate-limit-middleware'
+import { PERIOD_STATUS } from '@/components/lib/status'
 import { createParticipantBulkSchema, validateInput } from '@/components/lib/validators'
 import { NextRequest } from 'next/server'
 
@@ -72,7 +73,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 		const activePeriod = await prisma.period.findFirst({
 			where: {
 				groupId,
-				status: 'active',
+				status: PERIOD_STATUS.active,
 			},
 			include: {
 				participantPeriods: true,

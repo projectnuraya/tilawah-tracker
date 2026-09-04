@@ -1,5 +1,6 @@
 import { authOptions } from '@/components/lib/auth'
 import { prisma } from '@/components/lib/db'
+import { PERIOD_STATUS } from '@/components/lib/status'
 import { ParticipantsList } from '@/components/participants/participants-list'
 import { BackButton } from '@/components/ui/back-button'
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
@@ -34,7 +35,7 @@ async function getGroupWithParticipants(userId: string, groupId: string) {
 				orderBy: [{ isActive: 'desc' }, { name: 'asc' }],
 			},
 			periods: {
-				where: { status: 'active' },
+				where: { status: PERIOD_STATUS.active },
 				take: 1,
 				include: {
 					participantPeriods: true,
