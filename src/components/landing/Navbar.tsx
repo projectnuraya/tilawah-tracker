@@ -2,6 +2,7 @@
 
 import { LayoutDashboard, Menu, X } from 'lucide-react'
 import { useSession } from 'next-auth/react'
+import { motion } from 'motion/react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
@@ -38,7 +39,10 @@ export default function Navbar() {
 
 	return (
 		<>
-			<header
+			<motion.header
+				initial={{ y: -20, opacity: 0 }}
+				animate={{ y: 0, opacity: 1 }}
+				transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
 				className={`fixed top-0 z-50 w-full transition-all duration-300 ${
 					scrolled ? 'bg-card/95 backdrop-blur-md shadow-sm border-b border-border' : 'bg-transparent'
 				}`}>
@@ -103,7 +107,7 @@ export default function Navbar() {
 						)}
 					</button>
 				</div>
-			</header>
+			</motion.header>
 
 			{/* Mobile Menu Overlay — sibling to header to escape backdrop-blur containing block */}
 			{mobileOpen && (

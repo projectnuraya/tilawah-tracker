@@ -1,6 +1,10 @@
+'use client'
+
 import { Monitor, Smartphone } from 'lucide-react'
+import { motion } from 'motion/react'
 import Image from 'next/image'
 import { landingCopy } from './copy'
+import { defaultViewport, fadeInUp, scaleUp, staggerContainer } from './motion-variants'
 
 const { gallery } = landingCopy
 
@@ -86,25 +90,39 @@ export default function ScreenshotGallery() {
 	return (
 		<section id={gallery.sectionId} className='py-20 bg-card overflow-hidden'>
 			<div className='mx-auto max-w-7xl px-6 sm:px-8 lg:px-8'>
-				<div className='text-center mb-16'>
+				<motion.div
+					variants={fadeInUp}
+					initial='hidden'
+					whileInView='visible'
+					viewport={defaultViewport}
+					className='text-center mb-16'>
 					<h2 className='text-3xl font-bold text-foreground sm:text-4xl'>{gallery.heading}</h2>
 					<p className='mt-4 text-muted-foreground'>{gallery.subheading}</p>
-				</div>
+				</motion.div>
 
-				<div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
+				<motion.div
+					variants={staggerContainer(0.12)}
+					initial='hidden'
+					whileInView='visible'
+					viewport={defaultViewport}
+					className='grid grid-cols-1 md:grid-cols-2 gap-8 items-start'>
 					{/* Desktop mockup takes full width on left */}
-					<LaptopMockup
-						label={gallery.items[0].label}
-						image={gallery.items[0].image}
-						browserUrl={gallery.items[0].browserUrl}
-					/>
+					<motion.div variants={scaleUp} whileHover={{ y: -4 }} transition={{ duration: 0.2 }}>
+						<LaptopMockup
+							label={gallery.items[0].label}
+							image={gallery.items[0].image}
+							browserUrl={gallery.items[0].browserUrl}
+						/>
+					</motion.div>
 					{/* Mobile mockups side by side on right */}
 					<div className='grid grid-cols-2 gap-4'>
 						{gallery.items.slice(1).map((item) => (
-							<MobileMockup key={item.label} label={item.label} image={item.image} />
+							<motion.div key={item.label} variants={fadeInUp} whileHover={{ y: -4 }} transition={{ duration: 0.2 }}>
+								<MobileMockup label={item.label} image={item.image} />
+							</motion.div>
 						))}
 					</div>
-				</div>
+				</motion.div>
 			</div>
 		</section>
 	)
