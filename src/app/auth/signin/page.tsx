@@ -130,7 +130,13 @@ function SignInContent() {
 				</motion.div>
 
 				{/* Footer */}
-				<p className='text-center text-base text-muted-foreground'>Butuh akses? Hubungi admin grup Anda.</p>
+				<motion.p
+					initial={{ opacity: 0, y: 10 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={{ duration: 0.3, ease: 'easeOut', delay: 0.1 }}
+					className='text-center text-base text-muted-foreground'>
+					Butuh akses? Hubungi admin grup Anda.
+				</motion.p>
 			</div>
 		</div>
 	)
