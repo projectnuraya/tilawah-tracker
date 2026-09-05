@@ -1,5 +1,6 @@
 import { getPublicGroupOverview, validatePublicToken } from '@/components/lib/public-utils'
 import { PublicPeriodCard } from '@/components/public/public-period-card'
+import { PageEntrance } from '@/components/ui/page-entrance'
 import { AlertCircle, Calendar } from 'lucide-react'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
@@ -37,7 +38,7 @@ export default async function PublicGroupPage({ params }: PageProps) {
 	const { group, activePeriod, periods: lockedPeriods } = overview
 
 	return (
-		<div className='min-h-screen bg-background'>
+		<PageEntrance>
 			<div>
 				{/* Header */}
 				<div className='mb-8 text-center'>
@@ -103,6 +104,6 @@ export default async function PublicGroupPage({ params }: PageProps) {
 					</div>
 				)}
 			</div>
-		</div>
+		</PageEntrance>
 	)
 }

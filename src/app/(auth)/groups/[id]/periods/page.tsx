@@ -8,6 +8,7 @@ import { CreatePeriodButton } from '@/components/periods/create-period-button'
 import { LockPrompt } from '@/components/periods/lock-prompt'
 import { BackButton } from '@/components/ui/back-button'
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
+import { PageEntrance } from '@/components/ui/page-entrance'
 import { PageHeader } from '@/components/ui/page-header'
 import { PeriodBadge } from '@/components/ui/status-badge'
 import { Calendar, Users } from 'lucide-react'
@@ -64,7 +65,7 @@ export default async function PeriodsListPage({ params }: PageProps) {
 	const lockedPeriods = periodsWithStats.filter((p) => p.status === PERIOD_STATUS.locked)
 
 	return (
-		<div>
+		<PageEntrance>
 			{/* Breadcrumb Navigation */}
 			<BreadcrumbNav
 				items={[
@@ -176,6 +177,6 @@ export default async function PeriodsListPage({ params }: PageProps) {
 					</Link>
 				</div>
 			)}
-		</div>
+		</PageEntrance>
 	)
 }

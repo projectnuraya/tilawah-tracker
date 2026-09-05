@@ -2,6 +2,7 @@
 
 import { isDemoMode } from '@/components/lib/demo-mode'
 import { GoogleIcon } from '@/components/ui/icons'
+import { motion } from 'motion/react'
 import { signIn } from 'next-auth/react'
 import Image from 'next/image'
 import { useSearchParams } from 'next/navigation'
@@ -43,16 +44,24 @@ function SignInContent() {
 		<div className='min-h-screen flex flex-col items-center justify-center bg-background px-4'>
 			<div className='w-full max-w-sm space-y-8'>
 				{/* Logo & Title */}
-				<div className='text-center'>
+				<motion.div
+					initial={{ opacity: 0, y: -10 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={{ duration: 0.3, ease: 'easeOut' }}
+					className='text-center'>
 					<h1 className='text-3xl font-semibold text-foreground flex items-center justify-center gap-2'>
 						<Image src='/favicon.png' alt='Tilawah Tracker Logo' width={32} height={32} />
 						Tilawah Tracker
 					</h1>
 					<p className='mt-2 text-muted-foreground'>Pantau progress tilawah Al-Qur&apos;an bersama</p>
-				</div>
+				</motion.div>
 
 				{/* Sign-in Card */}
-				<div className='rounded-xl border border-border bg-card p-6 shadow-sm'>
+				<motion.div
+					initial={{ opacity: 0, y: 16, scale: 0.98 }}
+					animate={{ opacity: 1, y: 0, scale: 1 }}
+					transition={{ duration: 0.35, ease: 'easeOut', delay: 0.05 }}
+					className='rounded-xl border border-border bg-card p-6 shadow-sm'>
 					<h2 className='text-xl font-medium text-center mb-6'>
 						{isDemoModeEnabled ? 'Demo Mode' : 'Masuk sebagai Koordinator'}
 					</h2>
@@ -87,16 +96,19 @@ function SignInContent() {
 									required
 								/>
 							</div>
-							<button
+							<motion.button
+								whileTap={{ scale: 0.98 }}
 								type='submit'
 								disabled={isLoading}
 								className='w-full rounded-lg bg-primary px-4 py-3 text-primary-foreground font-medium shadow-sm transition hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'>
 								{isLoading ? 'Sedang masuk...' : 'Masuk ke Demo'}
-							</button>
+							</motion.button>
 						</form>
 					) : (
 						<>
-							<button
+							<motion.button
+								whileHover={{ scale: 1.01 }}
+								whileTap={{ scale: 0.98 }}
 								onClick={handleGoogleSignIn}
 								disabled={isLoading}
 								className='w-full flex items-center justify-center gap-3 rounded-lg border border-border bg-card px-4 py-3 text-foreground font-medium shadow-sm transition hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'>
@@ -108,14 +120,14 @@ function SignInContent() {
 										<span>Masuk dengan Google</span>
 									</>
 								)}
-							</button>
+							</motion.button>
 
 							<p className='mt-4 text-sm text-center text-muted-foreground'>
 								Hanya koordinator yang terdaftar yang dapat masuk.
 							</p>
 						</>
 					)}
-				</div>
+				</motion.div>
 
 				{/* Footer */}
 				<p className='text-center text-base text-muted-foreground'>Butuh akses? Hubungi admin grup Anda.</p>

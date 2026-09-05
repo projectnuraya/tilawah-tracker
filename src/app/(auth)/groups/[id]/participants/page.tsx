@@ -5,6 +5,7 @@ import { PERIOD_STATUS } from '@/components/lib/status'
 import { ParticipantsList } from '@/components/participants/participants-list'
 import { BackButton } from '@/components/ui/back-button'
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
+import { PageEntrance } from '@/components/ui/page-entrance'
 import { PageHeader } from '@/components/ui/page-header'
 import { Plus } from 'lucide-react'
 import { getServerSession } from 'next-auth'
@@ -89,7 +90,7 @@ export default async function ParticipantsPage({ params }: PageProps) {
 	}
 
 	return (
-		<div>
+		<PageEntrance>
 			{/* Breadcrumb Navigation */}
 			<BreadcrumbNav
 				items={[
@@ -108,7 +109,7 @@ export default async function ParticipantsPage({ params }: PageProps) {
 			{/* Add Participant Button */}
 			<Link
 				href={`/groups/${group.id}/participants/new`}
-				className='flex items-center justify-center gap-2 w-full rounded-xl bg-primary px-4 py-3.5 text-primary-foreground font-semibold shadow-sm transition hover:bg-primary-hover mb-6'>
+				className='flex items-center justify-center gap-2 w-full rounded-xl bg-primary px-4 py-3.5 text-primary-foreground font-semibold shadow-sm transition hover:bg-primary-hover active:scale-[0.99] mb-6'>
 				<Plus className='h-5 w-5' />
 				<span>Tambah Peserta</span>
 			</Link>
@@ -120,6 +121,6 @@ export default async function ParticipantsPage({ params }: PageProps) {
 				activePeriod={!!activePeriod}
 				participantDataMap={participantDataMap}
 			/>
-		</div>
+		</PageEntrance>
 	)
 }

@@ -7,6 +7,7 @@ import { ReactivateButton } from '@/components/participants/reactivate-button'
 import { BackButton } from '@/components/ui/back-button'
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
 import { buttonClasses } from '@/components/ui/button'
+import { PageEntrance } from '@/components/ui/page-entrance'
 import { PageHeader } from '@/components/ui/page-header'
 import { StatusText } from '@/components/ui/status-badge'
 import { MessageCircle } from 'lucide-react'
@@ -62,6 +63,7 @@ export default async function ParticipantDetailPage({ params }: PageProps) {
 		notFound()
 	}
 
+	// Helper for whatsapp link
 	const whatsappLink = participant.whatsappNumber
 		? `https://wa.me/${participant.whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
 				`Assalamu'alaikum ${participant.name}, ini pengingat untuk tilawah Anda.`,
@@ -69,7 +71,7 @@ export default async function ParticipantDetailPage({ params }: PageProps) {
 		: null
 
 	return (
-		<div>
+		<PageEntrance>
 			{/* Breadcrumb Navigation */}
 			<BreadcrumbNav
 				items={[
@@ -156,6 +158,6 @@ export default async function ParticipantDetailPage({ params }: PageProps) {
 					)}
 				</div>
 			</div>
-		</div>
+		</PageEntrance>
 	)
 }

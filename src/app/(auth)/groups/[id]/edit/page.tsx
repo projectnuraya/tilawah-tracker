@@ -3,6 +3,7 @@
 import { DeleteGroupButton } from '@/components/groups/delete-group-button'
 import { BackButton } from '@/components/ui/back-button'
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
+import { PageEntrance } from '@/components/ui/page-entrance'
 import { PageHeader } from '@/components/ui/page-header'
 import { Loader2 } from 'lucide-react'
 import Link from 'next/link'
@@ -112,7 +113,7 @@ export default function EditGroupPage({ params }: PageProps) {
 	}
 
 	return (
-		<div className='flex flex-col min-h-screen'>
+		<PageEntrance className='flex flex-col min-h-screen'>
 			<BreadcrumbNav
 				items={[
 					{ label: 'Dashboard', href: '/dashboard' },
@@ -180,6 +181,6 @@ export default function EditGroupPage({ params }: PageProps) {
 					<DeleteGroupButton groupId={groupId} groupName={originalName} />
 				</div>
 			)}
-		</div>
+		</PageEntrance>
 	)
 }

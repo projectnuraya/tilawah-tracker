@@ -4,6 +4,7 @@ import { useGroupName } from '@/components/lib/use-group-name'
 import { sanitizeWhatsAppNumber } from '@/components/lib/utils'
 import { BackButton } from '@/components/ui/back-button'
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
+import { PageEntrance } from '@/components/ui/page-entrance'
 import { PageHeader } from '@/components/ui/page-header'
 import { Loader2, Plus, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -106,7 +107,7 @@ export default function NewParticipantPage({ params }: PageProps) {
 	}
 
 	return (
-		<div>
+		<PageEntrance>
 			<BreadcrumbNav
 				items={[
 					{ label: 'Dashboard', href: '/dashboard' },
@@ -214,6 +215,6 @@ export default function NewParticipantPage({ params }: PageProps) {
 					Jika ada periode aktif, peserta akan otomatis mendapat nomor juz yang tersedia.
 				</p>
 			</div>
-		</div>
+		</PageEntrance>
 	)
 }

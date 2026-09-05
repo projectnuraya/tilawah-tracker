@@ -6,6 +6,7 @@ import { ProgressSummary } from '@/components/periods/progress-summary'
 import { PublicProgressList } from '@/components/public/public-progress-list'
 import { BackButton } from '@/components/ui/back-button'
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
+import { PageEntrance } from '@/components/ui/page-entrance'
 import { PageHeader } from '@/components/ui/page-header'
 import { PeriodBadge } from '@/components/ui/status-badge'
 import { Calendar } from 'lucide-react'
@@ -51,7 +52,7 @@ export default async function PublicPeriodDetailPage({ params }: PageProps) {
 	const phase = getPeriodPhase(period)
 
 	return (
-		<div className='min-h-screen bg-background'>
+		<PageEntrance>
 			<div>
 				<BreadcrumbNav
 					items={[
@@ -98,6 +99,6 @@ export default async function PublicPeriodDetailPage({ params }: PageProps) {
 					</div>
 				)}
 			</div>
-		</div>
+		</PageEntrance>
 	)
 }

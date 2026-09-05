@@ -31,7 +31,7 @@ export function PublicPeriodCard({ period, token }: PublicPeriodCardProps) {
 	return (
 		<Link
 			href={`/view/${token}/periods/${period.id}`}
-			className='block rounded-xl border border-border bg-card p-4 hover:border-primary/30 hover:shadow-sm transition'>
+			className='block rounded-xl border border-border bg-card p-4 hover:border-primary/40 hover:shadow-md transition-all active:scale-[0.99]'>
 			<div className='flex items-start justify-between mb-3'>
 				<div>
 					<div className='flex items-center gap-2 mb-1'>

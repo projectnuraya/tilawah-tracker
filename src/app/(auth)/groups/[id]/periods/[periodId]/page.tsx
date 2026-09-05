@@ -9,6 +9,7 @@ import { PeriodStats } from '@/components/periods/period-stats'
 import { ProgressSummary } from '@/components/periods/progress-summary'
 import { BackButton } from '@/components/ui/back-button'
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
+import { PageEntrance } from '@/components/ui/page-entrance'
 import { PageHeader } from '@/components/ui/page-header'
 import { PeriodBadge } from '@/components/ui/status-badge'
 import { Calendar } from 'lucide-react'
@@ -82,7 +83,7 @@ export default async function PeriodDetailPage({ params }: PageProps) {
 	const phase = getPeriodPhase(period)
 
 	return (
-		<div>
+		<PageEntrance>
 			{/* Breadcrumb Navigation */}
 			<BreadcrumbNav
 				items={[
@@ -132,6 +133,6 @@ export default async function PeriodDetailPage({ params }: PageProps) {
 				isActive={isActive}
 				notFinishedCount={counts.not_finished}
 			/>
-		</div>
+		</PageEntrance>
 	)
 }
