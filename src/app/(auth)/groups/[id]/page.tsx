@@ -10,6 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { BackButton } from '@/components/ui/back-button'
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
 import { ButtonLink } from '@/components/ui/button'
+import { PageEntrance } from '@/components/ui/page-entrance'
 import { PageHeader } from '@/components/ui/page-header'
 import { Calendar, Plus, Settings, Users } from 'lucide-react'
 import { getServerSession } from 'next-auth'
@@ -78,7 +79,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
 	const publicUrl = `${process.env.NEXT_PUBLIC_APP_URL || ''}/view/${group.publicToken}`
 
 	return (
-		<div>
+		<PageEntrance>
 			{/* Breadcrumb Navigation */}
 			<BreadcrumbNav
 				items={[
@@ -114,7 +115,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
 			<div className='grid grid-cols-2 gap-4 mb-6'>
 				<Link
 					href={`/groups/${group.id}/participants`}
-					className='block rounded-xl border border-border bg-card p-4 hover:bg-muted transition'>
+					className='block rounded-xl border border-border bg-card p-4 hover:border-primary/40 hover:shadow-sm transition-all active:scale-[0.99]'>
 					<div className='flex items-center gap-3'>
 						<div className='rounded-full bg-primary/10 p-2'>
 							<Users className='h-5 w-5 text-primary' />
@@ -127,7 +128,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
 				</Link>
 				<Link
 					href={`/groups/${group.id}/periods`}
-					className='block rounded-xl border border-border bg-card p-4 hover:bg-muted transition'>
+					className='block rounded-xl border border-border bg-card p-4 hover:border-primary/40 hover:shadow-sm transition-all active:scale-[0.99]'>
 					<div className='flex items-center gap-3'>
 						<div className='rounded-full bg-accent/10 p-2'>
 							<Calendar className='h-5 w-5 text-accent' />
@@ -156,7 +157,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
 				{activePeriod ? (
 					<Link
 						href={`/groups/${group.id}/periods/${activePeriod.id}`}
-						className='block rounded-lg border border-primary/20 bg-primary/5 p-4 hover:bg-primary/10 transition'>
+						className='block rounded-lg border border-primary/20 bg-primary/5 p-4 hover:border-primary/40 hover:bg-primary/10 transition-all active:scale-[0.99]'>
 						<div className='flex items-center justify-between'>
 							<div>
 								<p className='font-medium'>Periode #{activePeriod.periodNumber}</p>
@@ -164,7 +165,8 @@ export default async function GroupDetailPage({ params }: PageProps) {
 									{formatPeriodRange(activePeriod.startDate, activePeriod.endDate)}
 								</p>
 							</div>
-							<span className='inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-sm font-medium text-primary'>
+							<span className='inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary'>
+								<span className='h-1.5 w-1.5 rounded-full bg-primary animate-pulse' aria-hidden='true' />
 								Aktif
 							</span>
 						</div>
@@ -220,7 +222,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
 							<Link
 								key={period.id}
 								href={`/groups/${group.id}/periods/${period.id}`}
-								className='flex items-center justify-between py-2 px-3 rounded-lg hover:bg-muted transition'>
+								className='flex items-center justify-between py-2 px-3 rounded-lg hover:bg-muted hover:translate-x-0.5 transition-all'>
 								<div>
 									<span className='text-xl font-medium'>Periode #{period.periodNumber}</span>
 									<p className='text-base text-muted-foreground'>
@@ -241,6 +243,6 @@ export default async function GroupDetailPage({ params }: PageProps) {
 				</div>
 			)}
 			<ShareFab publicUrl={publicUrl} publicToken={group.publicToken} />
-		</div>
+		</PageEntrance>
 	)
 }

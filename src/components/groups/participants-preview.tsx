@@ -1,6 +1,7 @@
 'use client'
 
 import { ChevronDown, ChevronUp, Plus } from 'lucide-react'
+import { motion } from 'motion/react'
 import Link from 'next/link'
 import { useState } from 'react'
 
@@ -38,32 +39,40 @@ export function ParticipantsPreview({ participants, groupId }: ParticipantsPrevi
 
 	return (
 		<div>
-			<div className='flex flex-wrap gap-2'>
+			<motion.div layout className='flex flex-wrap gap-2'>
 				{participants.slice(0, displayCount).map((p) => (
-					<div
+					<motion.div
 						key={p.id}
+						layout
+						initial={{ opacity: 0, scale: 0.9 }}
+						animate={{ opacity: 1, scale: 1 }}
+						transition={{ duration: 0.15 }}
 						className='inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-xl text-primary'>
 						<span>{p.name}</span>
 						{p.whatsappNumber && <span className='text-sm'>📱</span>}
-					</div>
+					</motion.div>
 				))}
 				{hasMore && !expanded && (
-					<button
+					<motion.button
+						layout
+						whileTap={{ scale: 0.95 }}
 						onClick={() => setExpanded(true)}
 						className='inline-flex items-center gap-2 rounded-full bg-muted px-4 py-2 text-xl text-muted-foreground hover:bg-muted/80 transition cursor-pointer'>
 						<span>+{hiddenCount} lainnya</span>
 						<ChevronDown className='h-4 w-4' />
-					</button>
+					</motion.button>
 				)}
 				{expanded && hasMore && (
-					<button
+					<motion.button
+						layout
+						whileTap={{ scale: 0.95 }}
 						onClick={() => setExpanded(false)}
 						className='inline-flex items-center gap-2 rounded-full bg-muted px-4 py-2 text-xl text-muted-foreground hover:bg-muted/80 transition cursor-pointer'>
 						<span>Tampilkan Lebih Sedikit</span>
 						<ChevronUp className='h-4 w-4' />
-					</button>
+					</motion.button>
 				)}
-			</div>
+			</motion.div>
 		</div>
 	)
 }

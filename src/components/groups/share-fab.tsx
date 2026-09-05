@@ -3,6 +3,7 @@
 import { CopyTokenButton } from '@/components/groups/copy-token-button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { ExternalLink, Share2 } from 'lucide-react'
+import { motion } from 'motion/react'
 import Link from 'next/link'
 
 interface ShareFabProps {
@@ -14,11 +15,16 @@ export function ShareFab({ publicUrl, publicToken }: ShareFabProps) {
 	return (
 		<Dialog>
 			<DialogTrigger asChild>
-				<button
-					className='fixed bottom-4 right-4 rounded-full bg-primary p-4 text-primary-foreground shadow-lg hover:bg-primary-hover transition'
+				<motion.button
+					initial={{ scale: 0, opacity: 0 }}
+					animate={{ scale: 1, opacity: 1 }}
+					transition={{ type: 'spring', damping: 20, stiffness: 300, delay: 0.2 }}
+					whileHover={{ scale: 1.08 }}
+					whileTap={{ scale: 0.92 }}
+					className='fixed bottom-5 right-5 rounded-full bg-primary p-4 text-primary-foreground shadow-lg shadow-primary/20 hover:bg-primary-hover transition-colors'
 					aria-label='Bagikan tautan publik'>
-					<Share2 className='h-8 w-8' />
-				</button>
+					<Share2 className='h-6 w-6' />
+				</motion.button>
 			</DialogTrigger>
 			<DialogContent>
 				<DialogHeader>
