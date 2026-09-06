@@ -7,6 +7,7 @@ import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
 import { PageEntrance } from '@/components/ui/page-entrance'
 import { PageHeader } from '@/components/ui/page-header'
 import { Loader2, Plus, X } from 'lucide-react'
+import { AnimatePresence, motion } from 'motion/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
@@ -126,80 +127,102 @@ export default function NewParticipantPage({ params }: PageProps) {
 				<form onSubmit={handleSubmit} className='space-y-6'>
 					{/* Participant Rows */}
 					<div className='space-y-4'>
-						{participants.map((participant, index) => (
-							<div key={participant.id} className='flex gap-3 items-start'>
-								<div className='flex-1 space-y-3'>
-									<div>
-										<label htmlFor={`name-${participant.id}`} className='block text-base font-medium mb-2'>
-											Nama {index === 0 && <span className='text-destructive'>*</span>}
-										</label>
-										<input
-											type='text'
-											id={`name-${participant.id}`}
-											value={participant.name}
-											onChange={(e) => updateParticipant(participant.id, 'name', e.target.value)}
-											placeholder='contoh: Ahmad'
-											className='w-full rounded-lg border border-border bg-background px-4 py-2.5 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent'
-											disabled={isLoading}
-											autoFocus={index === 0}
-										/>
+						<AnimatePresence initial={false}>
+							{participants.map((participant, index) => (
+								<motion.div
+									key={participant.id}
+									layout
+									initial={{ opacity: 0, y: -10, scale: 0.98 }}
+									animate={{ opacity: 1, y: 0, scale: 1 }}
+									exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.15 } }}
+									transition={{ duration: 0.2, ease: 'easeOut' }}
+									className='flex gap-3 items-start'>
+									<div className='flex-1 space-y-3'>
+										<div>
+											<label htmlFor={`name-${participant.id}`} className='block text-base font-medium mb-2'>
+												Nama {index === 0 && <span className='text-destructive'>*</span>}
+											</label>
+											<input
+												type='text'
+												id={`name-${participant.id}`}
+												value={participant.name}
+												onChange={(e) => updateParticipant(participant.id, 'name', e.target.value)}
+												placeholder='contoh: Ahmad'
+												className='w-full rounded-lg border border-border bg-background px-4 py-2.5 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent'
+												disabled={isLoading}
+												autoFocus={index === 0}
+											/>
+										</div>
+
+										<div>
+											<label
+												htmlFor={`whatsapp-${participant.id}`}
+												className='block text-base font-medium mb-2'>
+												WhatsApp <span className='text-muted-foreground text-sm'>(opsional)</span>
+											</label>
+											<input
+												type='tel'
+												id={`whatsapp-${participant.id}`}
+												value={participant.whatsappNumber}
+												onChange={(e) => updateParticipant(participant.id, 'whatsappNumber', e.target.value)}
+												placeholder='contoh: +6281234567890'
+												className='w-full rounded-lg border border-border bg-background px-4 py-2.5 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent'
+												disabled={isLoading}
+											/>
+										</div>
 									</div>
 
-									<div>
-										<label
-											htmlFor={`whatsapp-${participant.id}`}
-											className='block text-base font-medium mb-2'>
-											WhatsApp <span className='text-muted-foreground text-sm'>(opsional)</span>
-										</label>
-										<input
-											type='tel'
-											id={`whatsapp-${participant.id}`}
-											value={participant.whatsappNumber}
-											onChange={(e) => updateParticipant(participant.id, 'whatsappNumber', e.target.value)}
-											placeholder='contoh: +6281234567890'
-											className='w-full rounded-lg border border-border bg-background px-4 py-2.5 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent'
+									{/* Remove Button */}
+									{participants.length > 1 && (
+										<motion.button
+											type='button'
+											onClick={() => removeParticipantRow(participant.id)}
 											disabled={isLoading}
-										/>
-									</div>
-								</div>
-
-								{/* Remove Button */}
-								{participants.length > 1 && (
-									<button
-										type='button'
-										onClick={() => removeParticipantRow(participant.id)}
-										disabled={isLoading}
-										className='mt-8 p-2 rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition disabled:opacity-50'
-										aria-label='Hapus baris peserta ini'>
-										<X className='h-5 w-5' />
-									</button>
-								)}
-							</div>
-						))}
+											whileHover={{ scale: 1.1 }}
+											whileTap={{ scale: 0.9 }}
+											className='mt-8 p-2 rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors disabled:opacity-50 cursor-pointer'
+											aria-label='Hapus baris peserta ini'>
+											<X className='h-5 w-5' />
+										</motion.button>
+									)}
+								</motion.div>
+							))}
+						</AnimatePresence>
 					</div>
 
 					{/* Add More Button */}
-					<button
+					<motion.button
 						type='button'
 						onClick={addParticipantRow}
 						disabled={isLoading}
-						className='w-full min-h-12 rounded-lg border-2 border-dashed border-border px-4 py-3 text-base font-medium text-muted-foreground hover:border-primary hover:text-primary transition disabled:opacity-50'>
-						<Plus className='h-5 w-5 inline-block mr-2' />
+						whileHover={{ scale: 1.005, borderColor: 'hsl(var(--primary))' }}
+						whileTap={{ scale: 0.98 }}
+						className='w-full min-h-12 rounded-lg border-2 border-dashed border-border px-4 py-3 text-base font-medium text-muted-foreground hover:text-primary transition-colors disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2'>
+						<Plus className='h-5 w-5' />
 						Tambah Peserta Lagi
-					</button>
+					</motion.button>
 
-					{error && (
-						<div className='rounded-lg bg-destructive/10 border border-destructive/20 px-4 py-3'>
-							<p className='text-base text-destructive'>{error}</p>
-						</div>
-					)}
+					<AnimatePresence>
+						{error && (
+							<motion.div
+								initial={{ opacity: 0, y: -6 }}
+								animate={{ opacity: 1, y: 0 }}
+								exit={{ opacity: 0, y: -6 }}
+								transition={{ duration: 0.15 }}
+								className='rounded-lg bg-destructive/10 border border-destructive/20 px-4 py-3'>
+								<p className='text-base text-destructive'>{error}</p>
+							</motion.div>
+						)}
+					</AnimatePresence>
 
 					{/* Submit Button */}
 					<div className='pt-2'>
-						<button
+						<motion.button
 							type='submit'
 							disabled={isLoading}
-							className='w-full rounded-lg bg-primary px-4 py-3 text-primary-foreground font-medium shadow-sm transition hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'>
+							whileHover={{ y: -1 }}
+							whileTap={{ scale: 0.98 }}
+							className='w-full rounded-lg bg-primary px-4 py-3 text-primary-foreground font-medium shadow-sm transition-colors hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer'>
 							{isLoading ? (
 								<span className='inline-flex items-center gap-2'>
 									<Loader2 className='h-4 w-4 animate-spin' />
@@ -208,7 +231,7 @@ export default function NewParticipantPage({ params }: PageProps) {
 							) : (
 								`Tambah ${participants.filter((p) => p.name.trim()).length || 1} Peserta`
 							)}
-						</button>
+						</motion.button>
 					</div>
 				</form>
 

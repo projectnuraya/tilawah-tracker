@@ -4,8 +4,10 @@ import { sanitizeWhatsAppNumber } from '@/components/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Input, Label } from '@/components/ui/input'
 import { Loader2 } from 'lucide-react'
+import { motion } from 'motion/react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { toast } from 'sonner'
 
 interface Participant {
 	id: string
@@ -24,12 +26,10 @@ export function EditParticipantForm({ participant }: EditParticipantFormProps) {
 	const [whatsappNumber, setWhatsappNumber] = useState(participant.whatsappNumber || '')
 	const [isSaving, setIsSaving] = useState(false)
 	const [error, setError] = useState('')
-	const [success, setSuccess] = useState(false)
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault()
 		setError('')
-		setSuccess(false)
 
 		if (!name.trim()) {
 			setError('Nama wajib diisi')
@@ -64,9 +64,9 @@ export function EditParticipantForm({ participant }: EditParticipantFormProps) {
 				return
 			}
 
-			setSuccess(true)
+			toast.success('Perubahan berhasil disimpan')
+			router.push(`/groups/${participant.groupId}/participants`)
 			router.refresh()
-			setTimeout(() => setSuccess(false), 2000)
 		} catch {
 			setError('Terjadi kesalahan yang tidak terduga')
 		} finally {
@@ -94,18 +94,19 @@ export function EditParticipantForm({ participant }: EditParticipantFormProps) {
 			</div>
 
 			{error && <p className='text-base text-destructive'>{error}</p>}
-			{success && <p className='text-base text-primary'>Berhasil disimpan!</p>}
 
-			<Button type='submit' disabled={isSaving} fullWidth>
-				{isSaving ? (
-					<>
-						<Loader2 className='h-4 w-4 animate-spin' aria-hidden='true' />
-						Menyimpan...
-					</>
-				) : (
-					'Simpan Perubahan'
-				)}
-			</Button>
+			<motion.div whileHover={{ y: -1 }} whileTap={{ scale: 0.98 }}>
+				<Button type='submit' disabled={isSaving} fullWidth className='cursor-pointer'>
+					{isSaving ? (
+						<>
+							<Loader2 className='h-4 w-4 animate-spin' aria-hidden='true' />
+							Menyimpan...
+						</>
+					) : (
+						'Simpan Perubahan'
+					)}
+				</Button>
+			</motion.div>
 		</form>
 	)
 }

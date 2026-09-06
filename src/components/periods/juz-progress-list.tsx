@@ -222,81 +222,130 @@ export function JuzProgressList({
 					JUZ_GROUPS.map((group, index) => {
 						const rows = group.juzNumbers.flatMap((juz) => byJuz[juz] ?? [])
 						if (rows.length === 0) return null
-						const isOpen = !collapsed[index]
 
 						return (
-							// No `overflow-hidden` here: it would clip the status dropdown's popover
-							// inside the card. The header button rounds its own corners instead.
-							<div key={group.label} className='rounded-xl border border-border bg-card'>
-								<button
-									onClick={() => setCollapsed((prev) => ({ ...prev, [index]: !prev[index] }))}
-									className={cn(
-										'w-full hover:bg-muted/80 px-4 py-3 border-b-2 border-b-accent flex items-center justify-between transition-colors cursor-pointer rounded-t-xl',
-										!isOpen && 'rounded-b-xl',
-									)}
-									aria-expanded={isOpen}>
-									<h3 className='font-medium text-left'>{group.label}</h3>
-									<div className='flex items-center gap-2'>
-										<span className='text-base text-muted-foreground'>{rows.length} peserta</span>
-										<ChevronDown
-											className={cn(
-												'h-4 w-4 text-muted-foreground transition-transform duration-200',
-												isOpen && 'rotate-180',
-											)}
-											aria-hidden='true'
-										/>
-									</div>
-								</button>
-
-								{isOpen && (
-									<div className='divide-y divide-border'>
-										{rows.map((pp) => (
-											<div key={pp.id} className='flex items-center justify-between gap-3 px-4 py-3'>
-												<div className='flex items-center gap-3 min-w-0'>
-													<div className='w-8 h-8 shrink-0 rounded-full bg-primary/10 flex items-center justify-center'>
-														<span className='text-primary font-medium text-base'>
-															{pp.participant.name.charAt(0).toUpperCase()}
-														</span>
-													</div>
-													<div className='min-w-0'>
-														<div className='flex items-center gap-2'>
-															<p className='font-medium text-base truncate'>
-																{pp.participant.name}
-															</p>
-															{pp.missedStreak > 0 && (
-																<span
-																	className='inline-flex shrink-0 items-center px-1.5 py-0.5 rounded text-sm font-medium bg-error-bg text-error-bg-foreground'
-																	title={`Terlewat ${pp.missedStreak} periode berturut-turut`}>
-																	💔×{pp.missedStreak}
-																</span>
-															)}
-														</div>
-														<p className='text-sm text-muted-foreground'>
-															Juz {pp.juzNumber}
-															{!pp.participant.isActive && ' · Tidak Aktif'}
-														</p>
-													</div>
-												</div>
-												<div className='shrink-0'>
-													{editable ? (
-														<ProgressStatusDropdown
-															participantPeriodId={pp.id}
-															currentStatus={pp.progressStatus}
-															participantName={pp.participant.name}
-															whatsappNumber={pp.participant.whatsappNumber ?? null}
-														/>
-													) : (
-														<StatusText status={pp.progressStatus} />
-													)}
-												</div>
-											</div>
-										))}
-									</div>
-								)}
-							</div>
+							<JuzGroupSection
+								key={group.label}
+								label={group.label}
+								rows={rows}
+								editable={editable}
+								isOpen={!collapsed[index]}
+								onToggle={() => setCollapsed((prev) => ({ ...prev, [index]: !prev[index] }))}
+							/>
 						)
 					})
 				)}
+			</motion.div>
+		</div>
+	)
+}
+
+interface JuzGroupSectionProps {
+	label: string
+	rows: JuzParticipantPeriod[]
+	editable: boolean
+	isOpen: boolean
+	onToggle: () => void
+}
+
+/**
+ * One collapsible juz group.
+ *
+ * `overflow` is driven by React state instead of Motion's `transitionEnd`, and the rows stay
+ * mounted (`inert` while collapsed) instead of going through `AnimatePresence`. Both are there for
+ * the same reason: Motion must never write `overflow` to the inline style, because an inline
+ * `overflow: hidden` left over from the collapse outranks any class we set afterwards — that is
+ * what clipped the status dropdown popovers after the first collapse, while a freshly loaded page
+ * (which never animated) showed them fine.
+ *
+ * So: clip only while the height is animating, go back to `visible` once the section has settled
+ * open, and let the popovers float outside the card.
+ */
+function JuzGroupSection({ label, rows, editable, isOpen, onToggle }: JuzGroupSectionProps) {
+	// Adjusted during render (React's documented pattern for deriving state from props) rather than
+	// in an effect: the clipping has to land in the same commit that starts the animation, or the
+	// rows spill out of the card for a frame.
+	const [settled, setSettled] = useState(true)
+	const [wasOpen, setWasOpen] = useState(isOpen)
+	if (wasOpen !== isOpen) {
+		setWasOpen(isOpen)
+		setSettled(false)
+	}
+
+	return (
+		<div className='rounded-xl border border-border bg-card transition-shadow'>
+			<motion.button
+				whileTap={{ scale: 0.995 }}
+				onClick={onToggle}
+				className={cn(
+					'w-full hover:bg-muted/80 px-4 py-3 flex items-center justify-between transition-colors cursor-pointer rounded-t-xl',
+					isOpen ? 'border-b-2 border-b-accent' : 'rounded-b-xl border-b-0',
+				)}
+				aria-expanded={isOpen}>
+				<h3 className='font-medium text-left'>{label}</h3>
+				<div className='flex items-center gap-2'>
+					<span className='text-base text-muted-foreground'>{rows.length} peserta</span>
+					<motion.div
+						animate={{ rotate: isOpen ? 180 : 0 }}
+						transition={{ duration: 0.2, ease: 'easeInOut' }}
+						className='flex items-center'>
+						<ChevronDown className='h-4 w-4 text-muted-foreground' aria-hidden='true' />
+					</motion.div>
+				</div>
+			</motion.button>
+
+			<motion.div
+				initial={false}
+				animate={isOpen ? 'open' : 'collapsed'}
+				variants={{
+					open: { height: 'auto', opacity: 1 },
+					collapsed: { height: 0, opacity: 0 },
+				}}
+				transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+				onAnimationComplete={() => setSettled(true)}
+				inert={!isOpen}
+				className={isOpen && settled ? 'overflow-visible' : 'overflow-hidden'}>
+				<div className='divide-y divide-border'>
+					{rows.map((pp) => (
+						<div key={pp.id} className='flex items-center justify-between gap-3 px-4 py-3'>
+							<div className='flex items-center gap-3 min-w-0'>
+								<div className='w-8 h-8 shrink-0 rounded-full bg-primary/10 flex items-center justify-center'>
+									<span className='text-primary font-medium text-base'>
+										{pp.participant.name.charAt(0).toUpperCase()}
+									</span>
+								</div>
+								<div className='min-w-0'>
+									<div className='flex items-center gap-2'>
+										<p className='font-medium text-base truncate'>{pp.participant.name}</p>
+										{pp.missedStreak > 0 && (
+											<span
+												className='inline-flex shrink-0 items-center px-1.5 py-0.5 rounded text-sm font-medium bg-error-bg text-error-bg-foreground'
+												title={`Terlewat ${pp.missedStreak} periode berturut-turut`}>
+												💔×{pp.missedStreak}
+											</span>
+										)}
+									</div>
+									<p className='text-sm text-muted-foreground'>
+										Juz {pp.juzNumber}
+										{!pp.participant.isActive && ' · Tidak Aktif'}
+									</p>
+								</div>
+							</div>
+							<div className='shrink-0'>
+								{editable ? (
+									<ProgressStatusDropdown
+										participantPeriodId={pp.id}
+										currentStatus={pp.progressStatus}
+										participantName={pp.participant.name}
+										whatsappNumber={pp.participant.whatsappNumber ?? null}
+									/>
+								) : (
+									<StatusText status={pp.progressStatus} />
+								)}
+							</div>
+						</div>
+					))}
+				</div>
 			</motion.div>
 		</div>
 	)
