@@ -225,10 +225,15 @@ export function JuzProgressList({
 						const isOpen = !collapsed[index]
 
 						return (
-							<div key={group.label} className='rounded-xl border border-border bg-card overflow-hidden'>
+							// No `overflow-hidden` here: it would clip the status dropdown's popover
+							// inside the card. The header button rounds its own corners instead.
+							<div key={group.label} className='rounded-xl border border-border bg-card'>
 								<button
 									onClick={() => setCollapsed((prev) => ({ ...prev, [index]: !prev[index] }))}
-									className='w-full hover:bg-muted/80 px-4 py-3 border-b-2 border-b-accent flex items-center justify-between transition-colors cursor-pointer'
+									className={cn(
+										'w-full hover:bg-muted/80 px-4 py-3 border-b-2 border-b-accent flex items-center justify-between transition-colors cursor-pointer rounded-t-xl',
+										!isOpen && 'rounded-b-xl',
+									)}
 									aria-expanded={isOpen}>
 									<h3 className='font-medium text-left'>{group.label}</h3>
 									<div className='flex items-center gap-2'>
