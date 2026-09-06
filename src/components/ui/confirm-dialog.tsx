@@ -3,6 +3,7 @@
 import { Button, type ButtonVariant } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Loader2 } from 'lucide-react'
+import { motion } from 'motion/react'
 
 interface ConfirmDialogProps {
 	open: boolean
@@ -44,23 +45,27 @@ export function ConfirmDialog({
 					<DialogDescription>{description}</DialogDescription>
 				</DialogHeader>
 				<DialogFooter className='flex-row gap-2 sm:gap-2'>
-					<Button
-						variant='outline'
-						onClick={() => onOpenChange(false)}
-						disabled={isPending}
-						className='flex-1 sm:flex-none'>
-						{cancelLabel}
-					</Button>
-					<Button variant={confirmVariant} onClick={onConfirm} disabled={isPending} className='flex-1 sm:flex-none'>
-						{isPending ? (
-							<>
-								<Loader2 className='h-4 w-4 animate-spin' aria-hidden='true' />
-								{pendingLabel ?? confirmLabel}
-							</>
-						) : (
-							confirmLabel
-						)}
-					</Button>
+					<motion.div whileTap={{ scale: 0.97 }} className='flex-1 sm:flex-none'>
+						<Button
+							variant='outline'
+							onClick={() => onOpenChange(false)}
+							disabled={isPending}
+							className='w-full'>
+							{cancelLabel}
+						</Button>
+					</motion.div>
+					<motion.div whileTap={{ scale: 0.97 }} className='flex-1 sm:flex-none'>
+						<Button variant={confirmVariant} onClick={onConfirm} disabled={isPending} className='w-full'>
+							{isPending ? (
+								<>
+									<Loader2 className='h-4 w-4 animate-spin' aria-hidden='true' />
+									{pendingLabel ?? confirmLabel}
+								</>
+							) : (
+								confirmLabel
+							)}
+						</Button>
+					</motion.div>
 				</DialogFooter>
 			</DialogContent>
 		</Dialog>

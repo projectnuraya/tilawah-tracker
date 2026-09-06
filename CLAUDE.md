@@ -16,9 +16,13 @@ npx prisma generate                      # regenerate Prisma client after schema
 npx prisma db push                       # sync schema to DB (dev, no migration)
 npx prisma migrate dev --name <name>     # create a migration (never `migrate reset` in prod)
 npm run dev                              # start dev server
-npm run build                            # production build (Next.js)
+npm run build                            # production build (Next.js) - only when the user explicitly asks
 npm run lint                             # eslint
 ```
+
+**Verifying changes: run `npm run lint` only — never `npm run build`.** The build is slow and is not part of the normal
+edit loop; run it (or `make build-all`) only when the user explicitly asks for a build. If a change needs type checking
+beyond eslint, say so and let the user decide rather than kicking off a build.
 
 There is no test suite yet (`tests/` is empty and no test script exists in `package.json`).
 

@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { Lock } from 'lucide-react'
+import { motion } from 'motion/react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { toast } from 'sonner'
@@ -42,14 +43,16 @@ export function LockPeriodButton({ periodId, notFinishedCount }: LockPeriodButto
 
 	return (
 		<>
-			<Button
-				variant='outline'
-				onClick={() => setIsConfirming(true)}
-				aria-label='Kunci periode untuk menandai peserta yang belum selesai sebagai terlewat'
-				className='border-destructive/50 text-destructive hover:bg-error-bg'>
-				<Lock className='h-4 w-4' aria-hidden='true' />
-				Kunci Periode
-			</Button>
+			<motion.div whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }} className='inline-flex'>
+				<Button
+					variant='outline'
+					onClick={() => setIsConfirming(true)}
+					aria-label='Kunci periode untuk menandai peserta yang belum selesai sebagai terlewat'
+					className='border-destructive/50 text-destructive hover:bg-error-bg cursor-pointer'>
+					<Lock className='h-4 w-4' aria-hidden='true' />
+					Kunci Periode
+				</Button>
+			</motion.div>
 
 			<ConfirmDialog
 				open={isConfirming}
