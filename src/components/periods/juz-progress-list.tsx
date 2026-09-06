@@ -7,6 +7,7 @@ import { ProgressStatusDropdown } from '@/components/periods/progress-dropdown'
 import { fieldClasses } from '@/components/ui/input'
 import { PROGRESS_STATUS, type ProgressStatus, StatusText } from '@/components/ui/status-badge'
 import { ChevronDown, Search, X } from 'lucide-react'
+import { motion } from 'motion/react'
 import { useMemo, useState } from 'react'
 
 interface Participant {
@@ -137,47 +138,69 @@ export function JuzProgressList({
 					<span className='text-base text-muted-foreground'>
 						{filtered.length} dari {participantPeriods.length} peserta
 					</span>
-					<button
+					<motion.button
+						whileTap={{ scale: 0.95 }}
 						onClick={resetFilters}
 						disabled={!hasActiveFilters}
 						className={cn(
-							'inline-flex min-h-11 items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-background text-base transition',
+							'inline-flex min-h-11 items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-background text-base transition-all',
 							hasActiveFilters ? 'hover:bg-muted cursor-pointer' : 'opacity-50 cursor-not-allowed',
 						)}>
 						<X className='h-3.5 w-3.5' aria-hidden='true' />
 						Reset
-					</button>
+					</motion.button>
 				</div>
 
 				<fieldset className='space-y-2'>
 					<legend className='text-base font-medium text-foreground mb-2'>Filter Status:</legend>
 					<div className='flex flex-wrap gap-3 sm:grid sm:grid-cols-2 lg:flex lg:flex-nowrap'>
-						{visibleFilters.map((f) => (
-							<button
-								key={f.label}
-								onClick={() => setFilterStatus(f.value)}
-								aria-pressed={filterStatus === f.value}
-								className={cn(
-									'flex-1 min-h-12 px-4 py-3 rounded-lg font-medium text-base transition-colors',
-									filterStatus === f.value ? f.on : f.off,
-								)}>
-								{f.icon && (
-									<span className='mr-2' aria-hidden='true'>
-										{f.icon}
-									</span>
-								)}
-								{f.label}
-							</button>
-						))}
+						{visibleFilters.map((f) => {
+							const isSelected = filterStatus === f.value
+							return (
+								<motion.button
+									key={f.label}
+									whileHover={{ y: -2 }}
+									whileTap={{ scale: 0.96 }}
+									transition={{ duration: 0.15 }}
+									onClick={() => setFilterStatus(f.value)}
+									aria-pressed={isSelected}
+									className={cn(
+										'flex-1 min-h-12 px-4 py-3 rounded-lg font-medium text-base transition-all shadow-xs flex items-center justify-center',
+										isSelected ? f.on : f.off,
+									)}>
+									{f.icon && (
+										<motion.span
+											key={isSelected ? 'active' : 'inactive'}
+											initial={isSelected ? { scale: 0.8 } : false}
+											animate={{ scale: 1 }}
+											transition={{ type: 'spring', stiffness: 500, damping: 18 }}
+											className='mr-2'
+											aria-hidden='true'>
+											{f.icon}
+										</motion.span>
+									)}
+									{f.label}
+								</motion.button>
+							)
+						})}
 					</div>
 				</fieldset>
 			</div>
 
-			<div className='space-y-4'>
+			<motion.div
+				key={`${filterStatus}-${searchQuery}`}
+				initial={{ opacity: 0.88, y: 3 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={{ duration: 0.15, ease: 'easeOut' }}
+				className='space-y-4'>
 				<h2 className='text-xl font-medium'>Progress per Juz</h2>
 
 				{filtered.length === 0 ? (
-					<div className='rounded-xl border border-border bg-card p-8 text-center'>
+					<motion.div
+						initial={{ opacity: 0, scale: 0.98 }}
+						animate={{ opacity: 1, scale: 1 }}
+						transition={{ duration: 0.2 }}
+						className='rounded-xl border border-border bg-card p-8 text-center'>
 						<div className='mx-auto w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4'>
 							<Search className='h-8 w-8 text-muted-foreground' aria-hidden='true' />
 						</div>
@@ -186,14 +209,15 @@ export function JuzProgressList({
 							Tidak ditemukan peserta yang sesuai dengan filter yang dipilih.
 						</p>
 						{hasActiveFilters && (
-							<button
+							<motion.button
+								whileTap={{ scale: 0.96 }}
 								onClick={resetFilters}
 								className='inline-flex min-h-11 items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-base font-medium hover:bg-primary-hover transition'>
 								<X className='h-4 w-4' aria-hidden='true' />
 								Reset Filter
-							</button>
+							</motion.button>
 						)}
-					</div>
+					</motion.div>
 				) : (
 					JUZ_GROUPS.map((group, index) => {
 						const rows = group.juzNumbers.flatMap((juz) => byJuz[juz] ?? [])
@@ -268,7 +292,7 @@ export function JuzProgressList({
 						)
 					})
 				)}
-			</div>
+			</motion.div>
 		</div>
 	)
 }
