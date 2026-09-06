@@ -140,7 +140,7 @@ export default function NewPeriodPage({ params }: PageProps) {
 	}
 
 	return (
-		<PageEntrance>
+		<>
 			<BreadcrumbNav
 				items={[
 					{ label: 'Dashboard', href: '/dashboard' },
@@ -149,11 +149,12 @@ export default function NewPeriodPage({ params }: PageProps) {
 				]}
 			/>
 
-			<BackButton
-				href={`/groups/${groupId}`}
-				label={groupName ? `Kembali ke ${groupName}` : 'Kembali ke Grup'}
-				className='mb-6'
-			/>
+			<PageEntrance>
+				<BackButton
+					href={`/groups/${groupId}`}
+					label={groupName ? `Kembali ke ${groupName}` : 'Kembali ke Grup'}
+					className='mb-6'
+				/>
 
 			<div className='max-w-md'>
 				<PageHeader title='Mulai Periode Baru' description='Buat periode tilawah mingguan baru untuk grup Anda.' />
@@ -228,5 +229,6 @@ export default function NewPeriodPage({ params }: PageProps) {
 				</form>
 			</div>
 		</PageEntrance>
+		</>
 	)
 }

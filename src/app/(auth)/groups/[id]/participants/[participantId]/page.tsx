@@ -71,7 +71,7 @@ export default async function ParticipantDetailPage({ params }: PageProps) {
 		: null
 
 	return (
-		<PageEntrance>
+		<>
 			{/* Breadcrumb Navigation */}
 			<BreadcrumbNav
 				items={[
@@ -82,8 +82,9 @@ export default async function ParticipantDetailPage({ params }: PageProps) {
 				]}
 			/>
 
-			{/* Enhanced Back Button */}
-			<BackButton href={`/groups/${participant.group.id}/participants`} label='Kembali ke Peserta' className='mb-6' />
+			<PageEntrance>
+				{/* Enhanced Back Button */}
+				<BackButton href={`/groups/${participant.group.id}/participants`} label='Kembali ke Peserta' className='mb-6' />
 
 			<div className='max-w-md'>
 				<PageHeader
@@ -159,5 +160,6 @@ export default async function ParticipantDetailPage({ params }: PageProps) {
 				</div>
 			</div>
 		</PageEntrance>
+		</>
 	)
 }

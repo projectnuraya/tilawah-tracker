@@ -83,7 +83,7 @@ export default async function PeriodDetailPage({ params }: PageProps) {
 	const phase = getPeriodPhase(period)
 
 	return (
-		<PageEntrance>
+		<>
 			{/* Breadcrumb Navigation */}
 			<BreadcrumbNav
 				items={[
@@ -94,8 +94,9 @@ export default async function PeriodDetailPage({ params }: PageProps) {
 				]}
 			/>
 
-			{/* Enhanced Back Button */}
-			<BackButton href={`/groups/${period.group.id}/periods`} label='Kembali ke Periode' className='mb-6' />
+			<PageEntrance>
+				{/* Enhanced Back Button */}
+				<BackButton href={`/groups/${period.group.id}/periods`} label='Kembali ke Periode' className='mb-6' />
 
 			{/* Header */}
 			<PageHeader
@@ -134,5 +135,6 @@ export default async function PeriodDetailPage({ params }: PageProps) {
 				notFinishedCount={counts.not_finished}
 			/>
 		</PageEntrance>
+		</>
 	)
 }

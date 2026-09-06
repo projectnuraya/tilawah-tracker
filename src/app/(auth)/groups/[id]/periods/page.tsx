@@ -65,7 +65,7 @@ export default async function PeriodsListPage({ params }: PageProps) {
 	const lockedPeriods = periodsWithStats.filter((p) => p.status === PERIOD_STATUS.locked)
 
 	return (
-		<PageEntrance>
+		<>
 			{/* Breadcrumb Navigation */}
 			<BreadcrumbNav
 				items={[
@@ -75,8 +75,9 @@ export default async function PeriodsListPage({ params }: PageProps) {
 				]}
 			/>
 
-			{/* Enhanced Back Button */}
-			<BackButton href={`/groups/${group.id}`} label={`Kembali ke ${group.name}`} className='mb-6' />
+			<PageEntrance>
+				{/* Enhanced Back Button */}
+				<BackButton href={`/groups/${group.id}`} label={`Kembali ke ${group.name}`} className='mb-6' />
 
 			{/* Header */}
 			<PageHeader title='Periode' description={`${group.periods.length} total periode`} />
@@ -178,5 +179,6 @@ export default async function PeriodsListPage({ params }: PageProps) {
 				</div>
 			)}
 		</PageEntrance>
+		</>
 	)
 }

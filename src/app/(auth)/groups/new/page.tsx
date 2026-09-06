@@ -57,7 +57,7 @@ export default function NewGroupPage() {
 	}
 
 	return (
-		<PageEntrance>
+		<>
 			<BreadcrumbNav
 				items={[
 					{ label: 'Dashboard', href: '/dashboard' },
@@ -65,7 +65,8 @@ export default function NewGroupPage() {
 				]}
 			/>
 
-			<BackButton href='/dashboard' label='Kembali ke Dashboard' className='mb-6' />
+			<PageEntrance>
+				<BackButton href='/dashboard' label='Kembali ke Dashboard' className='mb-6' />
 
 			<div className='max-w-md'>
 				<PageHeader title='Buat Grup Baru' description='Mulai grup tilawah baru untuk komunitas Anda.' />
@@ -110,5 +111,6 @@ export default function NewGroupPage() {
 				</p>
 			</div>
 		</PageEntrance>
+		</>
 	)
 }

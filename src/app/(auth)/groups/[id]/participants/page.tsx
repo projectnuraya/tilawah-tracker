@@ -90,7 +90,7 @@ export default async function ParticipantsPage({ params }: PageProps) {
 	}
 
 	return (
-		<PageEntrance>
+		<>
 			{/* Breadcrumb Navigation */}
 			<BreadcrumbNav
 				items={[
@@ -100,8 +100,9 @@ export default async function ParticipantsPage({ params }: PageProps) {
 				]}
 			/>
 
-			{/* Enhanced Back Button */}
-			<BackButton href={`/groups/${group.id}`} label={`Kembali ke ${group.name}`} className='mb-6' />
+			<PageEntrance>
+				{/* Enhanced Back Button */}
+				<BackButton href={`/groups/${group.id}`} label={`Kembali ke ${group.name}`} className='mb-6' />
 
 			{/* Header */}
 			<PageHeader title='Peserta' description={`${activeParticipants.length} peserta aktif`} />
@@ -122,5 +123,6 @@ export default async function ParticipantsPage({ params }: PageProps) {
 				participantDataMap={participantDataMap}
 			/>
 		</PageEntrance>
+		</>
 	)
 }

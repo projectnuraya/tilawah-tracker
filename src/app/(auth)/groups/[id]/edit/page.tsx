@@ -113,7 +113,7 @@ export default function EditGroupPage({ params }: PageProps) {
 	}
 
 	return (
-		<PageEntrance className='flex flex-col min-h-screen'>
+		<div className='flex flex-col min-h-screen'>
 			<BreadcrumbNav
 				items={[
 					{ label: 'Dashboard', href: '/dashboard' },
@@ -121,6 +121,8 @@ export default function EditGroupPage({ params }: PageProps) {
 					{ label: 'Edit', href: '#', current: true },
 				]}
 			/>
+
+			<PageEntrance className='flex flex-col flex-1'>
 
 			<BackButton
 				href={`/groups/${groupId}`}
@@ -182,5 +184,6 @@ export default function EditGroupPage({ params }: PageProps) {
 				</div>
 			)}
 		</PageEntrance>
+		</div>
 	)
 }

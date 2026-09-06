@@ -79,7 +79,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
 	const publicUrl = `${process.env.NEXT_PUBLIC_APP_URL || ''}/view/${group.publicToken}`
 
 	return (
-		<PageEntrance>
+		<>
 			{/* Breadcrumb Navigation */}
 			<BreadcrumbNav
 				items={[
@@ -87,6 +87,8 @@ export default async function GroupDetailPage({ params }: PageProps) {
 					{ label: group.name, href: '#', current: true },
 				]}
 			/>
+
+			<PageEntrance>
 
 			{/* Enhanced Back Button */}
 			<BackButton href='/dashboard' label='Kembali ke Dashboard' className='mb-6' />
@@ -244,5 +246,6 @@ export default async function GroupDetailPage({ params }: PageProps) {
 			)}
 			<ShareFab publicUrl={publicUrl} publicToken={group.publicToken} />
 		</PageEntrance>
+		</>
 	)
 }

@@ -52,16 +52,17 @@ export default async function PublicPeriodDetailPage({ params }: PageProps) {
 	const phase = getPeriodPhase(period)
 
 	return (
-		<PageEntrance>
-			<div>
-				<BreadcrumbNav
-					items={[
-						{ label: period.group.name, href: `/view/${token}` },
-						{ label: `Periode #${period.periodNumber}`, href: '#', current: true },
-					]}
-				/>
+		<>
+			<BreadcrumbNav
+				items={[
+					{ label: period.group.name, href: `/view/${token}` },
+					{ label: `Periode #${period.periodNumber}`, href: '#', current: true },
+				]}
+			/>
 
-				<BackButton href={`/view/${token}`} label={`Kembali ke ${period.group.name}`} className='mb-6' />
+			<PageEntrance>
+				<div>
+					<BackButton href={`/view/${token}`} label={`Kembali ke ${period.group.name}`} className='mb-6' />
 
 				<PageHeader
 					title={`Periode #${period.periodNumber}`}
@@ -98,7 +99,8 @@ export default async function PublicPeriodDetailPage({ params }: PageProps) {
 						<p className='text-muted-foreground text-sm'>Periode ini belum memiliki peserta.</p>
 					</div>
 				)}
-			</div>
-		</PageEntrance>
+				</div>
+			</PageEntrance>
+		</>
 	)
 }

@@ -107,7 +107,7 @@ export default function NewParticipantPage({ params }: PageProps) {
 	}
 
 	return (
-		<PageEntrance>
+		<>
 			<BreadcrumbNav
 				items={[
 					{ label: 'Dashboard', href: '/dashboard' },
@@ -117,7 +117,8 @@ export default function NewParticipantPage({ params }: PageProps) {
 				]}
 			/>
 
-			<BackButton href={`/groups/${groupId}/participants`} label='Kembali ke Peserta' className='mb-6' />
+			<PageEntrance>
+				<BackButton href={`/groups/${groupId}/participants`} label='Kembali ke Peserta' className='mb-6' />
 
 			<div>
 				<PageHeader title='Tambah Peserta' description='Tambahkan satu atau lebih anggota ke grup tilawah ini.' />
@@ -216,5 +217,6 @@ export default function NewParticipantPage({ params }: PageProps) {
 				</p>
 			</div>
 		</PageEntrance>
+		</>
 	)
 }
