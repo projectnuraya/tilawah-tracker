@@ -7,7 +7,7 @@ import { ProgressStatusDropdown } from '@/components/periods/progress-dropdown'
 import { fieldClasses } from '@/components/ui/input'
 import { PROGRESS_STATUS, type ProgressStatus, StatusText } from '@/components/ui/status-badge'
 import { ChevronDown, Search, X } from 'lucide-react'
-import { motion } from 'motion/react'
+import { AnimatePresence, motion } from 'motion/react'
 import { useMemo, useState } from 'react'
 
 interface Participant {
@@ -225,74 +225,97 @@ export function JuzProgressList({
 						const isOpen = !collapsed[index]
 
 						return (
-							// No `overflow-hidden` here: it would clip the status dropdown's popover
-							// inside the card. The header button rounds its own corners instead.
-							<div key={group.label} className='rounded-xl border border-border bg-card'>
-								<button
+							// Animated collapsible accordion:
+							// Uses `transitionEnd: { overflow: 'visible' }` when open so that
+							// the status dropdown popovers inside can float freely without being clipped.
+							<div key={group.label} className='rounded-xl border border-border bg-card transition-shadow'>
+								<motion.button
+									whileTap={{ scale: 0.995 }}
 									onClick={() => setCollapsed((prev) => ({ ...prev, [index]: !prev[index] }))}
 									className={cn(
-										'w-full hover:bg-muted/80 px-4 py-3 border-b-2 border-b-accent flex items-center justify-between transition-colors cursor-pointer rounded-t-xl',
-										!isOpen && 'rounded-b-xl',
+										'w-full hover:bg-muted/80 px-4 py-3 flex items-center justify-between transition-colors cursor-pointer rounded-t-xl',
+										isOpen ? 'border-b-2 border-b-accent' : 'rounded-b-xl border-b-0',
 									)}
 									aria-expanded={isOpen}>
 									<h3 className='font-medium text-left'>{group.label}</h3>
 									<div className='flex items-center gap-2'>
 										<span className='text-base text-muted-foreground'>{rows.length} peserta</span>
-										<ChevronDown
-											className={cn(
-												'h-4 w-4 text-muted-foreground transition-transform duration-200',
-												isOpen && 'rotate-180',
-											)}
-											aria-hidden='true'
-										/>
+										<motion.div
+											animate={{ rotate: isOpen ? 180 : 0 }}
+											transition={{ duration: 0.2, ease: 'easeInOut' }}
+											className='flex items-center'>
+											<ChevronDown className='h-4 w-4 text-muted-foreground' aria-hidden='true' />
+										</motion.div>
 									</div>
-								</button>
+								</motion.button>
 
-								{isOpen && (
-									<div className='divide-y divide-border'>
-										{rows.map((pp) => (
-											<div key={pp.id} className='flex items-center justify-between gap-3 px-4 py-3'>
-												<div className='flex items-center gap-3 min-w-0'>
-													<div className='w-8 h-8 shrink-0 rounded-full bg-primary/10 flex items-center justify-center'>
-														<span className='text-primary font-medium text-base'>
-															{pp.participant.name.charAt(0).toUpperCase()}
-														</span>
-													</div>
-													<div className='min-w-0'>
-														<div className='flex items-center gap-2'>
-															<p className='font-medium text-base truncate'>
-																{pp.participant.name}
-															</p>
-															{pp.missedStreak > 0 && (
-																<span
-																	className='inline-flex shrink-0 items-center px-1.5 py-0.5 rounded text-sm font-medium bg-error-bg text-error-bg-foreground'
-																	title={`Terlewat ${pp.missedStreak} periode berturut-turut`}>
-																	💔×{pp.missedStreak}
+								<AnimatePresence initial={false}>
+									{isOpen && (
+										<motion.div
+											key='content'
+											variants={{
+												open: {
+													height: 'auto',
+													opacity: 1,
+													transitionEnd: { overflow: 'visible' },
+												},
+												collapsed: {
+													height: 0,
+													opacity: 0,
+													overflow: 'hidden',
+												},
+											}}
+											initial='collapsed'
+											animate='open'
+											exit='collapsed'
+											transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+											style={{ overflow: 'hidden' }}>
+											<div className='divide-y divide-border'>
+												{rows.map((pp) => (
+													<div key={pp.id} className='flex items-center justify-between gap-3 px-4 py-3'>
+														<div className='flex items-center gap-3 min-w-0'>
+															<div className='w-8 h-8 shrink-0 rounded-full bg-primary/10 flex items-center justify-center'>
+																<span className='text-primary font-medium text-base'>
+																	{pp.participant.name.charAt(0).toUpperCase()}
 																</span>
+															</div>
+															<div className='min-w-0'>
+																<div className='flex items-center gap-2'>
+																	<p className='font-medium text-base truncate'>
+																		{pp.participant.name}
+																	</p>
+																	{pp.missedStreak > 0 && (
+																		<span
+																			className='inline-flex shrink-0 items-center px-1.5 py-0.5 rounded text-sm font-medium bg-error-bg text-error-bg-foreground'
+																			title={`Terlewat ${pp.missedStreak} periode berturut-turut`}>
+																			💔×{pp.missedStreak}
+																		</span>
+																	)}
+																</div>
+																<p className='text-sm text-muted-foreground'>
+																	Juz {pp.juzNumber}
+																	{!pp.participant.isActive && ' · Tidak Aktif'}
+																</p>
+															</div>
+														</div>
+														<div className='shrink-0'>
+															{editable ? (
+																<ProgressStatusDropdown
+																	participantPeriodId={pp.id}
+																	currentStatus={pp.progressStatus}
+																	participantName={pp.participant.name}
+																	whatsappNumber={pp.participant.whatsappNumber ?? null}
+																/>
+															) : (
+																<StatusText status={pp.progressStatus} />
 															)}
 														</div>
-														<p className='text-sm text-muted-foreground'>
-															Juz {pp.juzNumber}
-															{!pp.participant.isActive && ' · Tidak Aktif'}
-														</p>
 													</div>
-												</div>
-												<div className='shrink-0'>
-													{editable ? (
-														<ProgressStatusDropdown
-															participantPeriodId={pp.id}
-															currentStatus={pp.progressStatus}
-															participantName={pp.participant.name}
-															whatsappNumber={pp.participant.whatsappNumber ?? null}
-														/>
-													) : (
-														<StatusText status={pp.progressStatus} />
-													)}
-												</div>
+												))}
 											</div>
-										))}
-									</div>
-								)}
+										</motion.div>
+									)}
+								</AnimatePresence>
 							</div>
 						)
 					})
