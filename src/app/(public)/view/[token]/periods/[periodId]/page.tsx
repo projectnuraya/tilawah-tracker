@@ -1,10 +1,12 @@
-import { getPeriodPhase } from '@/components/lib/period-status'
+import { formatPeriodRange, getPeriodPhase } from '@/components/lib/period-status'
 import { getPublicPeriodDetails } from '@/components/lib/public-utils'
+import { countByStatus, PERIOD_STATUS } from '@/components/lib/status'
 import { PeriodStats } from '@/components/periods/period-stats'
 import { ProgressSummary } from '@/components/periods/progress-summary'
 import { PublicProgressList } from '@/components/public/public-progress-list'
 import { BackButton } from '@/components/ui/back-button'
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
+import { PageEntrance } from '@/components/ui/page-entrance'
 import { PageHeader } from '@/components/ui/page-header'
 import { PeriodBadge } from '@/components/ui/status-badge'
 import { Calendar } from 'lucide-react'
@@ -42,27 +44,25 @@ export default async function PublicPeriodDetailPage({ params }: PageProps) {
 	}
 
 	// Calculate stats
-	const stats = {
-		total: period.participantPeriods.length,
-		finished: period.participantPeriods.filter((pp) => pp.progressStatus === 'finished').length,
-		not_finished: period.participantPeriods.filter((pp) => pp.progressStatus === 'not_finished').length,
-		missed: period.participantPeriods.filter((pp) => pp.progressStatus === 'missed').length,
-	}
+	// Three passes over the same array, written out twice — countByStatus does it in one
+	const counts = countByStatus(period.participantPeriods)
+	const total = period.participantPeriods.length
 
-	const isActive = period.status === 'active'
+	const isActive = period.status === PERIOD_STATUS.active
 	const phase = getPeriodPhase(period)
 
 	return (
-		<div className='min-h-screen bg-background'>
-			<div>
-				<BreadcrumbNav
-					items={[
-						{ label: period.group.name, href: `/view/${token}` },
-						{ label: `Periode #${period.periodNumber}`, href: '#', current: true },
-					]}
-				/>
+		<>
+			<BreadcrumbNav
+				items={[
+					{ label: period.group.name, href: `/view/${token}` },
+					{ label: `Periode #${period.periodNumber}`, href: '#', current: true },
+				]}
+			/>
 
-				<BackButton href={`/view/${token}`} label={`Kembali ke ${period.group.name}`} className='mb-6' />
+			<PageEntrance>
+				<div>
+					<BackButton href={`/view/${token}`} label={`Kembali ke ${period.group.name}`} className='mb-6' />
 
 				<PageHeader
 					title={`Periode #${period.periodNumber}`}
@@ -72,21 +72,20 @@ export default async function PublicPeriodDetailPage({ params }: PageProps) {
 							<p className='mb-1'>{period.group.name}</p>
 							<span className='flex items-center gap-2'>
 								<Calendar className='h-4 w-4' aria-hidden='true' />
-								{new Date(period.startDate).toLocaleDateString('id-ID', { dateStyle: 'long' })} -{' '}
-								{new Date(period.endDate).toLocaleDateString('id-ID', { dateStyle: 'long' })}
+								{formatPeriodRange(period.startDate, period.endDate, { dateStyle: 'long' })}
 							</span>
 						</>
 					}
 				/>
 
 				<PeriodStats
-					finished={stats.finished}
-					notFinished={stats.not_finished}
-					missed={stats.missed}
+					finished={counts.finished}
+					notFinished={counts.not_finished}
+					missed={counts.missed}
 					showMissed={!isActive}
 				/>
 
-				<ProgressSummary finished={stats.finished} total={stats.total} />
+				<ProgressSummary finished={counts.finished} total={total} />
 
 				{/* Progress List */}
 				{period.participantPeriods.length > 0 ? (
@@ -100,8 +99,8 @@ export default async function PublicPeriodDetailPage({ params }: PageProps) {
 						<p className='text-muted-foreground text-sm'>Periode ini belum memiliki peserta.</p>
 					</div>
 				)}
-
-			</div>
-		</div>
+				</div>
+			</PageEntrance>
+		</>
 	)
 }

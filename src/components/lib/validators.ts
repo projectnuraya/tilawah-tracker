@@ -1,3 +1,4 @@
+import { PROGRESS_STATUS_VALUES } from '@/components/lib/status'
 import { z } from 'zod'
 
 /**
@@ -8,25 +9,24 @@ import { z } from 'zod'
 // ==================== Groups ====================
 
 export const createGroupSchema = z.object({
-	name: z.string().min(3, 'Nama grup minimal 3 karakter').max(255, 'Nama grup maksimal 255 karakter'),
+	name: z.string('Nama grup wajib diisi').min(3, 'Nama grup minimal 3 karakter').max(255, 'Nama grup maksimal 255 karakter'),
 })
 
 export const updateGroupSchema = z.object({
-	name: z.string().min(3, 'Nama grup minimal 3 karakter').max(255, 'Nama grup maksimal 255 karakter'),
+	name: z.string('Nama grup wajib diisi').min(3, 'Nama grup minimal 3 karakter').max(255, 'Nama grup maksimal 255 karakter'),
 })
-
-export type CreateGroupInput = z.infer<typeof createGroupSchema>
-export type UpdateGroupInput = z.infer<typeof updateGroupSchema>
 
 // ==================== Participants ====================
 
 export const createParticipantSchema = z.object({
-	name: z.string().min(2, 'Nama peserta minimal 2 karakter').max(255, 'Nama peserta maksimal 255 karakter'),
+	name: z.string('Nama peserta wajib diisi').min(2, 'Nama peserta minimal 2 karakter').max(255, 'Nama peserta maksimal 255 karakter'),
 	whatsappNumber: z
 		.string()
 		.regex(/^\+\d{10,15}$/, 'Format nomor WhatsApp tidak valid (contoh: +6281234567890)')
+		.or(z.literal(''))
 		.optional()
-		.nullable(),
+		.nullable()
+		.transform((val) => (val === '' ? null : val)),
 })
 
 export const createParticipantBulkSchema = z.object({
@@ -37,32 +37,26 @@ export const createParticipantBulkSchema = z.object({
 })
 
 export const updateParticipantSchema = z.object({
-	name: z.string().min(2, 'Nama peserta minimal 2 karakter').max(255, 'Nama peserta maksimal 255 karakter').optional(),
+	name: z
+		.string('Nama peserta wajib diisi')
+		.min(2, 'Nama peserta minimal 2 karakter')
+		.max(255, 'Nama peserta maksimal 255 karakter')
+		.optional(),
 	whatsappNumber: z
 		.string()
 		.regex(/^\+\d{10,15}$/, 'Format nomor WhatsApp tidak valid (contoh: +6281234567890)')
+		.or(z.literal(''))
 		.optional()
-		.nullable(),
+		.nullable()
+		.transform((val) => (val === '' ? null : val)),
 	isActive: z.boolean().optional(),
 })
-
-export const listParticipantsSchema = z.object({
-	includeInactive: z
-		.string()
-		.optional()
-		.transform((val) => val === 'true'),
-})
-
-export type CreateParticipantInput = z.infer<typeof createParticipantSchema>
-export type CreateParticipantBulkInput = z.infer<typeof createParticipantBulkSchema>
-export type UpdateParticipantInput = z.infer<typeof updateParticipantSchema>
-export type ListParticipantsInput = z.infer<typeof listParticipantsSchema>
 
 // ==================== Periods ====================
 
 export const createPeriodSchema = z.object({
 	startDate: z
-		.string()
+		.string('Tanggal mulai wajib diisi')
 		.refine(
 			(date) => {
 				const d = new Date(date)
@@ -79,45 +73,33 @@ export const createPeriodSchema = z.object({
 		),
 })
 
-export const listPeriodsSchema = z.object({
-	limit: z
-		.string()
-		.optional()
-		.transform((val) => {
-			const parsed = parseInt(val || '20')
-			return Math.min(Math.max(parsed, 1), 100) // Min 1, max 100
-		}),
-	includeArchived: z
-		.string()
-		.optional()
-		.transform((val) => val === 'true'),
-})
-
-export type CreatePeriodInput = z.infer<typeof createPeriodSchema>
-export type ListPeriodsInput = z.infer<typeof listPeriodsSchema>
-
 // ==================== Progress ====================
 
 export const updateProgressSchema = z.object({
-	status: z.enum(['not_finished', 'finished', 'missed'], {
+	status: z.enum(PROGRESS_STATUS_VALUES, {
 		message: 'Status tidak valid',
 	}),
 })
 
 export const updateJuzSchema = z.object({
-	juzNumber: z.number().int('Nomor juz harus bilangan bulat').min(1, 'Nomor juz minimal 1').max(30, 'Nomor juz maksimal 30'),
+	juzNumber: z
+		.number('Nomor juz wajib diisi')
+		.int('Nomor juz harus bilangan bulat')
+		.min(1, 'Nomor juz minimal 1')
+		.max(30, 'Nomor juz maksimal 30'),
 })
 
-export type UpdateProgressInput = z.infer<typeof updateProgressSchema>
-export type UpdateJuzInput = z.infer<typeof updateJuzSchema>
-
-// ==================== WhatsApp Share ====================
-
-export const generateShareSchema = z.object({
-	customMessage: z.string().max(500, 'Pesan kustom maksimal 500 karakter').optional(),
-})
-
-export type GenerateShareInput = z.infer<typeof generateShareSchema>
+/**
+ * The message a coordinator should actually read.
+ *
+ * `message` used to be the constant 'Input tidak valid', and every route surfaces exactly that
+ * field to the browser — so the Indonesian per-field messages written above ("Nama grup minimal 3
+ * karakter", "Periode harus dimulai pada hari Senin") were defined but never shown to anyone.
+ * Zod orders issues as encountered, so the first one is the field the coordinator hit first.
+ */
+function firstIssueMessage(error: z.ZodError): string {
+	return error.issues[0]?.message ?? 'Input tidak valid'
+}
 
 /**
  * Validate input against schema and return typed result with error details
@@ -138,7 +120,7 @@ export function validateInput<T>(
 			success: false,
 			error: {
 				code: 'VALIDATION_ERROR',
-				message: 'Input tidak valid',
+				message: firstIssueMessage(result.error),
 				details: result.error.flatten(),
 			},
 		}

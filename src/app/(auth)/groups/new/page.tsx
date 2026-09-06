@@ -2,6 +2,7 @@
 
 import { BackButton } from '@/components/ui/back-button'
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
+import { PageEntrance } from '@/components/ui/page-entrance'
 import { PageHeader } from '@/components/ui/page-header'
 import { Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -56,7 +57,7 @@ export default function NewGroupPage() {
 	}
 
 	return (
-		<div>
+		<>
 			<BreadcrumbNav
 				items={[
 					{ label: 'Dashboard', href: '/dashboard' },
@@ -64,7 +65,8 @@ export default function NewGroupPage() {
 				]}
 			/>
 
-			<BackButton href='/dashboard' label='Kembali ke Dashboard' className='mb-6' />
+			<PageEntrance>
+				<BackButton href='/dashboard' label='Kembali ke Dashboard' className='mb-6' />
 
 			<div className='max-w-md'>
 				<PageHeader title='Buat Grup Baru' description='Mulai grup tilawah baru untuk komunitas Anda.' />
@@ -108,6 +110,7 @@ export default function NewGroupPage() {
 					Link publik akan dibuat secara otomatis. Anda dapat membagikan link ini kepada peserta untuk akses baca saja.
 				</p>
 			</div>
-		</div>
+		</PageEntrance>
+		</>
 	)
 }

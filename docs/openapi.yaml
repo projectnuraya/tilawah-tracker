@@ -1,634 +1,631 @@
 openapi: 3.0.3
 info:
-  title: Tilawah Tracker API
-  description: RESTful API for managing Qur'an reading progress in groups
-  version: 1.0.0
-  contact:
-    name: Project Nuraya
+    title: Tilawah Tracker API
+    description: |
+        Internal REST surface for the Tilawah Tracker app. The only callers are this app's own
+        `'use client'` components — server-rendered pages query Prisma directly instead, and the
+        public `/view/{token}` pages read through `src/components/lib/public-utils.ts` rather than
+        any route here. There is no external consumer and no compatibility guarantee.
+
+        Kept in sync by hand with `src/app/api/v1/**/route.ts`. See `docs/api-docs.md` for the
+        narrative version.
+    version: 2.0.0
+    contact:
+        name: Project Nuraya
 servers:
-  - url: http://localhost:3000
-    description: Development server
-  - url: https://your-domain.com
-    description: Production server
+    - url: http://localhost:3000
+      description: Development
+    - url: https://your-domain.com
+      description: Production
 
 security:
-  - bearerAuth: []
+    - sessionCookie: []
 
 tags:
-  - name: Groups
-    description: Manage groups
-  - name: Participants
-    description: Manage participants
-  - name: Periods
-    description: Manage reading periods
-  - name: Progress
-    description: Update reading progress
-  - name: Public
-    description: Public read-only access
+    - name: Groups
+      description: Create, read, rename and delete groups
+    - name: Participants
+      description: Add participants in bulk, edit them, deactivate and reactivate
+    - name: Periods
+      description: Start a weekly period and lock it
+    - name: Progress
+      description: Update a participant's status or juz within an active period
 
 paths:
-  /api/v1/groups:
-    get:
-      tags:
-        - Groups
-      summary: List groups
-      description: Get all groups for the authenticated coordinator
-      security:
-        - bearerAuth: []
-      responses:
-        "200":
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResponse"
-              example:
-                success: true
-                data:
-                  - id: "group-uuid"
-                    name: "My Group"
-                    publicToken: "abc123"
-                    participantCount: 5
-                    periodCount: 2
-                    hasActivePeriod: true
-                    joinedAt: "2024-01-01T00:00:00.000Z"
-                    createdAt: "2024-01-01T00:00:00.000Z"
-    post:
-      tags:
-        - Groups
-      summary: Create group
-      description: Create a new group
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - name
-              properties:
-                name:
-                  type: string
-                  minLength: 1
-                  maxLength: 255
-      responses:
-        "201":
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResponse"
-        "400":
-          $ref: "#/components/responses/ValidationError"
+    /api/v1/groups:
+        post:
+            tags: [Groups]
+            summary: Create group
+            description: |
+                Creates the group and its coordinator link in one transaction, and generates a
+                unique unlisted `publicToken`. Rate limit `write` (30/min).
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/GroupNameBody"
+            responses:
+                "201":
+                    description: Created
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: "#/components/schemas/SuccessResponse"
+                                    - properties:
+                                          data:
+                                              $ref: "#/components/schemas/GroupCreated"
+                "400": { $ref: "#/components/responses/ValidationError" }
+                "401": { $ref: "#/components/responses/Unauthorized" }
+                "429": { $ref: "#/components/responses/RateLimited" }
 
-  /api/v1/groups/{id}:
-    parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
-    get:
-      tags:
-        - Groups
-      summary: Get group
-      description: Get group details
-      security:
-        - bearerAuth: []
-      responses:
-        "200":
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResponse"
-        "404":
-          $ref: "#/components/responses/NotFound"
-    patch:
-      tags:
-        - Groups
-      summary: Update group
-      description: Update group name
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - name
-              properties:
-                name:
-                  type: string
-                  minLength: 1
-                  maxLength: 255
-      responses:
-        "200":
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResponse"
-        "400":
-          $ref: "#/components/responses/ValidationError"
-        "404":
-          $ref: "#/components/responses/NotFound"
-    delete:
-      tags:
-        - Groups
-      summary: Delete group
-      description: Delete a group and all related data
-      security:
-        - bearerAuth: []
-      responses:
-        "200":
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResponse"
-        "404":
-          $ref: "#/components/responses/NotFound"
+    /api/v1/groups/{id}:
+        parameters:
+            - $ref: "#/components/parameters/GroupId"
+        get:
+            tags: [Groups]
+            summary: Get group
+            description: Rate limit `read` (100/min).
+            responses:
+                "200":
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: "#/components/schemas/SuccessResponse"
+                                    - properties:
+                                          data:
+                                              $ref: "#/components/schemas/GroupDetail"
+                "401": { $ref: "#/components/responses/Unauthorized" }
+                "403": { $ref: "#/components/responses/Forbidden" }
+                "404": { $ref: "#/components/responses/NotFound" }
+                "429": { $ref: "#/components/responses/RateLimited" }
+        patch:
+            tags: [Groups]
+            summary: Rename group
+            description: Rate limit `write` (30/min).
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/GroupNameBody"
+            responses:
+                "200":
+                    description: Updated
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: "#/components/schemas/SuccessResponse"
+                                    - properties:
+                                          data:
+                                              type: object
+                                              properties:
+                                                  id: { type: string, format: uuid }
+                                                  name: { type: string }
+                                                  publicToken: { type: string }
+                                                  updatedAt: { type: string, format: date-time }
+                "400": { $ref: "#/components/responses/ValidationError" }
+                "401": { $ref: "#/components/responses/Unauthorized" }
+                "403": { $ref: "#/components/responses/Forbidden" }
+                "429": { $ref: "#/components/responses/RateLimited" }
+        delete:
+            tags: [Groups]
+            summary: Delete group
+            description: |
+                Hard delete. Cascades to participants, periods and all progress rows. Rate limit
+                `write` (30/min).
+            responses:
+                "200":
+                    description: Deleted
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: "#/components/schemas/SuccessResponse"
+                                    - properties:
+                                          data:
+                                              type: object
+                                              properties:
+                                                  deleted: { type: boolean, example: true }
+                "401": { $ref: "#/components/responses/Unauthorized" }
+                "403": { $ref: "#/components/responses/Forbidden" }
+                "429": { $ref: "#/components/responses/RateLimited" }
 
-  /api/v1/groups/{groupId}/participants:
-    parameters:
-      - name: groupId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
-    get:
-      tags:
-        - Participants
-      summary: List participants
-      description: Get participants for a group
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: includeInactive
-          in: query
-          schema:
-            type: boolean
-            default: false
-      responses:
-        "200":
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResponse"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-    post:
-      tags:
-        - Participants
-      summary: Add participant
-      description: Add a new participant to a group
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - name
-              properties:
-                name:
-                  type: string
-                  minLength: 1
-                  maxLength: 255
-                whatsappNumber:
-                  type: string
-                  pattern: '^\+\d{10,15}$'
-      responses:
-        "201":
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResponse"
-        "400":
-          $ref: "#/components/responses/ValidationError"
-        "403":
-          $ref: "#/components/responses/Forbidden"
+    /api/v1/groups/{id}/participants/bulk:
+        parameters:
+            - $ref: "#/components/parameters/GroupId"
+        post:
+            tags: [Participants]
+            summary: Add participants
+            description: |
+                The only create path — the participant form posts here even for a single person.
+                Rejects names already in the group and duplicates within the request itself. If a
+                period is active, each new participant is assigned the least-used juz in the same
+                transaction. Rate limit `bulkParticipant` (5 per 5 min).
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            required: [participants]
+                            properties:
+                                participants:
+                                    type: array
+                                    minItems: 1
+                                    maxItems: 100
+                                    items:
+                                        $ref: "#/components/schemas/ParticipantInput"
+            responses:
+                "200":
+                    description: Created
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: "#/components/schemas/SuccessResponse"
+                                    - properties:
+                                          data:
+                                              type: object
+                                              properties:
+                                                  participants:
+                                                      type: array
+                                                      items: { $ref: "#/components/schemas/Participant" }
+                                                  count: { type: integer }
+                "400": { $ref: "#/components/responses/ValidationError" }
+                "401": { $ref: "#/components/responses/Unauthorized" }
+                "403": { $ref: "#/components/responses/Forbidden" }
+                "429": { $ref: "#/components/responses/RateLimited" }
 
-  /api/v1/participants/{id}:
-    parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
-    get:
-      tags:
-        - Participants
-      summary: Get participant
-      description: Get participant details
-      security:
-        - bearerAuth: []
-      responses:
-        "200":
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResponse"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          $ref: "#/components/responses/NotFound"
-    patch:
-      tags:
-        - Participants
-      summary: Update participant
-      description: Update participant details
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                  minLength: 1
-                  maxLength: 255
-                whatsappNumber:
-                  type: string
-                  pattern: '^\+\d{10,15}$'
-                isActive:
-                  type: boolean
-      responses:
-        "200":
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResponse"
-        "400":
-          $ref: "#/components/responses/ValidationError"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          $ref: "#/components/responses/NotFound"
-    delete:
-      tags:
-        - Participants
-      summary: Deactivate participant
-      description: Soft delete participant
-      security:
-        - bearerAuth: []
-      responses:
-        "200":
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResponse"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          $ref: "#/components/responses/NotFound"
+    /api/v1/groups/{id}/periods:
+        parameters:
+            - $ref: "#/components/parameters/GroupId"
+        post:
+            tags: [Periods]
+            summary: Start a period
+            description: |
+                `startDate` must be a Monday, read in UTC. The period runs Monday–Sunday; the end
+                date is computed on the UTC calendar. Refused while another period is still active,
+                or when the group has no active participants.
 
-  /api/v1/groups/{groupId}/periods:
-    parameters:
-      - name: groupId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
-    get:
-      tags:
-        - Periods
-      summary: List periods
-      description: Get periods for a group
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: limit
-          in: query
-          schema:
-            type: integer
-            default: 20
-        - name: includeArchived
-          in: query
-          schema:
-            type: boolean
-            default: false
-      responses:
-        "200":
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResponse"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-    post:
-      tags:
-        - Periods
-      summary: Create period
-      description: Create a new period starting on Monday
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - startDate
-              properties:
-                startDate:
-                  type: string
-                  format: date-time
-      responses:
-        "201":
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResponse"
-        "400":
-          $ref: "#/components/responses/ValidationError"
-        "403":
-          $ref: "#/components/responses/Forbidden"
+                Juz assignment happens in one transaction: returning participants advance one juz
+                (30 wraps to 1), new participants take the least-used juz, and the very first period
+                distributes everyone round-robin across 1–30. Rate limit `write` (30/min).
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            required: [startDate]
+                            properties:
+                                startDate:
+                                    type: string
+                                    format: date
+                                    description: A Monday, as `YYYY-MM-DD`
+                                    example: "2026-01-05"
+            responses:
+                "201":
+                    description: Created
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: "#/components/schemas/SuccessResponse"
+                                    - properties:
+                                          data:
+                                              $ref: "#/components/schemas/PeriodCreated"
+                "400":
+                    description: |
+                        Invalid input, a period is already active, or the group has no active
+                        participants.
+                    content:
+                        application/json:
+                            schema: { $ref: "#/components/schemas/ErrorResponse" }
+                            example:
+                                success: false
+                                error:
+                                    code: VALIDATION_ERROR
+                                    message: Masih ada periode aktif. Kunci periode itu dulu sebelum memulai yang baru.
+                "401": { $ref: "#/components/responses/Unauthorized" }
+                "403": { $ref: "#/components/responses/Forbidden" }
+                "404": { $ref: "#/components/responses/NotFound" }
+                "429": { $ref: "#/components/responses/RateLimited" }
 
-  /api/v1/periods/{id}:
-    parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
-    get:
-      tags:
-        - Periods
-      summary: Get period
-      description: Get period details with progress
-      security:
-        - bearerAuth: []
-      responses:
-        "200":
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResponse"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          $ref: "#/components/responses/NotFound"
+    /api/v1/participants/{id}:
+        parameters:
+            - $ref: "#/components/parameters/ParticipantId"
+        patch:
+            tags: [Participants]
+            summary: Update participant
+            description: |
+                Every field is optional. Setting `isActive: true` on a currently inactive
+                participant also assigns them a juz in the running period, so they reappear in the
+                current week; someone toggled off and on inside the same period keeps their original
+                juz. Rate limit `singleParticipant` (60/min).
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                name: { type: string, minLength: 2, maxLength: 255 }
+                                whatsappNumber:
+                                    type: string
+                                    nullable: true
+                                    pattern: '^\+\d{10,15}$'
+                                    example: "+6281234567890"
+                                isActive: { type: boolean }
+            responses:
+                "200":
+                    description: Updated
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: "#/components/schemas/SuccessResponse"
+                                    - properties:
+                                          data: { $ref: "#/components/schemas/Participant" }
+                "400": { $ref: "#/components/responses/ValidationError" }
+                "401": { $ref: "#/components/responses/Unauthorized" }
+                "403": { $ref: "#/components/responses/Forbidden" }
+                "404": { $ref: "#/components/responses/NotFound" }
+                "429": { $ref: "#/components/responses/RateLimited" }
+        delete:
+            tags: [Participants]
+            summary: Deactivate participant
+            description: |
+                Soft delete — flips `isActive` to false so historical periods keep their rows.
+                Reverse it with `PATCH { "isActive": true }`. Rate limit `singleParticipant`
+                (60/min).
+            responses:
+                "200":
+                    description: Deactivated
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: "#/components/schemas/SuccessResponse"
+                                    - properties:
+                                          data:
+                                              type: object
+                                              properties:
+                                                  deactivated: { type: boolean, example: true }
+                "401": { $ref: "#/components/responses/Unauthorized" }
+                "403": { $ref: "#/components/responses/Forbidden" }
+                "404": { $ref: "#/components/responses/NotFound" }
+                "429": { $ref: "#/components/responses/RateLimited" }
 
-  /api/v1/periods/{id}/lock:
-    parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
-    post:
-      tags:
-        - Periods
-      summary: Lock period
-      description: Lock period and mark unfinished as missed
-      security:
-        - bearerAuth: []
-      responses:
-        "200":
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResponse"
-        "400":
-          $ref: "#/components/responses/ValidationError"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          $ref: "#/components/responses/NotFound"
+    /api/v1/periods/{id}/lock:
+        parameters:
+            - $ref: "#/components/parameters/PeriodId"
+        post:
+            tags: [Periods]
+            summary: Lock a period
+            description: |
+                One-way and irreversible. Flips every `not_finished` row to `missed`, then sets
+                `status: locked` and `lockedAt`, in one transaction. A locked period rejects all
+                progress and juz updates. Takes no request body. Rate limit `write` (30/min).
+            responses:
+                "200":
+                    description: Locked
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: "#/components/schemas/SuccessResponse"
+                                    - properties:
+                                          data:
+                                              type: object
+                                              properties:
+                                                  id: { type: string, format: uuid }
+                                                  status: { type: string, enum: [locked] }
+                                                  lockedAt: { type: string, format: date-time }
+                                                  statusCounts: { $ref: "#/components/schemas/StatusCounts" }
+                "400":
+                    description: Already locked
+                    content:
+                        application/json:
+                            schema: { $ref: "#/components/schemas/ErrorResponse" }
+                            example:
+                                success: false
+                                error: { code: VALIDATION_ERROR, message: Periode ini sudah terkunci. }
+                "401": { $ref: "#/components/responses/Unauthorized" }
+                "403": { $ref: "#/components/responses/Forbidden" }
+                "404": { $ref: "#/components/responses/NotFound" }
+                "429": { $ref: "#/components/responses/RateLimited" }
 
-  /api/v1/progress/{id}:
-    parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
-    patch:
-      tags:
-        - Progress
-      summary: Update progress
-      description: Update participant progress status
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - status
-              properties:
-                status:
-                  type: string
-                  enum: [not_finished, finished, missed]
-      responses:
-        "200":
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResponse"
-        "400":
-          $ref: "#/components/responses/ValidationError"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          $ref: "#/components/responses/NotFound"
+    /api/v1/progress/{id}:
+        parameters:
+            - $ref: "#/components/parameters/ParticipantPeriodId"
+        patch:
+            tags: [Progress]
+            summary: Set progress status
+            description: |
+                Setting `finished` also resets `missedStreak` to 0. Refused once the period is
+                locked. Rate limit `progress` (100/min).
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            required: [status]
+                            properties:
+                                status:
+                                    type: string
+                                    enum: [not_finished, finished, missed]
+            responses:
+                "200":
+                    description: Updated
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: "#/components/schemas/SuccessResponse"
+                                    - properties:
+                                          data: { $ref: "#/components/schemas/ParticipantPeriod" }
+                "400": { $ref: "#/components/responses/ValidationError" }
+                "401": { $ref: "#/components/responses/Unauthorized" }
+                "403": { $ref: "#/components/responses/Forbidden" }
+                "404": { $ref: "#/components/responses/NotFound" }
+                "429": { $ref: "#/components/responses/RateLimited" }
 
-  /api/v1/progress/{id}/juz:
-    parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
-    patch:
-      tags:
-        - Progress
-      summary: Update juz
-      description: Update juz assignment
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - juzNumber
-              properties:
-                juzNumber:
-                  type: integer
-                  minimum: 1
-                  maximum: 30
-      responses:
-        "200":
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResponse"
-        "400":
-          $ref: "#/components/responses/ValidationError"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          $ref: "#/components/responses/NotFound"
-
-  /api/v1/public/{token}:
-    parameters:
-      - name: token
-        in: path
-        required: true
-        schema:
-          type: string
-    get:
-      tags:
-        - Public
-      summary: Public group overview
-      description: Get public group info (no auth required)
-      responses:
-        "200":
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResponse"
-        "404":
-          $ref: "#/components/responses/NotFound"
-
-  /api/v1/public/{token}/periods/{periodId}:
-    parameters:
-      - name: token
-        in: path
-        required: true
-        schema:
-          type: string
-      - name: periodId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
-    get:
-      tags:
-        - Public
-      summary: Public period details
-      description: Get public period progress (no auth required)
-      responses:
-        "200":
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResponse"
-        "404":
-          $ref: "#/components/responses/NotFound"
+    /api/v1/progress/{id}/juz:
+        parameters:
+            - $ref: "#/components/parameters/ParticipantPeriodId"
+        patch:
+            tags: [Progress]
+            summary: Reassign juz
+            description: Refused once the period is locked. Rate limit `progress` (100/min).
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            required: [juzNumber]
+                            properties:
+                                juzNumber: { type: integer, minimum: 1, maximum: 30 }
+            responses:
+                "200":
+                    description: Updated
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: "#/components/schemas/SuccessResponse"
+                                    - properties:
+                                          data: { $ref: "#/components/schemas/ParticipantPeriod" }
+                "400": { $ref: "#/components/responses/ValidationError" }
+                "401": { $ref: "#/components/responses/Unauthorized" }
+                "403": { $ref: "#/components/responses/Forbidden" }
+                "404": { $ref: "#/components/responses/NotFound" }
+                "429": { $ref: "#/components/responses/RateLimited" }
 
 components:
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
+    securitySchemes:
+        sessionCookie:
+            type: apiKey
+            in: cookie
+            name: next-auth.session-token
+            description: |
+                NextAuth session cookie, set by Google OAuth sign-in. Sign-in is allowlist-only: a
+                coordinator row must already exist for the email. There is no bearer-token or
+                API-key auth — to exercise these by hand, sign in through the browser and reuse the
+                cookie. In production the cookie is named `__Secure-next-auth.session-token`.
 
-  schemas:
-    SuccessResponse:
-      type: object
-      required:
-        - success
-        - data
-      properties:
-        success:
-          type: boolean
-          example: true
-        data:
-          description: Response data
+    parameters:
+        GroupId:
+            name: id
+            in: path
+            required: true
+            schema: { type: string, format: uuid }
+        ParticipantId:
+            name: id
+            in: path
+            required: true
+            schema: { type: string, format: uuid }
+        PeriodId:
+            name: id
+            in: path
+            required: true
+            schema: { type: string, format: uuid }
+        ParticipantPeriodId:
+            name: id
+            in: path
+            required: true
+            description: A `ParticipantPeriod` id — not a participant id
+            schema: { type: string, format: uuid }
 
-    ErrorResponse:
-      type: object
-      required:
-        - success
-        - error
-      properties:
-        success:
-          type: boolean
-          example: false
-        error:
-          type: object
-          required:
-            - code
-            - message
-          properties:
-            code:
-              type: string
-            message:
-              type: string
+    schemas:
+        SuccessResponse:
+            type: object
+            required: [success, data]
+            properties:
+                success: { type: boolean, example: true }
+                data: { description: Response payload }
 
-  responses:
-    ValidationError:
-      description: Validation error
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ErrorResponse"
-          example:
-            success: false
-            error:
-              code: VALIDATION_ERROR
-              message: Invalid input
+        ErrorResponse:
+            type: object
+            required: [success, error]
+            properties:
+                success: { type: boolean, example: false }
+                error:
+                    type: object
+                    required: [code, message]
+                    properties:
+                        code:
+                            type: string
+                            enum:
+                                [
+                                    UNAUTHORIZED,
+                                    FORBIDDEN,
+                                    NOT_FOUND,
+                                    VALIDATION_ERROR,
+                                    RATE_LIMIT_EXCEEDED,
+                                    INTERNAL_ERROR,
+                                ]
+                        message:
+                            type: string
+                            description: Indonesian, written for the coordinator and rendered verbatim by the UI
+                        details:
+                            description: Flattened Zod error. Present on validation failures only.
+                            type: object
 
-    Forbidden:
-      description: Access forbidden
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ErrorResponse"
-          example:
-            success: false
-            error:
-              code: FORBIDDEN
-              message: Access denied
+        GroupNameBody:
+            type: object
+            required: [name]
+            properties:
+                name: { type: string, minLength: 3, maxLength: 255 }
 
-    NotFound:
-      description: Resource not found
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ErrorResponse"
-          example:
-            success: false
-            error:
-              code: NOT_FOUND
-              message: Resource not found
+        GroupCreated:
+            type: object
+            properties:
+                id: { type: string, format: uuid }
+                name: { type: string }
+                publicToken: { type: string, description: "32-char unlisted token used by /view/{token}" }
+                createdAt: { type: string, format: date-time }
+
+        GroupDetail:
+            type: object
+            properties:
+                id: { type: string, format: uuid }
+                name: { type: string }
+                publicToken: { type: string }
+                participantCount: { type: integer, description: Active participants only }
+                periodCount: { type: integer }
+                latestPeriod:
+                    nullable: true
+                    allOf: [{ $ref: "#/components/schemas/Period" }]
+                coordinators:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            id: { type: string, format: uuid }
+                            name: { type: string, nullable: true }
+                            email: { type: string, nullable: true }
+                            image: { type: string, nullable: true }
+                createdAt: { type: string, format: date-time }
+                updatedAt: { type: string, format: date-time }
+
+        ParticipantInput:
+            type: object
+            required: [name]
+            properties:
+                name: { type: string, minLength: 2, maxLength: 255 }
+                whatsappNumber:
+                    type: string
+                    nullable: true
+                    pattern: '^\+\d{10,15}$'
+                    description: Coordinator-only; never returned on public paths
+                    example: "+6281234567890"
+
+        Participant:
+            type: object
+            properties:
+                id: { type: string, format: uuid }
+                groupId: { type: string, format: uuid }
+                name: { type: string }
+                whatsappNumber: { type: string, nullable: true }
+                isActive: { type: boolean }
+                createdAt: { type: string, format: date-time }
+                updatedAt: { type: string, format: date-time }
+
+        Period:
+            type: object
+            properties:
+                id: { type: string, format: uuid }
+                groupId: { type: string, format: uuid }
+                periodNumber: { type: integer }
+                startDate:
+                    type: string
+                    format: date
+                    description: A `DATE` column — read it as UTC, never in the viewer's timezone
+                endDate: { type: string, format: date }
+                status: { type: string, enum: [active, locked] }
+                isArchived: { type: boolean }
+                lockedAt: { type: string, format: date-time, nullable: true }
+
+        PeriodCreated:
+            type: object
+            properties:
+                id: { type: string, format: uuid }
+                groupId: { type: string, format: uuid }
+                periodNumber: { type: integer }
+                startDate: { type: string, format: date }
+                endDate: { type: string, format: date }
+                status: { type: string, enum: [active] }
+                participantCount: { type: integer }
+
+        ParticipantPeriod:
+            type: object
+            properties:
+                id: { type: string, format: uuid }
+                participantId: { type: string, format: uuid }
+                periodId: { type: string, format: uuid }
+                juzNumber: { type: integer, minimum: 1, maximum: 30 }
+                progressStatus: { type: string, enum: [not_finished, finished, missed] }
+                missedStreak: { type: integer, description: Consecutive periods missed }
+                updatedAt: { type: string, format: date-time }
+
+        StatusCounts:
+            type: object
+            properties:
+                finished: { type: integer }
+                not_finished: { type: integer }
+                missed: { type: integer }
+
+    responses:
+        Unauthorized:
+            description: No valid session
+            content:
+                application/json:
+                    schema: { $ref: "#/components/schemas/ErrorResponse" }
+                    example:
+                        success: false
+                        error: { code: UNAUTHORIZED, message: Sesi Anda sudah berakhir. Silakan masuk kembali. }
+        Forbidden:
+            description: Signed in, but the group is not theirs
+            content:
+                application/json:
+                    schema: { $ref: "#/components/schemas/ErrorResponse" }
+                    example:
+                        success: false
+                        error: { code: FORBIDDEN, message: Anda tidak punya akses ke grup ini. }
+        NotFound:
+            description: Resource does not exist
+            content:
+                application/json:
+                    schema: { $ref: "#/components/schemas/ErrorResponse" }
+                    example:
+                        success: false
+                        error: { code: NOT_FOUND, message: Data tidak ditemukan. }
+        ValidationError:
+            description: Input failed validation
+            content:
+                application/json:
+                    schema: { $ref: "#/components/schemas/ErrorResponse" }
+                    example:
+                        success: false
+                        error:
+                            code: VALIDATION_ERROR
+                            message: Nama grup minimal 3 karakter
+                            details: { formErrors: [], fieldErrors: { name: [Nama grup minimal 3 karakter] } }
+        RateLimited:
+            description: |
+                Too many requests. Carries `X-RateLimit-Limit`, `X-RateLimit-Remaining`,
+                `X-RateLimit-Reset` and `Retry-After`. The limiter is in-memory and per-coordinator,
+                so it is not safe across multiple instances.
+            content:
+                application/json:
+                    schema: { $ref: "#/components/schemas/ErrorResponse" }
+                    example:
+                        success: false
+                        error: { code: RATE_LIMIT_EXCEEDED, message: Terlalu banyak permintaan. Coba lagi sebentar lagi. }

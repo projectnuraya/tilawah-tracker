@@ -12,15 +12,21 @@ export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs))
 }
 
+/**
+ * Normalise a typed WhatsApp number to the E.164-ish shape `createParticipantSchema` accepts.
+ *
+ * Indonesians write the same number three ways — `0812…`, `62812…`, `+62812…` — and often just
+ * `812…`. That last case used to fall through to a bare `'+' + digits`, producing `+81234567890`:
+ * a valid-looking Japanese number that passed `/^\+\d{10,15}$/` and got saved. A `628…` branch sat
+ * below `62…` and was therefore unreachable.
+ *
+ * Runs on every keystroke, so an empty field must stay empty rather than becoming a lone `+`.
+ */
 export const sanitizeWhatsAppNumber = (input: string): string => {
-	const cleaned = input.replace(/\D/g, '')
-	if (cleaned.startsWith('62')) {
-		return '+' + cleaned
-	} else if (cleaned.startsWith('0')) {
-		return '+62' + cleaned.slice(1)
-	} else if (cleaned.startsWith('628')) {
-		return '+62' + cleaned.slice(2)
-	} else {
-		return '+' + cleaned
-	}
+	const digits = input.replace(/\D/g, '')
+	if (!digits) return ''
+	if (digits.startsWith('62')) return `+${digits}`
+	if (digits.startsWith('0')) return `+62${digits.slice(1)}`
+	if (digits.startsWith('8')) return `+62${digits}`
+	return `+${digits}`
 }

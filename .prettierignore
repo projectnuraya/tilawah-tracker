@@ -1,0 +1,10 @@
+node_modules
+.next
+graphify-out
+package-lock.json
+*.tsbuildinfo
+public
+
+# Prose is edited by hand; Prettier's markdown rewrapping would churn these on every run.
+*.md
+docs

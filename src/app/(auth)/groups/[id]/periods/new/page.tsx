@@ -1,8 +1,10 @@
 'use client'
 
+import { formatPeriodDate } from '@/components/lib/period-status'
 import { useGroupName } from '@/components/lib/use-group-name'
 import { BackButton } from '@/components/ui/back-button'
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
+import { PageEntrance } from '@/components/ui/page-entrance'
 import { PageHeader } from '@/components/ui/page-header'
 import { AlertCircle, Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -10,6 +12,13 @@ import { useEffect, useState } from 'react'
 
 interface PageProps {
 	params: Promise<{ id: string }>
+}
+
+const WEEKDAY_FORMAT: Intl.DateTimeFormatOptions = {
+	weekday: 'long',
+	year: 'numeric',
+	month: 'long',
+	day: 'numeric',
 }
 
 /** Formats a Date using its local calendar fields. Never use toISOString() here: it converts to UTC
@@ -51,9 +60,22 @@ export default function NewPeriodPage({ params }: PageProps) {
 		params.then(({ id }) => setGroupId(id))
 	}, [params])
 
-	const handleDateChange = (value: string) => {
-		setStartDate(value)
-		if (value && !isMonday(value)) {
+	// Calculate end date (Sunday, 6 days after start)
+	const calculateEndDate = (start: string): string => {
+		if (!start) return ''
+		// Work strictly in UTC dates to stay DST- and timezone-immune
+		const date = new Date(`${start}T00:00:00Z`)
+		date.setUTCDate(date.getUTCDate() + 6)
+		return date.toISOString().split('T')[0]
+	}
+
+	const endDate = calculateEndDate(startDate)
+
+	const handleDateChange = (newDate: string) => {
+		setStartDate(newDate)
+		if (!newDate) {
+			setDateError('Tanggal mulai wajib diisi')
+		} else if (!isMonday(newDate)) {
 			setDateError('Periode harus dimulai pada hari Senin')
 		} else {
 			setDateError('')
@@ -65,12 +87,12 @@ export default function NewPeriodPage({ params }: PageProps) {
 		setError('')
 
 		if (!startDate) {
-			setError('Tanggal mulai wajib diisi')
+			setDateError('Tanggal mulai wajib diisi')
 			return
 		}
 
 		if (!isMonday(startDate)) {
-			setError('Periode harus dimulai pada hari Senin')
+			setDateError('Periode harus dimulai pada hari Senin')
 			return
 		}
 
@@ -82,7 +104,9 @@ export default function NewPeriodPage({ params }: PageProps) {
 				headers: {
 					'Content-Type': 'application/json',
 				},
-				body: JSON.stringify({ startDate }),
+				body: JSON.stringify({
+					startDate: `${startDate}T00:00:00Z`,
+				}),
 			})
 
 			let data
@@ -95,27 +119,17 @@ export default function NewPeriodPage({ params }: PageProps) {
 			}
 
 			if (!data.success) {
-				setError(data.error?.message || 'Gagal membuat periode')
+				setError(data.error?.message || 'Gagal memulai periode')
 				return
 			}
 
 			router.replace(`/groups/${groupId}/periods/${data.data.id}`)
-			router.refresh()
 		} catch {
 			setError('Terjadi kesalahan yang tidak terduga')
 		} finally {
 			setIsLoading(false)
 		}
 	}
-
-	// Calculate end date (start + 6 days), in UTC to match how isMonday() reads the date-only value
-	const endDate = startDate
-		? (() => {
-				const end = new Date(`${startDate}T00:00:00Z`)
-				end.setUTCDate(end.getUTCDate() + 6)
-				return end.toISOString().split('T')[0]
-			})()
-		: ''
 
 	if (!groupId) {
 		return (
@@ -126,7 +140,7 @@ export default function NewPeriodPage({ params }: PageProps) {
 	}
 
 	return (
-		<div>
+		<>
 			<BreadcrumbNav
 				items={[
 					{ label: 'Dashboard', href: '/dashboard' },
@@ -135,11 +149,12 @@ export default function NewPeriodPage({ params }: PageProps) {
 				]}
 			/>
 
-			<BackButton
-				href={`/groups/${groupId}`}
-				label={groupName ? `Kembali ke ${groupName}` : 'Kembali ke Grup'}
-				className='mb-6'
-			/>
+			<PageEntrance>
+				<BackButton
+					href={`/groups/${groupId}`}
+					label={groupName ? `Kembali ke ${groupName}` : 'Kembali ke Grup'}
+					className='mb-6'
+				/>
 
 			<div className='max-w-md'>
 				<PageHeader title='Mulai Periode Baru' description='Buat periode tilawah mingguan baru untuk grup Anda.' />
@@ -183,21 +198,9 @@ export default function NewPeriodPage({ params }: PageProps) {
 						<div className='rounded-lg border border-border bg-muted/50 p-4'>
 							<p className='text-base font-medium mb-2'>Durasi Periode</p>
 							<p className='text-base text-muted-foreground'>
-								{new Date(`${startDate}T00:00:00Z`).toLocaleDateString('id-ID', {
-									weekday: 'long',
-									year: 'numeric',
-									month: 'long',
-									day: 'numeric',
-									timeZone: 'UTC',
-								})}
+								{formatPeriodDate(`${startDate}T00:00:00Z`, WEEKDAY_FORMAT)}
 								{' → '}
-								{new Date(`${endDate}T00:00:00Z`).toLocaleDateString('id-ID', {
-									weekday: 'long',
-									year: 'numeric',
-									month: 'long',
-									day: 'numeric',
-									timeZone: 'UTC',
-								})}
+								{formatPeriodDate(`${endDate}T00:00:00Z`, WEEKDAY_FORMAT)}
 							</p>
 						</div>
 					)}
@@ -225,6 +228,7 @@ export default function NewPeriodPage({ params }: PageProps) {
 					</div>
 				</form>
 			</div>
-		</div>
+		</PageEntrance>
+		</>
 	)
 }

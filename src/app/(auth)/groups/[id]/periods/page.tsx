@@ -1,12 +1,16 @@
 import { authOptions } from '@/components/lib/auth'
+import { hasGroupAccess } from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
-import { getPeriodPhase } from '@/components/lib/period-status'
+import { formatPeriodRange, getPeriodPhase } from '@/components/lib/period-status'
+import { countByPeriod } from '@/components/lib/periods'
+import { PERIOD_STATUS } from '@/components/lib/status'
 import { CreatePeriodButton } from '@/components/periods/create-period-button'
 import { LockPrompt } from '@/components/periods/lock-prompt'
 import { BackButton } from '@/components/ui/back-button'
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
-import { PeriodBadge } from '@/components/ui/status-badge'
+import { PageEntrance } from '@/components/ui/page-entrance'
 import { PageHeader } from '@/components/ui/page-header'
+import { PeriodBadge } from '@/components/ui/status-badge'
 import { Calendar, Users } from 'lucide-react'
 import { getServerSession } from 'next-auth'
 import Link from 'next/link'
@@ -17,16 +21,7 @@ interface PageProps {
 }
 
 async function getGroupWithPeriods(userId: string, groupId: string) {
-	const access = await prisma.coordinatorGroup.findUnique({
-		where: {
-			coordinatorId_groupId: {
-				coordinatorId: userId,
-				groupId,
-			},
-		},
-	})
-
-	if (!access) {
+	if (!(await hasGroupAccess(userId, groupId))) {
 		return null
 	}
 
@@ -61,30 +56,16 @@ export default async function PeriodsListPage({ params }: PageProps) {
 		notFound()
 	}
 
-	// Get stats for each period
-	const periodsWithStats = await Promise.all(
-		group.periods.map(async (period) => {
-			const stats = await prisma.participantPeriod.groupBy({
-				by: ['progressStatus'],
-				where: { periodId: period.id },
-				_count: { progressStatus: true },
-			})
+	// One query for every period's counts, rather than a groupBy per period
+	const counts = await countByPeriod(group.periods.map((p) => p.id))
+	const periodsWithStats = group.periods.map((period) => ({ ...period, statusCounts: counts.get(period.id)! }))
 
-			const statusCounts = { finished: 0, not_finished: 0, missed: 0 }
-			for (const s of stats) {
-				statusCounts[s.progressStatus as keyof typeof statusCounts] = s._count.progressStatus
-			}
-
-			return { ...period, statusCounts }
-		}),
-	)
-
-	const activePeriod = periodsWithStats.find((p) => p.status === 'active')
+	const activePeriod = periodsWithStats.find((p) => p.status === PERIOD_STATUS.active)
 	const activePhase = activePeriod ? getPeriodPhase(activePeriod) : null
-	const lockedPeriods = periodsWithStats.filter((p) => p.status === 'locked')
+	const lockedPeriods = periodsWithStats.filter((p) => p.status === PERIOD_STATUS.locked)
 
 	return (
-		<div>
+		<>
 			{/* Breadcrumb Navigation */}
 			<BreadcrumbNav
 				items={[
@@ -94,8 +75,9 @@ export default async function PeriodsListPage({ params }: PageProps) {
 				]}
 			/>
 
-			{/* Enhanced Back Button */}
-			<BackButton href={`/groups/${group.id}`} label={`Kembali ke ${group.name}`} className='mb-6' />
+			<PageEntrance>
+				{/* Enhanced Back Button */}
+				<BackButton href={`/groups/${group.id}`} label={`Kembali ke ${group.name}`} className='mb-6' />
 
 			{/* Header */}
 			<PageHeader title='Periode' description={`${group.periods.length} total periode`} />
@@ -127,10 +109,7 @@ export default async function PeriodsListPage({ params }: PageProps) {
 								<div className='flex items-center gap-4 text-base text-muted-foreground'>
 									<span className='inline-flex items-center gap-1'>
 										<Calendar className='h-4 w-4' />
-										{new Date(activePeriod.startDate).toLocaleDateString('id-ID', {
-											dateStyle: 'medium',
-										})}{' '}
-										- {new Date(activePeriod.endDate).toLocaleDateString('id-ID', { dateStyle: 'medium' })}
+										{formatPeriodRange(activePeriod.startDate, activePeriod.endDate)}
 									</span>
 									<span className='inline-flex items-center gap-1'>
 										<Users className='h-4 w-4' />
@@ -168,8 +147,7 @@ export default async function PeriodsListPage({ params }: PageProps) {
 											</span>
 										</div>
 										<p className='text-base text-muted-foreground'>
-											{new Date(period.startDate).toLocaleDateString('id-ID', { dateStyle: 'medium' })} -{' '}
-											{new Date(period.endDate).toLocaleDateString('id-ID', { dateStyle: 'medium' })}
+											{formatPeriodRange(period.startDate, period.endDate)}
 										</p>
 									</div>
 									<div className='flex items-center gap-4 text-sm'>
@@ -200,6 +178,7 @@ export default async function PeriodsListPage({ params }: PageProps) {
 					</Link>
 				</div>
 			)}
-		</div>
+		</PageEntrance>
+		</>
 	)
 }

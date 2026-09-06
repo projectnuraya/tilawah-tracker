@@ -1,5 +1,6 @@
-import { getPublicGroupPeriods, getPublicGroupWithActivePeriod } from '@/components/lib/public-utils'
+import { getPublicGroupOverview, validatePublicToken } from '@/components/lib/public-utils'
 import { PublicPeriodCard } from '@/components/public/public-period-card'
+import { PageEntrance } from '@/components/ui/page-entrance'
 import { AlertCircle, Calendar } from 'lucide-react'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
@@ -11,7 +12,7 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
 	try {
 		const { token } = await params
-		const { group } = await getPublicGroupWithActivePeriod(token)
+		const group = await validatePublicToken(token)
 		return {
 			title: `${group.name} - Tilawah Tracker`,
 			description: `Progress tilawah grup ${group.name}`,
@@ -27,21 +28,17 @@ export default async function PublicGroupPage({ params }: PageProps) {
 	const { token } = await params
 
 	// Fetch data and handle errors before JSX construction
-	let group, activePeriod, periods
+	let overview
 	try {
-		const groupData = await getPublicGroupWithActivePeriod(token)
-		const periodsData = await getPublicGroupPeriods(token)
-		group = groupData.group
-		activePeriod = groupData.activePeriod
-		periods = periodsData.periods
+		overview = await getPublicGroupOverview(token)
 	} catch {
 		notFound()
 	}
 
-	const lockedPeriods = periods
+	const { group, activePeriod, periods: lockedPeriods } = overview
 
 	return (
-		<div className='min-h-screen bg-background'>
+		<PageEntrance>
 			<div>
 				{/* Header */}
 				<div className='mb-8 text-center'>
@@ -106,8 +103,7 @@ export default async function PublicGroupPage({ params }: PageProps) {
 						</p>
 					</div>
 				)}
-
 			</div>
-		</div>
+		</PageEntrance>
 	)
 }

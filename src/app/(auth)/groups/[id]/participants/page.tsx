@@ -1,8 +1,11 @@
 import { authOptions } from '@/components/lib/auth'
+import { hasGroupAccess } from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
+import { PERIOD_STATUS } from '@/components/lib/status'
 import { ParticipantsList } from '@/components/participants/participants-list'
 import { BackButton } from '@/components/ui/back-button'
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
+import { PageEntrance } from '@/components/ui/page-entrance'
 import { PageHeader } from '@/components/ui/page-header'
 import { Plus } from 'lucide-react'
 import { getServerSession } from 'next-auth'
@@ -14,16 +17,7 @@ interface PageProps {
 }
 
 async function getGroupWithParticipants(userId: string, groupId: string) {
-	const access = await prisma.coordinatorGroup.findUnique({
-		where: {
-			coordinatorId_groupId: {
-				coordinatorId: userId,
-				groupId,
-			},
-		},
-	})
-
-	if (!access) {
+	if (!(await hasGroupAccess(userId, groupId))) {
 		return null
 	}
 
@@ -34,7 +28,7 @@ async function getGroupWithParticipants(userId: string, groupId: string) {
 				orderBy: [{ isActive: 'desc' }, { name: 'asc' }],
 			},
 			periods: {
-				where: { status: 'active' },
+				where: { status: PERIOD_STATUS.active },
 				take: 1,
 				include: {
 					participantPeriods: true,
@@ -96,7 +90,7 @@ export default async function ParticipantsPage({ params }: PageProps) {
 	}
 
 	return (
-		<div>
+		<>
 			{/* Breadcrumb Navigation */}
 			<BreadcrumbNav
 				items={[
@@ -106,8 +100,9 @@ export default async function ParticipantsPage({ params }: PageProps) {
 				]}
 			/>
 
-			{/* Enhanced Back Button */}
-			<BackButton href={`/groups/${group.id}`} label={`Kembali ke ${group.name}`} className='mb-6' />
+			<PageEntrance>
+				{/* Enhanced Back Button */}
+				<BackButton href={`/groups/${group.id}`} label={`Kembali ke ${group.name}`} className='mb-6' />
 
 			{/* Header */}
 			<PageHeader title='Peserta' description={`${activeParticipants.length} peserta aktif`} />
@@ -115,7 +110,7 @@ export default async function ParticipantsPage({ params }: PageProps) {
 			{/* Add Participant Button */}
 			<Link
 				href={`/groups/${group.id}/participants/new`}
-				className='flex items-center justify-center gap-2 w-full rounded-xl bg-primary px-4 py-3.5 text-primary-foreground font-semibold shadow-sm transition hover:bg-primary-hover mb-6'>
+				className='flex items-center justify-center gap-2 w-full rounded-xl bg-primary px-4 py-3.5 text-primary-foreground font-semibold shadow-sm transition hover:bg-primary-hover active:scale-[0.99] mb-6'>
 				<Plus className='h-5 w-5' />
 				<span>Tambah Peserta</span>
 			</Link>
@@ -127,6 +122,7 @@ export default async function ParticipantsPage({ params }: PageProps) {
 				activePeriod={!!activePeriod}
 				participantDataMap={participantDataMap}
 			/>
-		</div>
+		</PageEntrance>
+		</>
 	)
 }

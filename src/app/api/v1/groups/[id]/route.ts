@@ -2,12 +2,14 @@ import {
 	apiError,
 	apiSuccess,
 	NotFoundError,
+	parseJsonBody,
 	requireAuth,
 	requireGroupAccess,
 	ValidationError,
 } from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
-import { logger } from '@/components/lib/logger'
+import { getIdentifier, rateLimit } from '@/components/lib/rate-limit'
+import { createRateLimitResponse } from '@/components/lib/rate-limit-middleware'
 import { updateGroupSchema, validateInput } from '@/components/lib/validators'
 import { NextRequest } from 'next/server'
 
@@ -23,6 +25,14 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 	try {
 		const session = await requireAuth()
 		const { id } = await params
+
+		// Rate limit: 100 requests per minute
+		const identifier = getIdentifier(request, session.user.id)
+		const rateLimitResult = await rateLimit.read(identifier)
+
+		if (!rateLimitResult.success) {
+			return createRateLimitResponse(rateLimitResult)
+		}
 
 		await requireGroupAccess(session.user.id, id)
 
@@ -57,7 +67,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 		})
 
 		if (!group) {
-			throw new NotFoundError('Group not found')
+			throw new NotFoundError('Grup tidak ditemukan.')
 		}
 
 		return apiSuccess({
@@ -85,19 +95,21 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 		const session = await requireAuth()
 		const { id } = await params
 
+		// Rate limit: 30 requests per minute
+		const identifier = getIdentifier(request, session.user.id)
+		const rateLimitResult = await rateLimit.write(identifier)
+
+		if (!rateLimitResult.success) {
+			return createRateLimitResponse(rateLimitResult)
+		}
+
 		await requireGroupAccess(session.user.id, id)
 
-		let body
-		try {
-			body = await request.json()
-		} catch (err) {
-			logger.error({ err }, 'Failed to parse JSON in request body')
-			throw new ValidationError('Invalid JSON in request body')
-		}
+		const body = await parseJsonBody(request)
 		const validation = validateInput(updateGroupSchema, body)
 
 		if (!validation.success) {
-			throw new ValidationError(validation.error.message)
+			throw new ValidationError(validation.error.message, validation.error.details)
 		}
 
 		const { name } = validation.data
@@ -126,6 +138,14 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
 	try {
 		const session = await requireAuth()
 		const { id } = await params
+
+		// Rate limit: 30 requests per minute
+		const identifier = getIdentifier(request, session.user.id)
+		const rateLimitResult = await rateLimit.write(identifier)
+
+		if (!rateLimitResult.success) {
+			return createRateLimitResponse(rateLimitResult)
+		}
 
 		await requireGroupAccess(session.user.id, id)
 

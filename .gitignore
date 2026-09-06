@@ -24,6 +24,7 @@
 .DS_Store
 *.pem
 .vscode/
+graphify*
 
 # debug
 npm-debug.log*

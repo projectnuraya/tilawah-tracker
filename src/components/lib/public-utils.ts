@@ -1,5 +1,7 @@
 import { NotFoundError } from './auth-utils'
 import { prisma } from './db'
+import { countByPeriod } from './periods'
+import { PERIOD_STATUS } from './status'
 
 /**
  * Validate a public token and return the associated group
@@ -26,86 +28,35 @@ export async function validatePublicToken(token: string) {
 }
 
 /**
- * Get group overview with its current active period (if any)
- * Used to display the main progress view for public token access
+ * Everything the public group page renders: the group, its running period, and its locked history.
+ *
+ * One function because the page needs all three at once. It used to call two helpers that each
+ * re-validated the token, so every page load looked the token up twice.
  */
-export async function getPublicGroupWithActivePeriod(token: string) {
+export async function getPublicGroupOverview(token: string) {
 	const group = await validatePublicToken(token)
 
-	// Get current active period if exists
-	const activePeriod = await prisma.period.findFirst({
-		where: {
-			groupId: group.id,
-			status: 'active',
-		},
-		include: {
-			_count: {
-				select: { participantPeriods: true },
-			},
-		},
-		orderBy: { periodNumber: 'desc' },
-	})
-
-	// Calculate progress stats for active period
-	let activeWithStats = null
-	if (activePeriod) {
-		const stats = await prisma.participantPeriod.groupBy({
-			by: ['progressStatus'],
-			where: { periodId: activePeriod.id },
-			_count: { progressStatus: true },
-		})
-
-		const statusCounts = { finished: 0, not_finished: 0, missed: 0 }
-		for (const s of stats) {
-			statusCounts[s.progressStatus as keyof typeof statusCounts] = s._count.progressStatus
-		}
-
-		activeWithStats = { ...activePeriod, statusCounts }
-	}
-
-	return { group, activePeriod: activeWithStats }
-}
-
-/**
- * Get all past periods for a public group with progress stats
- * Shows historical data of completed weeks (limited to last 52 weeks)
- */
-export async function getPublicGroupPeriods(token: string) {
-	const group = await validatePublicToken(token)
-
-	const periods = await prisma.period.findMany({
-		where: {
-			groupId: group.id,
-			status: 'locked',
-		},
-		include: {
-			_count: {
-				select: { participantPeriods: true },
-			},
-		},
-		orderBy: { periodNumber: 'desc' },
-		take: 52,
-	})
-
-	// Attach stats to each period
-	const periodsWithStats = await Promise.all(
-		periods.map(async (period) => {
-			const stats = await prisma.participantPeriod.groupBy({
-				by: ['progressStatus'],
-				where: { periodId: period.id },
-				_count: { progressStatus: true },
-			})
-
-			const statusCounts = { finished: 0, not_finished: 0, missed: 0 }
-			for (const s of stats) {
-				statusCounts[s.progressStatus as keyof typeof statusCounts] = s._count.progressStatus
-			}
-
-			return { ...period, statusCounts }
+	const [activePeriod, lockedPeriods] = await Promise.all([
+		prisma.period.findFirst({
+			where: { groupId: group.id, status: PERIOD_STATUS.active },
+			include: { _count: { select: { participantPeriods: true } } },
+			orderBy: { periodNumber: 'desc' },
 		}),
-	)
+		prisma.period.findMany({
+			where: { groupId: group.id, status: PERIOD_STATUS.locked },
+			include: { _count: { select: { participantPeriods: true } } },
+			orderBy: { periodNumber: 'desc' },
+			take: 52, // roughly a year of history
+		}),
+	])
 
-	return { group, periods: periodsWithStats }
+	const counts = await countByPeriod([...(activePeriod ? [activePeriod.id] : []), ...lockedPeriods.map((p) => p.id)])
+
+	return {
+		group,
+		activePeriod: activePeriod ? { ...activePeriod, statusCounts: counts.get(activePeriod.id)! } : null,
+		periods: lockedPeriods.map((period) => ({ ...period, statusCounts: counts.get(period.id)! })),
+	}
 }
 
 /**

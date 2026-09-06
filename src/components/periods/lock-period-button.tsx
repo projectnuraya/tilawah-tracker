@@ -1,9 +1,9 @@
 'use client'
 
-import { logger } from '@/components/lib/logger'
 import { Button } from '@/components/ui/button'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { Lock } from 'lucide-react'
+import { motion } from 'motion/react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { toast } from 'sonner'
@@ -33,7 +33,7 @@ export function LockPeriodButton({ periodId, notFinishedCount }: LockPeriodButto
 				toast.error('Gagal mengunci periode', { description: 'Silakan coba lagi.' })
 			}
 		} catch (err) {
-			logger.error({ err, periodId }, 'Failed to lock period')
+			console.error('Failed to lock period', periodId, err)
 			toast.error('Gagal mengunci periode', { description: 'Periksa koneksi internet Anda.' })
 		} finally {
 			setIsLocking(false)
@@ -43,14 +43,16 @@ export function LockPeriodButton({ periodId, notFinishedCount }: LockPeriodButto
 
 	return (
 		<>
-			<Button
-				variant='outline'
-				onClick={() => setIsConfirming(true)}
-				aria-label='Kunci periode untuk menandai peserta yang belum selesai sebagai terlewat'
-				className='border-destructive/50 text-destructive hover:bg-error-bg'>
-				<Lock className='h-4 w-4' aria-hidden='true' />
-				Kunci Periode
-			</Button>
+			<motion.div whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }} className='inline-flex'>
+				<Button
+					variant='outline'
+					onClick={() => setIsConfirming(true)}
+					aria-label='Kunci periode untuk menandai peserta yang belum selesai sebagai terlewat'
+					className='border-destructive/50 text-destructive hover:bg-error-bg cursor-pointer'>
+					<Lock className='h-4 w-4' aria-hidden='true' />
+					Kunci Periode
+				</Button>
+			</motion.div>
 
 			<ConfirmDialog
 				open={isConfirming}
@@ -64,9 +66,7 @@ export function LockPeriodButton({ periodId, notFinishedCount }: LockPeriodButto
 							ini tidak dapat dibatalkan.
 						</>
 					) : (
-						<>
-							Setelah dikunci, laporan susulan tidak bisa dicatat lagi dan tindakan ini tidak dapat dibatalkan.
-						</>
+						<>Setelah dikunci, laporan susulan tidak bisa dicatat lagi dan tindakan ini tidak dapat dibatalkan.</>
 					)
 				}
 				confirmLabel='Ya, Kunci Periode'

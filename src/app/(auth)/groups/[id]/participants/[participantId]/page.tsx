@@ -1,11 +1,13 @@
 import { authOptions } from '@/components/lib/auth'
+import { hasGroupAccess } from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
 import { DeactivateButton } from '@/components/participants/deactivate-button'
 import { EditParticipantForm } from '@/components/participants/edit-form'
 import { ReactivateButton } from '@/components/participants/reactivate-button'
 import { BackButton } from '@/components/ui/back-button'
-import { buttonClasses } from '@/components/ui/button'
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
+import { buttonClasses } from '@/components/ui/button'
+import { PageEntrance } from '@/components/ui/page-entrance'
 import { PageHeader } from '@/components/ui/page-header'
 import { StatusText } from '@/components/ui/status-badge'
 import { MessageCircle } from 'lucide-react'
@@ -17,16 +19,7 @@ interface PageProps {
 }
 
 async function getParticipant(userId: string, groupId: string, participantId: string) {
-	const access = await prisma.coordinatorGroup.findUnique({
-		where: {
-			coordinatorId_groupId: {
-				coordinatorId: userId,
-				groupId,
-			},
-		},
-	})
-
-	if (!access) {
+	if (!(await hasGroupAccess(userId, groupId))) {
 		return null
 	}
 
@@ -70,6 +63,7 @@ export default async function ParticipantDetailPage({ params }: PageProps) {
 		notFound()
 	}
 
+	// Helper for whatsapp link
 	const whatsappLink = participant.whatsappNumber
 		? `https://wa.me/${participant.whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
 				`Assalamu'alaikum ${participant.name}, ini pengingat untuk tilawah Anda.`,
@@ -77,7 +71,7 @@ export default async function ParticipantDetailPage({ params }: PageProps) {
 		: null
 
 	return (
-		<div>
+		<>
 			{/* Breadcrumb Navigation */}
 			<BreadcrumbNav
 				items={[
@@ -88,8 +82,9 @@ export default async function ParticipantDetailPage({ params }: PageProps) {
 				]}
 			/>
 
-			{/* Enhanced Back Button */}
-			<BackButton href={`/groups/${participant.group.id}/participants`} label='Kembali ke Peserta' className='mb-6' />
+			<PageEntrance>
+				{/* Enhanced Back Button */}
+				<BackButton href={`/groups/${participant.group.id}/participants`} label='Kembali ke Peserta' className='mb-6' />
 
 			<div className='max-w-md'>
 				<PageHeader
@@ -114,11 +109,7 @@ export default async function ParticipantDetailPage({ params }: PageProps) {
 				{participant.isActive && whatsappLink && (
 					<div className='rounded-xl border border-border bg-card p-4 mb-6'>
 						<h2 className='font-medium mb-2'>Aksi Cepat</h2>
-						<a
-							href={whatsappLink}
-							target='_blank'
-							rel='noopener noreferrer'
-							className={buttonClasses()}>
+						<a href={whatsappLink} target='_blank' rel='noopener noreferrer' className={buttonClasses()}>
 							<MessageCircle className='h-4 w-4' aria-hidden='true' />
 							Ingatkan via WhatsApp
 						</a>
@@ -168,6 +159,7 @@ export default async function ParticipantDetailPage({ params }: PageProps) {
 					)}
 				</div>
 			</div>
-		</div>
+		</PageEntrance>
+		</>
 	)
 }

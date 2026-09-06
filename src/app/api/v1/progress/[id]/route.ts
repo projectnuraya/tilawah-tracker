@@ -2,14 +2,15 @@ import {
 	apiError,
 	apiSuccess,
 	NotFoundError,
+	parseJsonBody,
 	requireAuth,
 	requireGroupAccess,
 	ValidationError,
 } from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
-import { logger } from '@/components/lib/logger'
 import { getIdentifier, rateLimit } from '@/components/lib/rate-limit'
 import { createRateLimitResponse } from '@/components/lib/rate-limit-middleware'
+import { PERIOD_STATUS, PROGRESS } from '@/components/lib/status'
 import { updateProgressSchema, validateInput } from '@/components/lib/validators'
 import { NextRequest } from 'next/server'
 
@@ -31,17 +32,11 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 			return createRateLimitResponse(rateLimitResult)
 		}
 
-		let body
-		try {
-			body = await request.json()
-		} catch (err) {
-			logger.error({ err }, 'Failed to parse JSON in update progress request body')
-			throw new ValidationError('Invalid JSON in update progress request body')
-		}
+		const body = await parseJsonBody(request)
 		const validation = validateInput(updateProgressSchema, body)
 
 		if (!validation.success) {
-			throw new ValidationError(validation.error.message)
+			throw new ValidationError(validation.error.message, validation.error.details)
 		}
 
 		const { status } = validation.data
@@ -59,15 +54,15 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 		})
 
 		if (!participantPeriod) {
-			throw new NotFoundError('Participant period not found')
+			throw new NotFoundError('Data progress peserta tidak ditemukan.')
 		}
 
 		// Verify coordinator access to the group
 		await requireGroupAccess(session.user.id, participantPeriod.period.groupId)
 
 		// Cannot update progress for locked periods (immutable)
-		if (participantPeriod.period.status === 'locked') {
-			throw new ValidationError('Cannot update progress for a locked period')
+		if (participantPeriod.period.status === PERIOD_STATUS.locked) {
+			throw new ValidationError('Periode sudah terkunci, progress tidak bisa diubah.')
 		}
 
 		// Update progress status and reset streak if completed
@@ -76,7 +71,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 			where: { id },
 			data: {
 				progressStatus: status,
-				...(status === 'finished' && { missedStreak: 0 }),
+				...(status === PROGRESS.finished && { missedStreak: 0 }),
 			},
 		})
 

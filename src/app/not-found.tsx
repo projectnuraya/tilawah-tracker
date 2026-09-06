@@ -22,8 +22,8 @@ export default function NotFound() {
 
 				{/* Description */}
 				<p className='text-lg text-muted-foreground leading-relaxed'>
-					Sepertinya kita tidak dapat menemukan halaman yang Anda cari. Ini mungkin karena tautannya salah, atau
-					halaman tersebut sudah dipindahkan.
+					Sepertinya kita tidak dapat menemukan halaman yang Anda cari. Ini mungkin karena tautannya salah, atau halaman
+					tersebut sudah dipindahkan.
 				</p>
 
 				{/*

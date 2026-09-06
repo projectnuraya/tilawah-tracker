@@ -1,10 +1,13 @@
 'use client'
 
+import { groupByJuz } from '@/components/lib/juz'
+import { PROGRESS } from '@/components/lib/status'
 import { cn } from '@/components/lib/utils'
 import { ProgressStatusDropdown } from '@/components/periods/progress-dropdown'
 import { fieldClasses } from '@/components/ui/input'
-import { PROGRESS_STATUS, StatusText, type ProgressStatus } from '@/components/ui/status-badge'
+import { PROGRESS_STATUS, type ProgressStatus, StatusText } from '@/components/ui/status-badge'
 import { ChevronDown, Search, X } from 'lucide-react'
+import { motion } from 'motion/react'
 import { useMemo, useState } from 'react'
 
 interface Participant {
@@ -43,10 +46,33 @@ const JUZ_GROUPS = [
 ]
 
 const FILTERS: { value: ProgressStatus | null; label: string; icon?: string; on: string; off: string }[] = [
-	{ value: null, label: 'Semua Status', on: 'bg-primary text-primary-foreground shadow-sm', off: 'border-2 border-border bg-background text-foreground hover:bg-muted' },
-	{ value: 'finished', label: PROGRESS_STATUS.finished.label, icon: PROGRESS_STATUS.finished.icon, on: 'bg-success text-success-foreground shadow-sm', off: 'border-2 border-success bg-success-bg text-success-bg-foreground' },
-	{ value: 'not_finished', label: PROGRESS_STATUS.not_finished.label, icon: PROGRESS_STATUS.not_finished.icon, on: 'bg-warning text-warning-foreground shadow-sm', off: 'border-2 border-warning bg-warning-bg text-warning-bg-foreground' },
-	{ value: 'missed', label: PROGRESS_STATUS.missed.label, icon: PROGRESS_STATUS.missed.icon, on: 'bg-destructive text-destructive-foreground shadow-sm', off: 'border-2 border-destructive bg-error-bg text-error-bg-foreground' },
+	{
+		value: null,
+		label: 'Semua Status',
+		on: 'bg-primary text-primary-foreground shadow-sm',
+		off: 'border-2 border-border bg-background text-foreground hover:bg-muted',
+	},
+	{
+		value: PROGRESS.finished,
+		label: PROGRESS_STATUS.finished.label,
+		icon: PROGRESS_STATUS.finished.icon,
+		on: 'bg-success text-success-foreground shadow-sm',
+		off: 'border-2 border-success bg-success-bg text-success-bg-foreground',
+	},
+	{
+		value: PROGRESS.notFinished,
+		label: PROGRESS_STATUS.not_finished.label,
+		icon: PROGRESS_STATUS.not_finished.icon,
+		on: 'bg-warning text-warning-foreground shadow-sm',
+		off: 'border-2 border-warning bg-warning-bg text-warning-bg-foreground',
+	},
+	{
+		value: PROGRESS.missed,
+		label: PROGRESS_STATUS.missed.label,
+		icon: PROGRESS_STATUS.missed.icon,
+		on: 'bg-destructive text-destructive-foreground shadow-sm',
+		off: 'border-2 border-destructive bg-error-bg text-error-bg-foreground',
+	},
 ]
 
 /**
@@ -58,7 +84,12 @@ const FILTERS: { value: ProgressStatus | null; label: string; icon?: string; on:
  * their empty-state buttons had different styles. Sections now start open on both sides and can
  * still be collapsed.
  */
-export function JuzProgressList({ participantPeriods, editable = false, showMissedFilter = false, actions }: JuzProgressListProps) {
+export function JuzProgressList({
+	participantPeriods,
+	editable = false,
+	showMissedFilter = false,
+	actions,
+}: JuzProgressListProps) {
 	const [searchQuery, setSearchQuery] = useState('')
 	const [filterStatus, setFilterStatus] = useState<ProgressStatus | null>(null)
 	const [collapsed, setCollapsed] = useState<Record<number, boolean>>({})
@@ -71,12 +102,7 @@ export function JuzProgressList({ participantPeriods, editable = false, showMiss
 		return rows
 	}, [searchQuery, filterStatus, participantPeriods])
 
-	const byJuz = useMemo(() => {
-		const grouped: Record<number, JuzParticipantPeriod[]> = {}
-		for (let i = 1; i <= 30; i++) grouped[i] = []
-		for (const pp of filtered) grouped[pp.juzNumber]?.push(pp)
-		return grouped
-	}, [filtered])
+	const byJuz = useMemo(() => groupByJuz(filtered), [filtered])
 
 	const hasActiveFilters = searchQuery.trim() !== '' || filterStatus !== null
 
@@ -86,7 +112,7 @@ export function JuzProgressList({ participantPeriods, editable = false, showMiss
 		setCollapsed({})
 	}
 
-	const visibleFilters = FILTERS.filter((f) => f.value !== 'missed' || showMissedFilter)
+	const visibleFilters = FILTERS.filter((f) => f.value !== PROGRESS.missed || showMissedFilter)
 
 	return (
 		<div>
@@ -112,47 +138,69 @@ export function JuzProgressList({ participantPeriods, editable = false, showMiss
 					<span className='text-base text-muted-foreground'>
 						{filtered.length} dari {participantPeriods.length} peserta
 					</span>
-					<button
+					<motion.button
+						whileTap={{ scale: 0.95 }}
 						onClick={resetFilters}
 						disabled={!hasActiveFilters}
 						className={cn(
-							'inline-flex min-h-11 items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-background text-base transition',
+							'inline-flex min-h-11 items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-background text-base transition-all',
 							hasActiveFilters ? 'hover:bg-muted cursor-pointer' : 'opacity-50 cursor-not-allowed',
 						)}>
 						<X className='h-3.5 w-3.5' aria-hidden='true' />
 						Reset
-					</button>
+					</motion.button>
 				</div>
 
 				<fieldset className='space-y-2'>
 					<legend className='text-base font-medium text-foreground mb-2'>Filter Status:</legend>
 					<div className='flex flex-wrap gap-3 sm:grid sm:grid-cols-2 lg:flex lg:flex-nowrap'>
-						{visibleFilters.map((f) => (
-							<button
-								key={f.label}
-								onClick={() => setFilterStatus(f.value)}
-								aria-pressed={filterStatus === f.value}
-								className={cn(
-									'flex-1 min-h-12 px-4 py-3 rounded-lg font-medium text-base transition-colors',
-									filterStatus === f.value ? f.on : f.off,
-								)}>
-								{f.icon && (
-									<span className='mr-2' aria-hidden='true'>
-										{f.icon}
-									</span>
-								)}
-								{f.label}
-							</button>
-						))}
+						{visibleFilters.map((f) => {
+							const isSelected = filterStatus === f.value
+							return (
+								<motion.button
+									key={f.label}
+									whileHover={{ y: -2 }}
+									whileTap={{ scale: 0.96 }}
+									transition={{ duration: 0.15 }}
+									onClick={() => setFilterStatus(f.value)}
+									aria-pressed={isSelected}
+									className={cn(
+										'flex-1 min-h-12 px-4 py-3 rounded-lg font-medium text-base transition-all shadow-xs flex items-center justify-center',
+										isSelected ? f.on : f.off,
+									)}>
+									{f.icon && (
+										<motion.span
+											key={isSelected ? 'active' : 'inactive'}
+											initial={isSelected ? { scale: 0.8 } : false}
+											animate={{ scale: 1 }}
+											transition={{ type: 'spring', stiffness: 500, damping: 18 }}
+											className='mr-2'
+											aria-hidden='true'>
+											{f.icon}
+										</motion.span>
+									)}
+									{f.label}
+								</motion.button>
+							)
+						})}
 					</div>
 				</fieldset>
 			</div>
 
-			<div className='space-y-4'>
+			<motion.div
+				key={`${filterStatus}-${searchQuery}`}
+				initial={{ opacity: 0.88, y: 3 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={{ duration: 0.15, ease: 'easeOut' }}
+				className='space-y-4'>
 				<h2 className='text-xl font-medium'>Progress per Juz</h2>
 
 				{filtered.length === 0 ? (
-					<div className='rounded-xl border border-border bg-card p-8 text-center'>
+					<motion.div
+						initial={{ opacity: 0, scale: 0.98 }}
+						animate={{ opacity: 1, scale: 1 }}
+						transition={{ duration: 0.2 }}
+						className='rounded-xl border border-border bg-card p-8 text-center'>
 						<div className='mx-auto w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4'>
 							<Search className='h-8 w-8 text-muted-foreground' aria-hidden='true' />
 						</div>
@@ -161,14 +209,15 @@ export function JuzProgressList({ participantPeriods, editable = false, showMiss
 							Tidak ditemukan peserta yang sesuai dengan filter yang dipilih.
 						</p>
 						{hasActiveFilters && (
-							<button
+							<motion.button
+								whileTap={{ scale: 0.96 }}
 								onClick={resetFilters}
 								className='inline-flex min-h-11 items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-base font-medium hover:bg-primary-hover transition'>
 								<X className='h-4 w-4' aria-hidden='true' />
 								Reset Filter
-							</button>
+							</motion.button>
 						)}
-					</div>
+					</motion.div>
 				) : (
 					JUZ_GROUPS.map((group, index) => {
 						const rows = group.juzNumbers.flatMap((juz) => byJuz[juz] ?? [])
@@ -176,16 +225,24 @@ export function JuzProgressList({ participantPeriods, editable = false, showMiss
 						const isOpen = !collapsed[index]
 
 						return (
-							<div key={group.label} className='rounded-xl border border-border bg-card overflow-hidden'>
+							// No `overflow-hidden` here: it would clip the status dropdown's popover
+							// inside the card. The header button rounds its own corners instead.
+							<div key={group.label} className='rounded-xl border border-border bg-card'>
 								<button
 									onClick={() => setCollapsed((prev) => ({ ...prev, [index]: !prev[index] }))}
-									className='w-full hover:bg-muted/80 px-4 py-3 border-b-2 border-b-accent flex items-center justify-between transition-colors cursor-pointer'
+									className={cn(
+										'w-full hover:bg-muted/80 px-4 py-3 border-b-2 border-b-accent flex items-center justify-between transition-colors cursor-pointer rounded-t-xl',
+										!isOpen && 'rounded-b-xl',
+									)}
 									aria-expanded={isOpen}>
 									<h3 className='font-medium text-left'>{group.label}</h3>
 									<div className='flex items-center gap-2'>
 										<span className='text-base text-muted-foreground'>{rows.length} peserta</span>
 										<ChevronDown
-											className={cn('h-4 w-4 text-muted-foreground transition-transform duration-200', isOpen && 'rotate-180')}
+											className={cn(
+												'h-4 w-4 text-muted-foreground transition-transform duration-200',
+												isOpen && 'rotate-180',
+											)}
 											aria-hidden='true'
 										/>
 									</div>
@@ -203,7 +260,9 @@ export function JuzProgressList({ participantPeriods, editable = false, showMiss
 													</div>
 													<div className='min-w-0'>
 														<div className='flex items-center gap-2'>
-															<p className='font-medium text-base truncate'>{pp.participant.name}</p>
+															<p className='font-medium text-base truncate'>
+																{pp.participant.name}
+															</p>
 															{pp.missedStreak > 0 && (
 																<span
 																	className='inline-flex shrink-0 items-center px-1.5 py-0.5 rounded text-sm font-medium bg-error-bg text-error-bg-foreground'
@@ -238,7 +297,7 @@ export function JuzProgressList({ participantPeriods, editable = false, showMiss
 						)
 					})
 				)}
-			</div>
+			</motion.div>
 		</div>
 	)
 }

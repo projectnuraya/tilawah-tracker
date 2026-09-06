@@ -4,6 +4,7 @@ import { useGroupName } from '@/components/lib/use-group-name'
 import { sanitizeWhatsAppNumber } from '@/components/lib/utils'
 import { BackButton } from '@/components/ui/back-button'
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
+import { PageEntrance } from '@/components/ui/page-entrance'
 import { PageHeader } from '@/components/ui/page-header'
 import { Loader2, Plus, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -106,7 +107,7 @@ export default function NewParticipantPage({ params }: PageProps) {
 	}
 
 	return (
-		<div>
+		<>
 			<BreadcrumbNav
 				items={[
 					{ label: 'Dashboard', href: '/dashboard' },
@@ -116,7 +117,8 @@ export default function NewParticipantPage({ params }: PageProps) {
 				]}
 			/>
 
-			<BackButton href={`/groups/${groupId}/participants`} label='Kembali ke Peserta' className='mb-6' />
+			<PageEntrance>
+				<BackButton href={`/groups/${groupId}/participants`} label='Kembali ke Peserta' className='mb-6' />
 
 			<div>
 				<PageHeader title='Tambah Peserta' description='Tambahkan satu atau lebih anggota ke grup tilawah ini.' />
@@ -144,7 +146,9 @@ export default function NewParticipantPage({ params }: PageProps) {
 									</div>
 
 									<div>
-										<label htmlFor={`whatsapp-${participant.id}`} className='block text-base font-medium mb-2'>
+										<label
+											htmlFor={`whatsapp-${participant.id}`}
+											className='block text-base font-medium mb-2'>
 											WhatsApp <span className='text-muted-foreground text-sm'>(opsional)</span>
 										</label>
 										<input
@@ -212,6 +216,7 @@ export default function NewParticipantPage({ params }: PageProps) {
 					Jika ada periode aktif, peserta akan otomatis mendapat nomor juz yang tersedia.
 				</p>
 			</div>
-		</div>
+		</PageEntrance>
+		</>
 	)
 }

@@ -1,6 +1,5 @@
 'use client'
 
-import { logger } from '@/components/lib/logger'
 import { Button } from '@/components/ui/button'
 import { Loader2, UserPlus } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -35,7 +34,7 @@ export function ReactivateButton({ participantId, groupId }: ReactivateButtonPro
 				toast.error('Gagal mengaktifkan peserta', { description: 'Silakan coba lagi.' })
 			}
 		} catch (err) {
-			logger.error({ err, participantId }, 'Failed to reactivate participant')
+			console.error('Failed to reactivate participant', participantId, err)
 			toast.error('Gagal mengaktifkan peserta', { description: 'Periksa koneksi internet Anda.' })
 		} finally {
 			setIsLoading(false)

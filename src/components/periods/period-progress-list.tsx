@@ -1,6 +1,6 @@
 'use client'
 
-import { JuzProgressList, type JuzParticipantPeriod } from '@/components/periods/juz-progress-list'
+import { type JuzParticipantPeriod, JuzProgressList } from '@/components/periods/juz-progress-list'
 import { LockPeriodButton } from '@/components/periods/lock-period-button'
 import { ShareButton } from '@/components/periods/share-button'
 

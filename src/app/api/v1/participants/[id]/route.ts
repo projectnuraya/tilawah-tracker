@@ -1,65 +1,21 @@
-import { apiError, apiSuccess, ForbiddenError, NotFoundError, requireAuth, ValidationError } from '@/components/lib/auth-utils'
+import {
+	apiError,
+	apiSuccess,
+	getParticipantWithAccess,
+	parseJsonBody,
+	requireAuth,
+	ValidationError,
+} from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
-import { logger } from '@/components/lib/logger'
+import { juzTally, newAssignment, takeLeastUsedJuz } from '@/components/lib/juz'
+import { getIdentifier, rateLimit } from '@/components/lib/rate-limit'
+import { createRateLimitResponse } from '@/components/lib/rate-limit-middleware'
+import { PERIOD_STATUS } from '@/components/lib/status'
 import { updateParticipantSchema, validateInput } from '@/components/lib/validators'
 import { NextRequest } from 'next/server'
 
 interface RouteParams {
 	params: Promise<{ id: string }>
-}
-
-/**
- * Helper to verify coordinator has access to a participant
- * Checks the participant's group's coordinatorGroups relationship
- */
-async function getParticipantWithAccess(coordinatorId: string, participantId: string) {
-	const participant = await prisma.participant.findUnique({
-		where: { id: participantId },
-		include: {
-			group: {
-				include: {
-					coordinatorGroups: {
-						where: { coordinatorId },
-					},
-				},
-			},
-		},
-	})
-
-	if (!participant) {
-		throw new NotFoundError('Participant not found')
-	}
-
-	if (participant.group.coordinatorGroups.length === 0) {
-		throw new ForbiddenError("You don't have access to this participant")
-	}
-
-	return participant
-}
-
-/**
- * GET /api/v1/participants/[id]
- * Get participant details
- */
-export async function GET(request: NextRequest, { params }: RouteParams) {
-	try {
-		const session = await requireAuth()
-		const { id } = await params
-
-		const participant = await getParticipantWithAccess(session.user.id, id)
-
-		return apiSuccess({
-			id: participant.id,
-			groupId: participant.groupId,
-			name: participant.name,
-			whatsappNumber: participant.whatsappNumber,
-			isActive: participant.isActive,
-			createdAt: participant.createdAt,
-			updatedAt: participant.updatedAt,
-		})
-	} catch (error) {
-		return apiError(error)
-	}
 }
 
 /**
@@ -72,19 +28,21 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 		const session = await requireAuth()
 		const { id } = await params
 
-		await getParticipantWithAccess(session.user.id, id)
+		// Rate limit: 60 requests per minute
+		const identifier = getIdentifier(request, session.user.id)
+		const rateLimitResult = await rateLimit.singleParticipant(identifier)
 
-		let body
-		try {
-			body = await request.json()
-		} catch (err) {
-			logger.error({ err }, 'Failed to parse JSON in request body')
-			throw new ValidationError('Invalid JSON in request body')
+		if (!rateLimitResult.success) {
+			return createRateLimitResponse(rateLimitResult)
 		}
+
+		const participant = await getParticipantWithAccess(session.user.id, id)
+
+		const body = await parseJsonBody(request)
 		const validation = validateInput(updateParticipantSchema, body)
 
 		if (!validation.success) {
-			throw new ValidationError(validation.error.message)
+			throw new ValidationError(validation.error.message, validation.error.details)
 		}
 
 		const { name, whatsappNumber, isActive } = validation.data
@@ -99,27 +57,20 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 		if (name !== undefined) {
 			const trimmedName = name.trim()
 			// Check if another participant in the same group has the same name
-			const currentParticipant = await prisma.participant.findUnique({
-				where: { id },
-				select: { groupId: true },
+			const existing = await prisma.participant.findFirst({
+				where: {
+					groupId: participant.groupId,
+					name: {
+						equals: trimmedName,
+						mode: 'insensitive',
+					},
+					id: { not: id }, // Exclude current participant
+				},
+				select: { id: true },
 			})
 
-			if (currentParticipant) {
-				const existing = await prisma.participant.findFirst({
-					where: {
-						groupId: currentParticipant.groupId,
-						name: {
-							equals: trimmedName,
-							mode: 'insensitive',
-						},
-						id: { not: id }, // Exclude current participant
-					},
-					select: { id: true },
-				})
-
-				if (existing) {
-					throw new ValidationError(`Peserta dengan nama "${trimmedName}" sudah ada di grup ini`)
-				}
+			if (existing) {
+				throw new ValidationError(`Peserta dengan nama "${trimmedName}" sudah ada di grup ini.`)
 			}
 
 			updateData.name = trimmedName
@@ -143,9 +94,47 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 			updateData.isActive = isActive
 		}
 
-		const updated = await prisma.participant.update({
-			where: { id },
-			data: updateData,
+		const reactivating = isActive === true && !participant.isActive
+
+		const updated = await prisma.$transaction(async (tx) => {
+			const row = await tx.participant.update({
+				where: { id },
+				data: updateData,
+			})
+
+			// Adding a *new* participant during an active period assigns them a juz straight away.
+			// Reactivating one did not, so they stayed invisible for the rest of the running week —
+			// absent from the progress list, the stats and the WhatsApp share text — until the next
+			// period rolled over. Give them the same treatment.
+			if (reactivating) {
+				const activePeriod = await tx.period.findFirst({
+					where: { groupId: participant.groupId, status: PERIOD_STATUS.active },
+					select: { id: true },
+				})
+
+				if (activePeriod) {
+					const alreadyAssigned = await tx.participantPeriod.findUnique({
+						where: { participantId_periodId: { participantId: id, periodId: activePeriod.id } },
+						select: { id: true },
+					})
+
+					// Deactivating leaves the row in place, so someone toggled off and on again inside
+					// the same period keeps their original juz rather than being reassigned.
+					if (!alreadyAssigned) {
+						const juzCounts = await tx.participantPeriod.groupBy({
+							by: ['juzNumber'],
+							where: { periodId: activePeriod.id },
+							_count: { juzNumber: true },
+						})
+
+						await tx.participantPeriod.create({
+							data: newAssignment(id, activePeriod.id, takeLeastUsedJuz(juzTally(juzCounts))),
+						})
+					}
+				}
+			}
+
+			return row
 		})
 
 		return apiSuccess(updated)
@@ -164,6 +153,14 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
 	try {
 		const session = await requireAuth()
 		const { id } = await params
+
+		// Rate limit: 60 requests per minute
+		const identifier = getIdentifier(request, session.user.id)
+		const rateLimitResult = await rateLimit.singleParticipant(identifier)
+
+		if (!rateLimitResult.success) {
+			return createRateLimitResponse(rateLimitResult)
+		}
 
 		await getParticipantWithAccess(session.user.id, id)
 

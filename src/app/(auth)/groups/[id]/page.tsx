@@ -1,13 +1,16 @@
-import { getPeriodPhase } from '@/components/lib/period-status'
 import { ParticipantsPreview } from '@/components/groups/participants-preview'
-import { LockPrompt } from '@/components/periods/lock-prompt'
 import { ShareFab } from '@/components/groups/share-fab'
 import { authOptions } from '@/components/lib/auth'
+import { hasGroupAccess } from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
+import { formatPeriodDate, formatPeriodRange, getPeriodPhase } from '@/components/lib/period-status'
+import { PERIOD_STATUS } from '@/components/lib/status'
+import { LockPrompt } from '@/components/periods/lock-prompt'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { ButtonLink } from '@/components/ui/button'
 import { BackButton } from '@/components/ui/back-button'
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
+import { ButtonLink } from '@/components/ui/button'
+import { PageEntrance } from '@/components/ui/page-entrance'
 import { PageHeader } from '@/components/ui/page-header'
 import { Calendar, Plus, Settings, Users } from 'lucide-react'
 import { getServerSession } from 'next-auth'
@@ -20,16 +23,7 @@ interface PageProps {
 
 async function getGroup(userId: string, groupId: string) {
 	// Check access
-	const access = await prisma.coordinatorGroup.findUnique({
-		where: {
-			coordinatorId_groupId: {
-				coordinatorId: userId,
-				groupId,
-			},
-		},
-	})
-
-	if (!access) {
+	if (!(await hasGroupAccess(userId, groupId))) {
 		return null
 	}
 
@@ -80,12 +74,12 @@ export default async function GroupDetailPage({ params }: PageProps) {
 		notFound()
 	}
 
-	const activePeriod = group.periods.find((p) => p.status === 'active')
+	const activePeriod = group.periods.find((p) => p.status === PERIOD_STATUS.active)
 	const activePhase = activePeriod ? getPeriodPhase(activePeriod) : null
 	const publicUrl = `${process.env.NEXT_PUBLIC_APP_URL || ''}/view/${group.publicToken}`
 
 	return (
-		<div>
+		<>
 			{/* Breadcrumb Navigation */}
 			<BreadcrumbNav
 				items={[
@@ -93,6 +87,8 @@ export default async function GroupDetailPage({ params }: PageProps) {
 					{ label: group.name, href: '#', current: true },
 				]}
 			/>
+
+			<PageEntrance>
 
 			{/* Enhanced Back Button */}
 			<BackButton href='/dashboard' label='Kembali ke Dashboard' className='mb-6' />
@@ -121,7 +117,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
 			<div className='grid grid-cols-2 gap-4 mb-6'>
 				<Link
 					href={`/groups/${group.id}/participants`}
-					className='block rounded-xl border border-border bg-card p-4 hover:bg-muted transition'>
+					className='block rounded-xl border border-border bg-card p-4 hover:border-primary/40 hover:shadow-sm transition-all active:scale-[0.99]'>
 					<div className='flex items-center gap-3'>
 						<div className='rounded-full bg-primary/10 p-2'>
 							<Users className='h-5 w-5 text-primary' />
@@ -134,7 +130,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
 				</Link>
 				<Link
 					href={`/groups/${group.id}/periods`}
-					className='block rounded-xl border border-border bg-card p-4 hover:bg-muted transition'>
+					className='block rounded-xl border border-border bg-card p-4 hover:border-primary/40 hover:shadow-sm transition-all active:scale-[0.99]'>
 					<div className='flex items-center gap-3'>
 						<div className='rounded-full bg-accent/10 p-2'>
 							<Calendar className='h-5 w-5 text-accent' />
@@ -163,16 +159,16 @@ export default async function GroupDetailPage({ params }: PageProps) {
 				{activePeriod ? (
 					<Link
 						href={`/groups/${group.id}/periods/${activePeriod.id}`}
-						className='block rounded-lg border border-primary/20 bg-primary/5 p-4 hover:bg-primary/10 transition'>
+						className='block rounded-lg border border-primary/20 bg-primary/5 p-4 hover:border-primary/40 hover:bg-primary/10 transition-all active:scale-[0.99]'>
 						<div className='flex items-center justify-between'>
 							<div>
 								<p className='font-medium'>Periode #{activePeriod.periodNumber}</p>
 								<p className='text-base text-muted-foreground'>
-									{new Date(activePeriod.startDate).toLocaleDateString('id-ID', { dateStyle: 'medium' })} -{' '}
-									{new Date(activePeriod.endDate).toLocaleDateString('id-ID', { dateStyle: 'medium' })}
+									{formatPeriodRange(activePeriod.startDate, activePeriod.endDate)}
 								</p>
 							</div>
-							<span className='inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-sm font-medium text-primary'>
+							<span className='inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary'>
+								<span className='h-1.5 w-1.5 rounded-full bg-primary animate-pulse' aria-hidden='true' />
 								Aktif
 							</span>
 						</div>
@@ -228,20 +224,20 @@ export default async function GroupDetailPage({ params }: PageProps) {
 							<Link
 								key={period.id}
 								href={`/groups/${group.id}/periods/${period.id}`}
-								className='flex items-center justify-between py-2 px-3 rounded-lg hover:bg-muted transition'>
+								className='flex items-center justify-between py-2 px-3 rounded-lg hover:bg-muted hover:translate-x-0.5 transition-all'>
 								<div>
 									<span className='text-xl font-medium'>Periode #{period.periodNumber}</span>
 									<p className='text-base text-muted-foreground'>
-										{new Date(period.startDate).toLocaleDateString('id-ID', { dateStyle: 'short' })}
+										{formatPeriodDate(period.startDate, { dateStyle: 'short' })}
 									</p>
 								</div>
 								<span
 									className={`inline-flex items-center rounded-full px-2 py-0.5 text-base font-medium ${
-										period.status === 'active'
+										period.status === PERIOD_STATUS.active
 											? 'bg-primary/10 text-primary'
 											: 'bg-muted text-muted-foreground'
 									}`}>
-									{period.status === 'active' ? 'Aktif' : 'Terkunci'}
+									{period.status === PERIOD_STATUS.active ? 'Aktif' : 'Terkunci'}
 								</span>
 							</Link>
 						))}
@@ -249,6 +245,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
 				</div>
 			)}
 			<ShareFab publicUrl={publicUrl} publicToken={group.publicToken} />
-		</div>
+		</PageEntrance>
+		</>
 	)
 }

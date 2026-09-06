@@ -1,4 +1,4 @@
-import { getPeriodPhase } from '@/components/lib/period-status'
+import { formatPeriodRange, getPeriodPhase } from '@/components/lib/period-status'
 import { PeriodBadge } from '@/components/ui/status-badge'
 import { Calendar, Users } from 'lucide-react'
 import Link from 'next/link'
@@ -31,7 +31,7 @@ export function PublicPeriodCard({ period, token }: PublicPeriodCardProps) {
 	return (
 		<Link
 			href={`/view/${token}/periods/${period.id}`}
-			className='block rounded-xl border border-border bg-card p-4 hover:border-primary/30 hover:shadow-sm transition'>
+			className='block rounded-xl border border-border bg-card p-4 hover:border-primary/40 hover:shadow-md transition-all active:scale-[0.99]'>
 			<div className='flex items-start justify-between mb-3'>
 				<div>
 					<div className='flex items-center gap-2 mb-1'>
@@ -41,8 +41,7 @@ export function PublicPeriodCard({ period, token }: PublicPeriodCardProps) {
 					<div className='flex items-center gap-2 text-base text-muted-foreground'>
 						<Calendar className='h-3.5 w-3.5' />
 						<span>
-							{new Date(period.startDate).toLocaleDateString('id-ID', { dateStyle: 'medium' })} -{' '}
-							{new Date(period.endDate).toLocaleDateString('id-ID', { dateStyle: 'medium' })}
+							{formatPeriodRange(period.startDate, period.endDate)}
 						</span>
 					</div>
 				</div>

@@ -1,4 +1,5 @@
 import Header from '@/components/ui/header'
+import { PageEntrance } from '@/components/ui/page-entrance'
 import Link from 'next/link'
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
@@ -17,12 +18,14 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
 			{/* Main Content */}
 			<main className='container mx-auto max-w-3xl px-6 py-6'>{children}</main>
 
-			<footer className='container mx-auto max-w-3xl px-6 pb-10'>
-				<div className='pt-6 border-t border-border text-center text-base text-muted-foreground'>
-					<p>Tilawah Tracker - Sistem tracking tilawah grup</p>
-					<p className='mt-1'>PT Nuraya Digital Nusantara</p>
-				</div>
-			</footer>
+			<PageEntrance>
+				<footer className='container mx-auto max-w-3xl px-6 pb-10'>
+					<div className='pt-6 border-t border-border text-center text-base text-muted-foreground'>
+						<p>Tilawah Tracker - Sistem tracking tilawah grup</p>
+						<p className='mt-1'>PT Nuraya Digital Nusantara</p>
+					</div>
+				</footer>
+			</PageEntrance>
 		</div>
 	)
 }

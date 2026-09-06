@@ -1,12 +1,15 @@
 import { authOptions } from '@/components/lib/auth'
+import { hasGroupAccess } from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
-import { getPeriodPhase } from '@/components/lib/period-status'
+import { formatPeriodRange, getPeriodPhase } from '@/components/lib/period-status'
+import { countByStatus, PERIOD_STATUS } from '@/components/lib/status'
 import { LockPrompt } from '@/components/periods/lock-prompt'
+import { PeriodProgressList } from '@/components/periods/period-progress-list'
 import { PeriodStats } from '@/components/periods/period-stats'
 import { ProgressSummary } from '@/components/periods/progress-summary'
-import { PeriodProgressList } from '@/components/periods/period-progress-list'
 import { BackButton } from '@/components/ui/back-button'
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
+import { PageEntrance } from '@/components/ui/page-entrance'
 import { PageHeader } from '@/components/ui/page-header'
 import { PeriodBadge } from '@/components/ui/status-badge'
 import { Calendar } from 'lucide-react'
@@ -18,16 +21,7 @@ interface PageProps {
 }
 
 async function getPeriod(userId: string, groupId: string, periodId: string) {
-	const access = await prisma.coordinatorGroup.findUnique({
-		where: {
-			coordinatorId_groupId: {
-				coordinatorId: userId,
-				groupId,
-			},
-		},
-	})
-
-	if (!access) {
+	if (!(await hasGroupAccess(userId, groupId))) {
 		return null
 	}
 
@@ -81,18 +75,15 @@ export default async function PeriodDetailPage({ params }: PageProps) {
 	}
 
 	// Calculate stats
-	const stats = {
-		total: period.participantPeriods.length,
-		finished: period.participantPeriods.filter((pp) => pp.progressStatus === 'finished').length,
-		not_finished: period.participantPeriods.filter((pp) => pp.progressStatus === 'not_finished').length,
-		missed: period.participantPeriods.filter((pp) => pp.progressStatus === 'missed').length,
-	}
+	// Three passes over the same array, written out twice — countByStatus does it in one
+	const counts = countByStatus(period.participantPeriods)
+	const total = period.participantPeriods.length
 
-	const isActive = period.status === 'active'
+	const isActive = period.status === PERIOD_STATUS.active
 	const phase = getPeriodPhase(period)
 
 	return (
-		<div>
+		<>
 			{/* Breadcrumb Navigation */}
 			<BreadcrumbNav
 				items={[
@@ -103,8 +94,9 @@ export default async function PeriodDetailPage({ params }: PageProps) {
 				]}
 			/>
 
-			{/* Enhanced Back Button */}
-			<BackButton href={`/groups/${period.group.id}/periods`} label='Kembali ke Periode' className='mb-6' />
+			<PageEntrance>
+				{/* Enhanced Back Button */}
+				<BackButton href={`/groups/${period.group.id}/periods`} label='Kembali ke Periode' className='mb-6' />
 
 			{/* Header */}
 			<PageHeader
@@ -113,8 +105,7 @@ export default async function PeriodDetailPage({ params }: PageProps) {
 				description={
 					<span className='flex items-center gap-2'>
 						<Calendar className='h-4 w-4' aria-hidden='true' />
-						{new Date(period.startDate).toLocaleDateString('id-ID', { dateStyle: 'long' })} -{' '}
-						{new Date(period.endDate).toLocaleDateString('id-ID', { dateStyle: 'long' })}
+						{formatPeriodRange(period.startDate, period.endDate, { dateStyle: 'long' })}
 					</span>
 				}
 			/>
@@ -122,13 +113,13 @@ export default async function PeriodDetailPage({ params }: PageProps) {
 			{phase === 'awaiting_lock' && <LockPrompt periodNumber={period.periodNumber} endDate={period.endDate} />}
 
 			<PeriodStats
-				finished={stats.finished}
-				notFinished={stats.not_finished}
-				missed={stats.missed}
+				finished={counts.finished}
+				notFinished={counts.not_finished}
+				missed={counts.missed}
 				showMissed={!isActive}
 			/>
 
-			<ProgressSummary finished={stats.finished} total={stats.total} />
+			<ProgressSummary finished={counts.finished} total={total} />
 
 			{/* Period Progress List with Search and Filters */}
 			<PeriodProgressList
@@ -136,13 +127,14 @@ export default async function PeriodDetailPage({ params }: PageProps) {
 					...period,
 					participantPeriods: period.participantPeriods.map((pp) => ({
 						...pp,
-						progressStatus: pp.progressStatus as 'finished' | 'not_finished' | 'missed',
+						progressStatus: pp.progressStatus,
 						missedStreak: pp.missedStreak,
 					})),
 				}}
 				isActive={isActive}
-				notFinishedCount={stats.not_finished}
+				notFinishedCount={counts.not_finished}
 			/>
-		</div>
+		</PageEntrance>
+		</>
 	)
 }

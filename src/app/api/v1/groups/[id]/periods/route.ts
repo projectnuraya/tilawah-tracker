@@ -2,87 +2,21 @@ import {
 	apiError,
 	apiSuccess,
 	NotFoundError,
+	parseJsonBody,
 	requireAuth,
 	requireGroupAccess,
 	ValidationError,
 } from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
-import { logger } from '@/components/lib/logger'
-import { createPeriodSchema, listPeriodsSchema, validateInput } from '@/components/lib/validators'
+import { juzTally, newAssignment, nextJuz, takeLeastUsedJuz, TOTAL_JUZ } from '@/components/lib/juz'
+import { getIdentifier, rateLimit } from '@/components/lib/rate-limit'
+import { createRateLimitResponse } from '@/components/lib/rate-limit-middleware'
+import { PERIOD_STATUS, PROGRESS } from '@/components/lib/status'
+import { createPeriodSchema, validateInput } from '@/components/lib/validators'
 import { NextRequest } from 'next/server'
 
 interface RouteParams {
 	params: Promise<{ id: string }>
-}
-
-/**
- * GET /api/v1/groups/[id]/periods
- * List all periods for a group
- */
-export async function GET(request: NextRequest, { params }: RouteParams) {
-	try {
-		const session = await requireAuth()
-		const { id: groupId } = await params
-
-		await requireGroupAccess(session.user.id, groupId)
-
-		const url = new URL(request.url)
-		const queryValidation = validateInput(listPeriodsSchema, {
-			limit: url.searchParams.get('limit'),
-			includeArchived: url.searchParams.get('includeArchived'),
-		})
-
-		if (!queryValidation.success) {
-			throw new ValidationError(queryValidation.error.message)
-		}
-
-		const { limit, includeArchived } = queryValidation.data
-
-		const periods = await prisma.period.findMany({
-			where: {
-				groupId,
-				...(includeArchived ? {} : { isArchived: false }),
-			},
-			orderBy: { periodNumber: 'desc' },
-			take: limit,
-			include: {
-				_count: {
-					select: { participantPeriods: true },
-				},
-			},
-		})
-
-		// Get summary stats for each period
-		const periodsWithStats = await Promise.all(
-			periods.map(async (period) => {
-				const stats = await prisma.participantPeriod.groupBy({
-					by: ['progressStatus'],
-					where: { periodId: period.id },
-					_count: { progressStatus: true },
-				})
-
-				const statusCounts = {
-					finished: 0,
-					not_finished: 0,
-					missed: 0,
-				}
-
-				for (const s of stats) {
-					statusCounts[s.progressStatus as keyof typeof statusCounts] = s._count.progressStatus
-				}
-
-				return {
-					...period,
-					participantCount: period._count.participantPeriods,
-					statusCounts,
-				}
-			}),
-		)
-
-		return apiSuccess(periodsWithStats)
-	} catch (error) {
-		return apiError(error)
-	}
 }
 
 /**
@@ -94,19 +28,21 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 		const session = await requireAuth()
 		const { id: groupId } = await params
 
+		// Rate limit: 30 requests per minute
+		const identifier = getIdentifier(request, session.user.id)
+		const rateLimitResult = await rateLimit.write(identifier)
+
+		if (!rateLimitResult.success) {
+			return createRateLimitResponse(rateLimitResult)
+		}
+
 		await requireGroupAccess(session.user.id, groupId)
 
-		let body
-		try {
-			body = await request.json()
-		} catch (err) {
-			logger.error({ err }, 'Failed to parse JSON in request body')
-			throw new ValidationError('Invalid JSON in request body')
-		}
+		const body = await parseJsonBody(request)
 		const validation = validateInput(createPeriodSchema, body)
 
 		if (!validation.success) {
-			throw new ValidationError(validation.error.message)
+			throw new ValidationError(validation.error.message, validation.error.details)
 		}
 
 		const { startDate } = validation.data
@@ -116,7 +52,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 			where: { id: groupId },
 			include: {
 				periods: {
-					where: { status: 'active' },
+					where: { status: PERIOD_STATUS.active },
 					take: 1,
 				},
 				participants: {
@@ -126,29 +62,32 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 		})
 
 		if (!group) {
-			throw new NotFoundError('Group not found')
+			throw new NotFoundError('Grup tidak ditemukan.')
 		}
 
-		// Check if there's already an active period
+		// These two are the most common outcomes of the Monday flow, so they must reach the
+		// coordinator as readable 400s. They used to be passed to apiError() as plain object
+		// literals, and apiError dispatches on `instanceof` — so both fell through to the 500
+		// branch and surfaced as "An unexpected error occurred".
 		if (group.periods.length > 0) {
-			return apiError({
-				name: 'ValidationError',
-				message: 'There is already an active period. Lock it first before creating a new one.',
-			})
+			throw new ValidationError('Masih ada periode aktif. Kunci periode itu dulu sebelum memulai yang baru.')
 		}
 
-		// Check if there are active participants
 		if (group.participants.length === 0) {
-			return apiError({
-				name: 'ValidationError',
-				message: 'Add at least one participant before creating a period.',
-			})
+			throw new ValidationError('Tambahkan minimal satu peserta sebelum memulai periode.')
 		}
 
-		// Calculate end date (start + 6 days = 7 days total)
+		// Period runs Monday–Sunday, and both columns are `@db.Date`, so the arithmetic has to stay
+		// on the UTC calendar the date-only string parsed into. The previous
+		// `end.setDate(end.getDate() + 6)` mutated *local* fields instead, which lands on the wrong
+		// day in zones whose DST shift is not a whole hour (Australia/Lord_Howe, Pacific/Chatham):
+		// startDate 2024-09-30 stored an end date of 10-05 rather than 10-06.
+		//
+		// date-fns is the house convention, but its addDays is local-field arithmetic too and fails
+		// identically, so this one stays explicitly UTC.
 		const start = new Date(startDate)
 		const end = new Date(start)
-		end.setDate(end.getDate() + 6)
+		end.setUTCDate(end.getUTCDate() + 6)
 
 		// Get the last period number
 		const lastPeriod = await prisma.period.findFirst({
@@ -171,89 +110,46 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 					periodNumber,
 					startDate: start,
 					endDate: end,
-					status: 'active',
+					status: PERIOD_STATUS.active,
 					isArchived: false,
 				},
 			})
 
 			// Create participant periods with juz assignment logic
 			if (lastPeriod && lastPeriod.participantPeriods.length > 0) {
-				// Build map of previous assignments for existing participants
-				const previousAssignments = new Map<string, { juzNumber: number; status: string; missedStreak: number }>()
-				for (const pp of lastPeriod.participantPeriods) {
-					previousAssignments.set(pp.participantId, {
-						juzNumber: pp.juzNumber,
-						status: pp.progressStatus,
-						missedStreak: pp.missedStreak,
-					})
-				}
+				// Previous assignments, so returning participants can rotate off what they had
+				const previous = new Map(lastPeriod.participantPeriods.map((pp) => [pp.participantId, pp]))
 
-				// Assign juz for each active participant in the new period
+				// Running tally of the new period's juz load. This used to be re-queried with a
+				// groupBy inside the loop — one round trip per new participant — and the tally was
+				// stale anyway, since rows created earlier in the same transaction were counted only
+				// after the next query. Counting in memory is both correct and a single pass.
+				const tally = juzTally()
+				const rows = []
+
 				for (const participant of group.participants) {
-					const previous = previousAssignments.get(participant.id)
-					let newJuz: number
-					let newMissedStreak = 0
+					const last = previous.get(participant.id)
 
-					if (previous !== undefined) {
-						// Existing participant: always rotate to next juz, but track missed streak
-						newJuz = previous.juzNumber === 30 ? 1 : previous.juzNumber + 1
-						if (previous.status === 'missed') {
-							newMissedStreak = previous.missedStreak + 1
-						} else {
-							newMissedStreak = 0
-						}
+					if (last) {
+						// Returning participant: advance one juz, and carry the missed streak forward
+						const juz = nextJuz(last.juzNumber)
+						tally.set(juz, (tally.get(juz) ?? 0) + 1)
+						const streak = last.progressStatus === PROGRESS.missed ? last.missedStreak + 1 : 0
+						rows.push(newAssignment(participant.id, newPeriod.id, juz, streak))
 					} else {
-						// New participant: find least-assigned juz for load balancing
-						const juzCounts = await tx.participantPeriod.groupBy({
-							by: ['juzNumber'],
-							where: { periodId: newPeriod.id },
-							_count: { juzNumber: true },
-						})
-
-						const countMap = new Map<number, number>()
-						for (let i = 1; i <= 30; i++) {
-							countMap.set(i, 0)
-						}
-						for (const jc of juzCounts) {
-							countMap.set(jc.juzNumber, jc._count.juzNumber)
-						}
-
-						let minCount = Infinity
-						newJuz = 1
-						for (const [juz, count] of countMap) {
-							if (count < minCount) {
-								minCount = count
-								newJuz = juz
-							}
-						}
+						// New participant: take whichever juz is carrying the fewest people
+						rows.push(newAssignment(participant.id, newPeriod.id, takeLeastUsedJuz(tally)))
 					}
+				}
 
-					// Create the participant-period record
-					await tx.participantPeriod.create({
-						data: {
-							participantId: participant.id,
-							periodId: newPeriod.id,
-							juzNumber: newJuz,
-							progressStatus: 'not_finished',
-							missedStreak: newMissedStreak,
-						},
-					})
-				}
+				await tx.participantPeriod.createMany({ data: rows })
 			} else {
-				// First period: evenly distribute participants across 30 juz
-				const participants = group.participants
-				for (let i = 0; i < participants.length; i++) {
-					const juzNumber = (i % 30) + 1
-					await tx.participantPeriod.create({
-						data: {
-							participantId: participants[i].id,
-							periodId: newPeriod.id,
-							juzNumber,
-							progressStatus: 'not_finished',
-							missedStreak: 0,
-						},
-					})
-				}
+				// First period for this group: spread everyone round-robin across juz 1–30
+				await tx.participantPeriod.createMany({
+					data: group.participants.map((participant, i) =>
+						newAssignment(participant.id, newPeriod.id, (i % TOTAL_JUZ) + 1),
+					),
+				})
 			}
 
 			return newPeriod

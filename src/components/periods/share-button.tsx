@@ -1,9 +1,12 @@
 'use client'
 
-import { logger } from '@/components/lib/logger'
+import { groupByJuz, JUZ_NUMBERS } from '@/components/lib/juz'
+import { formatPeriodDate } from '@/components/lib/period-status'
+import { isProgressStatus } from '@/components/lib/status'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Label, Textarea } from '@/components/ui/input'
+import { PROGRESS_STATUS } from '@/components/ui/status-badge'
 import { Check, Copy, Share2 } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
@@ -41,21 +44,10 @@ export function ShareButton({ period, groupName, publicToken, coordinators }: Sh
 	const [copied, setCopied] = useState(false)
 
 	const generateShareText = () => {
-		const startDate = new Date(period.startDate).toLocaleDateString('id-ID', {
-			dateStyle: 'medium',
-		})
-		const endDate = new Date(period.endDate).toLocaleDateString('id-ID', {
-			dateStyle: 'medium',
-		})
+		const startDate = formatPeriodDate(period.startDate)
+		const endDate = formatPeriodDate(period.endDate)
 
-		// Group participants by juz
-		const byJuz: Record<number, typeof period.participantPeriods> = {}
-		for (const pp of period.participantPeriods) {
-			if (!byJuz[pp.juzNumber]) {
-				byJuz[pp.juzNumber] = []
-			}
-			byJuz[pp.juzNumber].push(pp)
-		}
+		const byJuz = groupByJuz(period.participantPeriods)
 
 		let text = `Bismillahirrahmanirrahim\n`
 		text += `_One Week One Juz_\n\n`
@@ -68,20 +60,14 @@ export function ShareButton({ period, groupName, publicToken, coordinators }: Sh
 			.filter(Boolean)
 			.join(', ')}\n\n`
 
-		for (let juz = 1; juz <= 30; juz++) {
+		for (const juz of JUZ_NUMBERS) {
 			const participants = byJuz[juz]
-			if (!participants || participants.length === 0) continue
+			if (participants.length === 0) continue
 
 			text += `*Juz ${juz}:*\n`
 			for (const pp of participants) {
-				const statusIcon =
-					pp.progressStatus === 'finished'
-						? '👑'
-						: pp.progressStatus === 'missed'
-							? '💔'
-							: pp.progressStatus === 'not_finished'
-								? '⏳'
-								: ''
+				// Same icons the UI shows, so the pasted message matches the screen it came from
+				const statusIcon = isProgressStatus(pp.progressStatus) ? PROGRESS_STATUS[pp.progressStatus].icon : ''
 				const streakText = pp.missedStreak > 0 ? ` 💔×${pp.missedStreak}` : ''
 				text += `- ${pp.participant.name}${statusIcon ? ' ' + statusIcon : ''}${streakText}\n`
 			}
@@ -119,7 +105,7 @@ export function ShareButton({ period, groupName, publicToken, coordinators }: Sh
 				setTimeout(() => setCopied(false), 2000)
 			}
 		} catch (err) {
-			logger.error({ err }, 'Failed to copy share text to clipboard')
+			console.error('Failed to copy share text to clipboard', err)
 			toast.error('Gagal menyalin teks', {
 				description: 'Peramban memblokir akses clipboard. Salin manual dari kotak pratinjau.',
 			})

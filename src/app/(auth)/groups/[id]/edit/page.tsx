@@ -3,6 +3,7 @@
 import { DeleteGroupButton } from '@/components/groups/delete-group-button'
 import { BackButton } from '@/components/ui/back-button'
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
+import { PageEntrance } from '@/components/ui/page-entrance'
 import { PageHeader } from '@/components/ui/page-header'
 import { Loader2 } from 'lucide-react'
 import Link from 'next/link'
@@ -121,6 +122,8 @@ export default function EditGroupPage({ params }: PageProps) {
 				]}
 			/>
 
+			<PageEntrance className='flex flex-col flex-1'>
+
 			<BackButton
 				href={`/groups/${groupId}`}
 				label={originalName ? `Kembali ke ${originalName}` : 'Kembali ke Grup'}
@@ -180,6 +183,7 @@ export default function EditGroupPage({ params }: PageProps) {
 					<DeleteGroupButton groupId={groupId} groupName={originalName} />
 				</div>
 			)}
+		</PageEntrance>
 		</div>
 	)
 }

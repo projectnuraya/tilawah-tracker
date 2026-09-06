@@ -1,5 +1,8 @@
-import { apiError, apiSuccess, ForbiddenError, NotFoundError, requireAuth, ValidationError } from '@/components/lib/auth-utils'
+import { apiError, apiSuccess, getPeriodWithAccess, requireAuth, ValidationError } from '@/components/lib/auth-utils'
 import { prisma } from '@/components/lib/db'
+import { getIdentifier, rateLimit } from '@/components/lib/rate-limit'
+import { createRateLimitResponse } from '@/components/lib/rate-limit-middleware'
+import { countByStatus, PERIOD_STATUS, PROGRESS } from '@/components/lib/status'
 import { NextRequest } from 'next/server'
 
 interface RouteParams {
@@ -16,31 +19,19 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 		const session = await requireAuth()
 		const { id } = await params
 
-		// Get period with access check via coordinator-group relationship
-		const period = await prisma.period.findUnique({
-			where: { id },
-			include: {
-				group: {
-					include: {
-						coordinatorGroups: {
-							where: { coordinatorId: session.user.id },
-						},
-					},
-				},
-			},
-		})
+		// Rate limit: 30 requests per minute — locking is irreversible
+		const identifier = getIdentifier(request, session.user.id)
+		const rateLimitResult = await rateLimit.write(identifier)
 
-		if (!period) {
-			throw new NotFoundError('Period not found')
+		if (!rateLimitResult.success) {
+			return createRateLimitResponse(rateLimitResult)
 		}
 
-		if (period.group.coordinatorGroups.length === 0) {
-			throw new ForbiddenError("You don't have access to this period")
-		}
+		const period = await getPeriodWithAccess(session.user.id, id)
 
 		// Cannot lock an already locked period
-		if (period.status === 'locked') {
-			throw new ValidationError('This period is already locked')
+		if (period.status === PERIOD_STATUS.locked) {
+			throw new ValidationError('Periode ini sudah terkunci.')
 		}
 
 		// Lock period and auto-mark all incomplete as "missed" in a transaction
@@ -51,10 +42,10 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 			await tx.participantPeriod.updateMany({
 				where: {
 					periodId: id,
-					progressStatus: 'not_finished',
+					progressStatus: PROGRESS.notFinished,
 				},
 				data: {
-					progressStatus: 'missed',
+					progressStatus: PROGRESS.missed,
 				},
 			})
 
@@ -62,7 +53,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 			return tx.period.update({
 				where: { id },
 				data: {
-					status: 'locked',
+					status: PERIOD_STATUS.locked,
 					lockedAt: new Date(),
 				},
 			})
@@ -74,16 +65,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 			where: { periodId: id },
 			_count: { progressStatus: true },
 		})
-
-		const statusCounts = {
-			finished: 0,
-			not_finished: 0,
-			missed: 0,
-		}
-
-		for (const s of stats) {
-			statusCounts[s.progressStatus as keyof typeof statusCounts] = s._count.progressStatus
-		}
+		const statusCounts = countByStatus(stats)
 
 		return apiSuccess({
 			id: lockedPeriod.id,

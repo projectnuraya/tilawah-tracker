@@ -1,6 +1,5 @@
 'use client'
 
-import { logger } from '@/components/lib/logger'
 import { AlertCircle, Home, RefreshCw } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
@@ -15,8 +14,9 @@ export default function ErrorPage({ error, reset }: ErrorProps) {
 	const { data: session } = useSession()
 
 	useEffect(() => {
-		// Log the error details
-		logger.error({ error, digest: error.digest }, 'Page error occurred')
+		// Runs in the browser, so this is a console call: Pino is a server module and
+		// importing it here dragged it into the client bundle. The server already logged this.
+		console.error('Page error occurred', error.digest, error)
 	}, [error])
 
 	return (
