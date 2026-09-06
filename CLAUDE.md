@@ -15,6 +15,8 @@ npm install                              # install deps
 npx prisma generate                      # regenerate Prisma client after schema.prisma changes
 npx prisma db push                       # sync schema to DB (dev, no migration)
 npx prisma migrate dev --name <name>     # create a migration (never `migrate reset` in prod)
+npx prisma migrate deploy                # apply pending migrations in prod (or `make migrate`)
+npx prisma migrate resolve --applied 0_init # baseline existing DB that was set up with db push (or `make migrate-baseline`)
 npm run dev                              # start dev server
 npm run build                            # production build (Next.js) - only when the user explicitly asks
 npm run lint                             # eslint

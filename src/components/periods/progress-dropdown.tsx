@@ -29,6 +29,11 @@ export function ProgressStatusDropdown({
 	const [isOpen, setIsOpen] = useState(false)
 	const dropdownRef = useRef<HTMLDivElement>(null)
 
+	// Sync state when currentStatus prop updates from the server
+	useEffect(() => {
+		setStatus(currentStatus)
+	}, [currentStatus])
+
 	// Close on click outside or Escape
 	useEffect(() => {
 		if (!isOpen) return
@@ -57,6 +62,7 @@ export function ProgressStatusDropdown({
 		setIsOpen(false)
 		if (newStatus === status) return
 
+		const previousStatus = status
 		setIsSaving(true)
 		setStatus(newStatus)
 
@@ -71,7 +77,7 @@ export function ProgressStatusDropdown({
 
 			if (!response.ok) {
 				// Revert on error
-				setStatus(currentStatus)
+				setStatus(previousStatus)
 				toast.error('Gagal menyimpan status', {
 					description: `Status ${participantName} dikembalikan seperti semula.`,
 				})
@@ -80,7 +86,7 @@ export function ProgressStatusDropdown({
 				router.refresh()
 			}
 		} catch {
-			setStatus(currentStatus)
+			setStatus(previousStatus)
 			toast.error('Gagal menyimpan status', { description: 'Periksa koneksi internet Anda.' })
 		} finally {
 			setIsSaving(false)

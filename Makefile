@@ -1,6 +1,6 @@
 # Makefile for Tilawah Tracker - Optimization: Build on Host
 
-.PHONY: build-all install build-app build-docker deploy
+.PHONY: build-all install build-app build-docker deploy migrate migrate-baseline
 
 build-all: install build-app build-docker
 
@@ -16,3 +16,10 @@ build-docker:
 
 deploy:
 	docker compose up -d
+
+migrate:
+	npx prisma migrate deploy
+
+migrate-baseline:
+	npx prisma migrate resolve --applied 0_init
+

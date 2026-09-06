@@ -9,22 +9,24 @@ import { z } from 'zod'
 // ==================== Groups ====================
 
 export const createGroupSchema = z.object({
-	name: z.string().min(3, 'Nama grup minimal 3 karakter').max(255, 'Nama grup maksimal 255 karakter'),
+	name: z.string('Nama grup wajib diisi').min(3, 'Nama grup minimal 3 karakter').max(255, 'Nama grup maksimal 255 karakter'),
 })
 
 export const updateGroupSchema = z.object({
-	name: z.string().min(3, 'Nama grup minimal 3 karakter').max(255, 'Nama grup maksimal 255 karakter'),
+	name: z.string('Nama grup wajib diisi').min(3, 'Nama grup minimal 3 karakter').max(255, 'Nama grup maksimal 255 karakter'),
 })
 
 // ==================== Participants ====================
 
 export const createParticipantSchema = z.object({
-	name: z.string().min(2, 'Nama peserta minimal 2 karakter').max(255, 'Nama peserta maksimal 255 karakter'),
+	name: z.string('Nama peserta wajib diisi').min(2, 'Nama peserta minimal 2 karakter').max(255, 'Nama peserta maksimal 255 karakter'),
 	whatsappNumber: z
 		.string()
 		.regex(/^\+\d{10,15}$/, 'Format nomor WhatsApp tidak valid (contoh: +6281234567890)')
+		.or(z.literal(''))
 		.optional()
-		.nullable(),
+		.nullable()
+		.transform((val) => (val === '' ? null : val)),
 })
 
 export const createParticipantBulkSchema = z.object({
@@ -35,12 +37,18 @@ export const createParticipantBulkSchema = z.object({
 })
 
 export const updateParticipantSchema = z.object({
-	name: z.string().min(2, 'Nama peserta minimal 2 karakter').max(255, 'Nama peserta maksimal 255 karakter').optional(),
+	name: z
+		.string('Nama peserta wajib diisi')
+		.min(2, 'Nama peserta minimal 2 karakter')
+		.max(255, 'Nama peserta maksimal 255 karakter')
+		.optional(),
 	whatsappNumber: z
 		.string()
 		.regex(/^\+\d{10,15}$/, 'Format nomor WhatsApp tidak valid (contoh: +6281234567890)')
+		.or(z.literal(''))
 		.optional()
-		.nullable(),
+		.nullable()
+		.transform((val) => (val === '' ? null : val)),
 	isActive: z.boolean().optional(),
 })
 
@@ -48,7 +56,7 @@ export const updateParticipantSchema = z.object({
 
 export const createPeriodSchema = z.object({
 	startDate: z
-		.string()
+		.string('Tanggal mulai wajib diisi')
 		.refine(
 			(date) => {
 				const d = new Date(date)
@@ -74,7 +82,11 @@ export const updateProgressSchema = z.object({
 })
 
 export const updateJuzSchema = z.object({
-	juzNumber: z.number().int('Nomor juz harus bilangan bulat').min(1, 'Nomor juz minimal 1').max(30, 'Nomor juz maksimal 30'),
+	juzNumber: z
+		.number('Nomor juz wajib diisi')
+		.int('Nomor juz harus bilangan bulat')
+		.min(1, 'Nomor juz minimal 1')
+		.max(30, 'Nomor juz maksimal 30'),
 })
 
 /**
